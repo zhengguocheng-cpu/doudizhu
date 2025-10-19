@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗地主游戏房间</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/room/css/room.css">
+    <!-- <link rel="stylesheet" href="room.css"> -->
+</head>
+<body>
+    <div class="main-container">
+        <!-- 顶部深蓝色标题栏 -->
+        <header class="top-header">
+            <h1>游戏房间 -  <span id="currentRoomId"></span></h1>
+            <button id="exitGameBtn" class="btn btn-warning" style="display: none;">退出游戏</button>
+            <div class="connection-status" id="connectionStatus">未连接</div>
+        </header>
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 游戏区域 -->
+            <section class="game-area" id="gameRoom">
+
+                <!-- 绿色游戏桌面 -->
+                <div class="game-table">
+                    <!-- 玩家位置等游戏元素 -->
+                    <!-- 顶部左侧玩家 (玩家2) -->
+                    <div class="player-position top-left-player hidden" id="topLeftPlayer">
+                        <div class="player-avatar-square">
+                            <div class="avatar-square" id="topLeftPlayerAvatar">🎲</div>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name" id="topLeftPlayerName">玩家2</div>
+                            <div class="player-cards-count" id="topLeftCardCount">未准备</div>
+                        </div>
+                    </div>
+
+                    <!-- 顶部右侧玩家 (玩家3) -->
+                    <div class="player-position top-right-player hidden" id="topRightPlayer">
+                        <div class="player-avatar-square">
+                            <div class="avatar-square" id="topRightPlayerAvatar">🎯</div>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name" id="topRightPlayerName">玩家3</div>
+                            <div class="player-cards-count" id="topRightCardCount">未准备</div>
+                        </div>
+                    </div>
+
+                    <!-- 底部玩家 (当前玩家) -->
+                    <div class="player-position bottom-player current-player" id="currentPlayerPosition">
+                        <div class="player-info">
+                            <div class="avatar-square current-avatar" id="currentPlayerAvatar">👑</div>
+                            <div class="player-name" id="currentPlayerNameDisplay">我</div>
+                            <div class="player-cards-count" id="currentPlayerCardCount">未准备</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 当前玩家手牌区域 -->
+                <div class="player-hand-section">
+                    <div class="cards-display player-hand" id="playerHand">
+                        <!-- 玩家手牌将动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 中央控制区域 - 覆盖在游戏桌面之上 -->
+                <div class="game-controls-overlay" id="gameControlsOverlay">
+                    <!-- 房间操作按钮 - 游戏开始前显示 -->
+                    <div class="room-actions" id="roomActions">
+                        <button id="startGameBtn" class="btn btn-success btn-lg">开始游戏</button>
+                        <button id="leaveRoomBtn" class="btn btn-danger btn-lg">返回大厅</button>
+                    </div>
+
+                    <!-- 出牌操作按钮 - 轮到玩家时显示 -->
+                    <div class="game-actions" id="gameActions" style="display: none;">
+                        <button id="hintBtn" class="btn btn-info btn-lg">提示</button>
+                        <button id="playCardsBtn" class="btn btn-primary btn-lg">出牌</button>
+                        <button id="passBtn" class="btn btn-secondary btn-lg">不出</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧聊天区域 -->
+            <aside class="chat-sidebar">
+                <div class="chat-header">
+                    <h3>房间聊天</h3>
+                </div>
+                <div class="chat-messages" id="roomMessageLog">
+                    <!-- 聊天消息将动态添加 -->
+                </div>
+                <div class="chat-input-area">
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="输入聊天消息...">
+                        <button id="sendChatBtn" class="btn btn-primary">发送</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 调试控制面板 -->
+        <div id="debugPanel" style="position: fixed; bottom: 20px; left: 200px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000;">
+            <div><strong>调试面板</strong></div>
+            <button onclick="testRoomJoined()" style="margin: 2px; padding: 2px 5px; font-size: 10px;">模拟room_joined</button>
+            <button onclick="testPlayerJoined()" style="margin: 2px; padding:2px 5px; font-size: 10px;">模拟player_joined</button>
+            <button onclick="testShowButtons()" style="margin: 2px; padding: 2px 5px; font-size: 10px;">显示按钮</button>
+            <button onclick="testHideButtons()" style="margin: 2px; padding: 2px 5px; font-size: 10px;">隐藏按钮</button>
+        </div>
+
+        <script>
+            function testRoomJoined() {
+                console.log('手动触发 room_joined 测试');
+                // 模拟服务器发送的消息
+                window.dispatchEvent(new CustomEvent('test-room-joined'));
+            }
+
+            function testPlayerJoined() {
+                console.log('手动触发 player_joined 测试');
+                window.dispatchEvent(new CustomEvent('test-player-joined'));
+            }
+
+            function testShowButtons() {
+                console.log('手动显示按钮');
+                const overlay = document.getElementById('gameControlsOverlay');
+                const actions = document.getElementById('roomActions');
+                if (overlay) overlay.style.display = 'flex';
+                if (actions) actions.style.display = 'flex';
+            }
+
+            function testHideButtons() {
+                console.log('手动隐藏按钮');
+                const overlay = document.getElementById('gameControlsOverlay');
+                const actions = document.getElementById('roomActions');
+                if (overlay) overlay.style.display = 'none';
+                if (actions) actions.style.display = 'none';
+            }
+        </script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/room/js/room.js"></script>
+    </div>
+</body>
+</html>

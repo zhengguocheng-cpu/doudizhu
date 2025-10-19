@@ -1,0 +1,865 @@
+/* 房间页面样式 */
+.main-container {
+    display: grid;
+    grid-template-rows: 60px auto; /* 2行 */
+    grid-template-columns: 1fr 0.3fr; /* 两列：游戏区域占剩余空间，聊天侧边栏固定宽度 */
+    background-color: #f5f5f5;
+    min-height: 0;
+    gap: 10px;
+    height: calc(100vh - 20px); /* 底部留出20px的空间，让auto行能填满剩余空间 */
+}
+/* 顶部深蓝色标题栏 */
+.top-header {
+    grid-area: 1 / 1 / 2 / 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr 100px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    height: 60px; /* 与grid设置匹配 */
+}
+
+.top-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.room-info-bar {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+    justify-content: space-between;
+}
+
+.room-info-bar span {
+    font-size: 18px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* 确保按钮始终可见 */
+.room-info-bar .btn {
+    flex-shrink: 0;
+    min-width: 100px;
+}
+
+
+
+/* 主要内容区域 - 使用CSS Grid布局 */
+.main-content {
+    grid-area: 2 / 1 / 3 / 3;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 0.3fr;
+    background-color: #f5f5f5;
+    min-height: 0;
+    gap: 0;
+}
+
+/* 游戏区域 */
+.game-area {
+    grid-area: 1 / 1 / 2 / 2;
+    display: grid;
+    grid-template-rows: 100px 1fr 100px; /* 三行：顶部玩家、中央区域、底部玩家+手牌 */
+    grid-template-columns: 100px 1fr 100px; /* 三列布局 */
+    gap: 5px;
+    padding: 20px;
+    height: 100%;
+    min-height: 0;
+}
+
+/* 绿色游戏桌面背景容器 */
+.game-table {
+    grid-area: 1 / 1 / 4 / 4; /* 占据整个游戏区域作为背景 */
+    background-color: #2d5016;
+    border: 10px solid #a0956b;
+    border-radius: 20px;
+    position: relative; /* 为覆盖层提供定位基准 */
+    /* 移除display: grid等grid布局属性，改为普通容器 */
+}
+
+/* 玩家位置样式 */
+.player-position {
+    position: relative; /* 相对于grid单元格定位 */
+    display: grid;
+    grid-template-rows: 1fr; /* 头像和信息垂直排 */
+    grid-template-columns:1fr; /* 头像和信息并排 */
+    gap: 0px;
+    align-items: center; /* Grid垂直居中 */
+    padding: 0px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: 100%;
+    justify-self: center;
+}
+
+/* 隐藏玩家位置 */
+.player-position.hidden {
+    display: none;
+}
+
+
+/* 顶部左侧玩家 */
+.top-left-player {
+    grid-area: 1 / 1 / 2 / 2; /* 第一行第一列 */
+}
+
+/* 顶部右侧玩家 */
+.top-right-player {
+    grid-area: 1 / 3 / 2 / 4; /* 第一行第三列 */
+}
+
+/* 底部玩家 */
+.bottom-player {
+    grid-area: 3 / 1 / 4 / 2; /* 第三行第一列 */
+    display: flex;
+    justify-content: flex-start; /* 靠左排列 */
+    align-items: flex-end; /* 底部对齐，确保在最底端 */
+    height: 100%;margin-left: 10px; /* 留出左边距，避免过于贴边 */
+}
+
+/* 玩家信息 */
+.player-info {
+    display: grid;
+    grid-template-rows: 50px auto; /* 头像和信息垂直排 */
+    grid-template-columns:50px auto; /*头像和信息并排*/
+    gap: 2px; /* 减少间距，让头像和名字更近 */
+    justify-items: center; /* 水平居中排列 */
+    align-items: center;   /* 垂直居中 */
+}
+
+.player-name {
+    grid-area: 2 / 1 / 3 / 2;
+    font-weight: bold;
+    font-size: 16px;
+    color: #f9f9fa;
+}
+
+.player-cards-count {
+    grid-area: 1 / 2 / 3 / 3;
+    font-size: 18px;
+    color: #e67e22;
+    font-weight: bold;
+}
+
+/* .player-position.current-player .player-name {
+    color: white;
+} */
+
+/* .player-position.current-player .player-cards-count {
+    color: rgba(255, 255, 255, 0.9);
+} */
+
+/* 玩家头像 */
+.avatar-square {
+    grid-area: 1 / 1 / 2 / 2;
+    width: 100%;      /* 占父容器100%宽度 */
+    height: 100%;     /* 占父容器100%高度 */
+    padding: 0px;     /* 无内边距 */
+    border-radius: 8px; /* 有圆角边框 */
+    box-sizing: border-box; /* 使用替代盒模型 */
+    text-align: center;
+    align-self: center;    /* 垂直居中 */
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.current-avatar {
+    background-color: #e74c3c;
+}
+
+/* 游戏中央区域 */
+.game-center {
+    grid-area: 2 / 2 / 3 / 3; /* 占据中央单元格 */
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr; /* 单行布局 */
+    gap: 15px;
+    z-index: 10;
+    justify-items: center;
+    align-items: center;
+}
+
+/* 游戏控制覆盖层 - 显示在游戏桌面之上 */
+.game-controls-overlay {
+    grid-area: 2 / 1 / 3 / 4; /* 相对于第二行网格区域定位，而不是整个游戏桌面 */
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+}
+
+.game-controls-overlay > * {
+    pointer-events: auto;
+}
+
+/* 房间操作按钮区域 */
+.room-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 两列等宽 */
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    max-width: 400px; /* 限制最大宽度，避免按钮过宽 */
+}
+
+.btn-lg {
+    padding: 15px 35px;
+    font-size: 20px;
+    border-radius: 8px;
+}
+
+/* 玩家手牌区域 */
+.player-hand-section {
+    grid-area: 3 / 2 / 4 / 4; /* 占据第三行第二和第三列 */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* 底部对齐，在第三行底部显示 */
+    height: 100%;
+    overflow: hidden;
+    padding-bottom: 10px; /* 留出一些底部空间，避免紧贴边缘 */
+}
+
+.player-hand {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); /* 自适应卡牌数量 */
+    gap: -20px; /* 重叠效果 */
+    justify-content: center; /* 水平居中排列卡牌 */
+    align-items: flex-end;     /* 底部对齐，让卡牌在底部显示 */
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+/* 卡牌样式 */
+.cards-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* 自适应列数，最小70px */
+    gap: 2px;
+    justify-content: center;
+    margin-bottom: 5px;
+    max-width: 100%;
+}
+
+.card {
+    width: 70px;
+    height: 100px;
+    background-color: #f8f9fa;
+    border: 3px solid #dee2e6;
+    border-radius: 15px;
+    display: grid;
+    align-items: center;        /* 垂直居中 */
+    justify-content: center;    /* 水平居中 */
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.card.selected {
+    border-color: #e74c3c;
+    background-color: #ffebee;
+}
+
+/* 右侧聊天侧边栏 */
+.chat-sidebar {
+    grid-area: 1 / 2 / 2 / 3; /* 占据第一行第二列 */
+    width: 100%; /* Grid布局中宽度由grid-template-columns控制 */
+    background-color: white;
+    border-left: 1px solid #ddd;
+    display: grid;
+    grid-template-rows: 50px 1fr 50px;
+    height: 100%;
+    border-radius: 0 8px 8px 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-header {
+    background-color: #f8f9fa;
+    padding: 4px 10px;
+    border-bottom: 1px solid #ddd;
+    display: grid;
+    align-items: center;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.chat-messages {
+    display: grid;
+    grid-template-rows: 1fr; /* 占满剩余空间 */
+    padding: 12px;
+    overflow-y: auto;
+    background-color: #fafbfc;
+    min-height: 400px;
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.chat-message .time {
+    color: #999;
+    font-size: 11px;
+    margin-right: 8px;
+    font-weight: normal;
+}
+
+.chat-message .player {
+    color: #007bff;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.chat-message .message {
+    color: #333;
+    font-size: 15px;
+    flex: 1;
+}
+
+/* 发送的聊天消息样式 */
+.chat-send {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.chat-send .player {
+    color: #1976d2;
+}
+
+/* 接收的聊天消息样式 */
+.chat-receive {
+    background-color: #f5f5f5;
+    border-left: 3px solid #666;
+}
+
+.chat-receive .player {
+    color: #333;
+}
+
+/* 调试信息样式 */
+.debug {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    color: #856404;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.chat-input-area {
+    padding: 0px; /* 移除所有内边距 */
+    border-top: 1px solid #ddd;
+    background-color: white;
+    height: 40px; /* 固定高度 */
+}
+
+.chat-input-container {
+    display: grid;
+    grid-template-columns: 1fr 50px;
+    gap: 2px; /* 减小间距 */
+    align-items: stretch;
+    width: 100%;
+    height: 100%; /* 占满容器高度 */
+}
+
+.chat-input-area input {
+    padding: 0px 0px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    height: 100%;
+    box-sizing: border-box;
+    outline: none;
+    background-color: #f8f9fa;
+    transition: all 0.2s;
+    cursor: text;
+    color: #333;
+}
+
+.chat-input-area input:focus,
+.chat-input-area input:active {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    background-color: white;
+}
+
+#sendChatBtn {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+    height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    box-sizing: border-box;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 35px;
+}
+
+#sendChatBtn:hover {
+    background-color: #0056b3;
+}
+
+#sendChatBtn:active {
+    background-color: #004085;
+}
+
+/* 游戏状态栏 */
+.game-status-bar {
+    background-color: #fff3cd;
+    border: 2px solid #ffeaa7;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin: 20px auto;
+    max-width: 700px;
+    text-align: center;
+}
+
+.status-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* 自适应列数 */
+    gap: 30px;
+    font-size: 18px;
+    justify-items: center;
+}
+
+.status-info span {
+    color: #856404;
+}
+
+/* 房间消息日志 */
+.room-message-log {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    padding: 20px;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+.room-message-log h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+}
+
+.room-message-log .log-content {
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+}
+
+/* 出牌区域 */
+.played-cards-area {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: rgba(255,255,255,0.8);
+    border-radius: 8px;
+}
+
+.played-cards-area h4 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 12px;
+}
+
+.played-cards {
+    min-height: 50px;
+    background-color: white;
+    border: 2px dashed #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); /* 自适应卡牌数量 */
+    gap: 3px;
+    align-items: center;
+}
+
+/* 游戏侧边栏 */
+.game-sidebar {
+    position: absolute;
+    right: -220px;
+    top: 0;
+    width: 200px;
+    height: 100%;
+    background-color: rgba(255,255,255,0.95);
+    border-left: 2px solid #ddd;
+    padding: 15px;
+    display: grid;
+    grid-template-rows: auto 1fr; /* 标题和内容 */
+    gap: 15px;
+}
+
+/* 出牌历史 */
+.game-history {
+    display: grid;
+    grid-template-rows: auto 1fr; /* 标题和列表 */
+    gap: 10px;
+}
+
+.game-history h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr; /* 玩家名和卡牌信息 */
+    gap: 8px;
+    align-items: center;
+}
+
+.history-item .player {
+    color: #7f8c8d;
+    font-weight: bold;
+}
+
+.history-item .cards {
+    color: #2c3e50;
+}
+
+/* 游戏底部区域 */
+.game-bottom-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 左右两个区域 */
+    gap: 20px;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+.game-info-left {
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    /* Grid布局用于内部元素排列 */
+    display: grid;
+    gap: 10px;
+}
+
+.game-info-right {
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    /* Grid布局用于内部元素排列 */
+    display: grid;
+    gap: 10px;
+}
+
+/* 游戏状态紧凑版 */
+.game-status-compact {
+    margin-bottom: 15px;
+}
+
+.status-info {
+    display: grid;
+    grid-template-columns: 1fr; /* 单列布局 */
+    gap: 8px;
+    font-size: 13px;
+}
+
+.status-info span {
+    color: #2c3e50;
+}
+
+/* 出牌历史紧凑版 */
+.game-history-compact h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 18px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.history-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 4px 0;
+    border-bottom: 1px solid #f8f9fa;
+    font-size: 11px;
+    display: grid;
+    grid-template-columns: auto 1fr; /* 玩家名和卡牌信息 */
+    gap: 8px;
+    align-items: center;
+}
+
+.history-item .player {
+    color: #7f8c8d;
+    font-weight: bold;
+    min-width: 50px;
+}
+
+.history-item .cards {
+    color: #2c3e50;
+}
+
+/* 聊天区域紧凑版 */
+.chat-area-compact h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 18px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+.chat-messages {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+.chat-message {
+    padding: 3px 0;
+    font-size: 15px;
+    display: grid;
+    grid-template-columns: auto auto 1fr; /* 时间、玩家、消息 */
+    gap: 5px;
+    align-items: center;
+}
+
+.chat-message .time {
+    color: #999;
+    
+    min-width: 35px;
+}
+
+.chat-message .player {
+    color: #3498db;
+   
+    min-width: 50px;
+}
+
+.chat-message .message {
+    color: #2c3e50;
+    /* 在grid布局中不需要flex: 1，由grid-template-columns: auto auto 1fr控制 */
+}
+
+/* 游戏状态指示器 */
+.status-left, .status-center, .status-right {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 自适应列数 */
+    gap: 20px;
+    align-items: center;
+}
+
+.room-info, .room-id {
+    font-size: 18px;
+    color: rgba(255,255,255,0.9);
+}
+
+.game-timer {
+    background-color: rgba(231, 76, 60, 0.8);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+}
+
+.game-state {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.btn-outline:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-color: white;
+}
+
+/* 玩家状态指示器 */
+.player-status-indicator {
+    display: grid;
+    grid-template-columns: auto auto; /* 状态点和文本 */
+    gap: 5px;
+    align-items: center;
+    font-size: 10px;
+    color: #7f8c8d;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #27ae60;
+}
+
+.status-dot.offline {
+    background-color: #95a5a6;
+}
+
+/* 响应式适配增强 - 方形游戏桌 */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr 250px; /* 缩小聊天侧边栏 */
+    }
+
+    .game-area {
+        grid-template-columns: 1fr 1fr 1fr; /* 三列等宽 */
+        grid-template-rows: 80px 1fr 80px; /* 缩小顶部和底部区域 */
+        padding: 15px;
+    }
+
+    .game-table {
+        padding: 15px; /* 调整内边距 */
+    }
+
+    .player-position {
+        min-width: 120px;
+        padding: 12px;
+    }
+
+    .avatar-square {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+
+    .player-name {
+        font-size: 13px;
+    }
+
+    .player-level {
+        font-size: 10px;
+    }
+
+    .player-hand {
+        gap: -15px; /* 调整卡牌重叠效果 */
+    }
+
+    .card {
+        width: 60px;
+        height: 84px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr; /* 移动端单列布局 */
+        grid-template-rows: 1fr auto; /* 游戏区域和聊天区域垂直排列 */
+    }
+
+    .game-area {
+        grid-row: 1; /* 游戏区域占据第一行 */
+        grid-template-columns: 1fr 1fr 1fr; /* 三列等宽 */
+        grid-template-rows: 60px 1fr 60px; /* 进一步缩小尺寸 */
+        padding: 10px;
+    }
+
+    .chat-sidebar {
+        grid-row: 2; /* 聊天区域占据第二行 */
+        height: 300px; /* 固定高度 */
+        width: 100%; /* 全宽度 */
+    }
+
+    .game-table {
+        padding: 10px; /* 调整内边距 */
+    }
+
+    .player-position {
+        min-width: 100px;
+        padding: 10px;
+    }
+
+    .avatar-square {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .player-name {
+        font-size: 12px;
+    }
+
+    .player-level {
+        font-size: 9px;
+    }
+
+    .player-hand {
+        gap: -10px; /* 调整卡牌重叠效果 */
+    }
+
+    .card {
+        width: 20px;
+        height: 28px;
+        font-size: 9px;
+    }
+
+    .room-info-bar {
+        display: grid;
+        grid-template-columns: 1fr auto; /* 文本和按钮 */
+        gap: 10px;
+        align-items: start; /* Grid布局的对齐方式 */
+    }
+
+    .room-info-bar span {
+        font-size: 16px;
+    }
+
+    .room-info-bar .btn {
+        min-width: 80px;
+        font-size: 14px;
+    }
+}

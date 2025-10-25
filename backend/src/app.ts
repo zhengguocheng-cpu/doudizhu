@@ -68,14 +68,14 @@ export class Application {
   }
 
   private setupRoutes(): void {
-    // 静态文件服务 - 服务前端页面，必须在路由之前设置
-    this.app.use(express.static(__dirname + '/../../frontend/public'));
-
-    // 基础路由
+    // 基础路由 - 必须在静态文件服务之前
     this.app.use('/', indexRoutes);
 
     // 游戏相关路由
     this.app.use('/api/games', gameRoutes);
+
+    // 静态文件服务 - 放在最后，作为fallback
+    this.app.use(express.static(__dirname + '/../../frontend/public'));
 
     // API文档路由
     this.app.get('/api', (req, res) => {

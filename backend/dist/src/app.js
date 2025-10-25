@@ -44,9 +44,9 @@ class Application {
         });
     }
     setupRoutes() {
-        this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
         this.app.use('/', routes_1.default);
         this.app.use('/api/games', gameRoutes_1.default);
+        this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
         this.app.get('/api', (req, res) => {
             res.json({
                 title: '斗地主游戏API文档',

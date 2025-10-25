@@ -2,46 +2,59 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import config from './config';
+import { config } from './config';
 import indexRoutes from './routes';
 import gameRoutes from './routes/gameRoutes';
-
-// 类型定义
-interface Player {
-  id: string;
-  name: string;
-  ready: boolean;
-  cards?: string[];
-  cardCount?: number;
-}
-
-interface GameRoom {
-  id: string;
-  players: Player[];
-  readyPlayers: string[];
-  gameStarted: boolean;
-  bottomCards?: string[];
-  landlord?: Player | null;
-  currentPlayer?: string;
-  lastPlayedCards?: string[];
-}
+import { createUserManager, UserManager } from './services/user/userManager';
+import { PlayerSession } from './services/player/playerSession';
+import { StateRecoveryService } from './services/state/stateRecovery';
+import { GameRoom } from './types/room';
+import { Player } from './types/player';
+import { gameRoomsService } from './services/game/gameRoomsService';
+import { roomService } from './services/room/roomService';
+import { AuthMiddleware } from './middleware/AuthMiddleware';
+import { socketEventHandler } from './services/socket/SocketEventHandler';
+import { ServiceRegistry } from './core/ServiceRegistry';
+import { DependencyContainer } from './core/container';
 
 export class Application {
   private app: express.Application;
   private server: any;
   private io!: SocketIOServer;
-  private gameRooms: Map<string, GameRoom> = new Map(); // 存储游戏房间状态
+  private userManager: any;
+  private sessionManager!: PlayerSession;
+  private stateRecovery!: StateRecoveryService;
+  private authMiddleware!: AuthMiddleware;
+  private eventHandler: any;
+  private container: DependencyContainer;
 
   constructor() {
     this.app = express();
-    this.setupMiddleware();
-    this.setupRoutes();
-    this.setupSocketIO();
+    this.container = DependencyContainer.getInstance();
+
+    // Initialize service registry FIRST to register all services in the dependency container
+    this.initializeServices().then(() => {
+      // 服务初始化完成后，再解析主要的服务
+      this.sessionManager = this.container.resolve<PlayerSession>('SessionManager');
+      this.userManager = this.container.resolve<UserManager>('UserManager');
+      this.authMiddleware = this.container.resolve<AuthMiddleware>('AuthMiddleware');
+
+      this.stateRecovery = new StateRecoveryService();
+      // eventHandler现在在setupSocketIO中初始化
+
+      this.setupMiddleware();
+      this.setupRoutes();
+      // 注意：setupSocketIO现在在start()方法中调用，避免server未初始化问题
+      this.setupCleanupTasks();
+    }).catch(error => {
+      console.error('Application初始化失败:', error);
+      process.exit(1);
+    });
   }
 
   private setupMiddleware(): void {
     // CORS配置
-    this.app.use(cors(config.cors));
+    this.app.use(cors(config.legacy.cors));
 
     // JSON解析中间件
     this.app.use(express.json({ limit: '10mb' }));
@@ -87,180 +100,156 @@ export class Application {
     this.server = createServer(this.app);
     this.io = new SocketIOServer(this.server, {
       cors: {
-        origin: config.cors.origin,
+        origin: config.legacy.cors.origin,
         methods: ["GET", "POST"]
       }
     });
 
+    // 在这里初始化eventHandler，确保在设置事件监听器之前可用
+    this.eventHandler = socketEventHandler;
+    this.eventHandler.initialize(this.io);
+
     this.io.on('connection', (socket) => {
       console.log(`用户连接: ${socket.id}`);
 
-      // 处理游戏相关Socket事件
-      socket.on('join_game', (data) => {
-        console.log('玩家加入游戏:', data);
-        socket.join(`room_${data.roomId}`);
-
-        // 初始化房间状态
-        if (!this.gameRooms.has(data.roomId)) {
-          this.gameRooms.set(data.roomId, {
-            id: data.roomId,
-            players: [],
-            readyPlayers: [],
-            gameStarted: false
-          });
-        }
-
-        const room = this.gameRooms.get(data.roomId);
-        if (room && !room.players.find((p: Player) => p.id === socket.id)) {
-          room.players.push({
-            id: socket.id,
-            name: data.playerName,
-            ready: false
-          });
-        }
-
-        socket.to(`room_${data.roomId}`).emit('player_joined', { playerId: socket.id });
-      });
-
-      socket.on('leave_game', (data) => {
-        console.log('玩家离开游戏:', socket.id);
-        socket.leave(`room_${data.roomId}`);
-
-        // 从房间中移除玩家
-        if (this.gameRooms.has(data.roomId)) {
-          const room = this.gameRooms.get(data.roomId);
-          if (room) {
-            room.players = room.players.filter((p: Player) => p.id !== socket.id);
-            room.readyPlayers = room.readyPlayers.filter((id: string) => id !== socket.id);
-
-            // 如果房间为空，删除房间
-            if (room.players.length === 0) {
-              this.gameRooms.delete(data.roomId);
-            }
+      // 使用认证中间件处理认证（如果可用）
+      if (this.authMiddleware) {
+        this.authMiddleware.authenticateSocket(socket, (err?: any) => {
+          if (err) {
+            console.error('认证中间件错误:', err);
+            return;
           }
-        }
 
-        socket.to(`room_${data.roomId}`).emit('player_left', { playerId: socket.id });
-      });
-
-      socket.on('player_ready', (data) => {
-        console.log('玩家准备:', data);
-
-        if (this.gameRooms.has(data.roomId)) {
-          const room = this.gameRooms.get(data.roomId);
-          if (room && !room.readyPlayers.includes(socket.id)) {
-            room.readyPlayers.push(socket.id);
-
-            // 检查是否所有玩家都准备好了
-            if (room.readyPlayers.length === room.players.length && room.players.length >= 3) {
-              this.startGame(data.roomId);
-            }
-          }
-        }
-
-        socket.to(`room_${data.roomId}`).emit('player_ready', { playerId: socket.id });
-      });
-
-      socket.on('grab_landlord', (data) => {
-        console.log('玩家抢地主:', data);
-
-        if (this.gameRooms.has(data.roomId)) {
-          const room = this.gameRooms.get(data.roomId);
-          if (room && room.gameStarted && !room.landlord) {
-            // 这里应该实现抢地主逻辑
-            // 暂时简化：第一个抢地主的玩家成为地主
-            if (data.isGrab) {
-              room.landlord = room.players.find(p => p.id === socket.id);
-              if (room.landlord) {
-                // 通知所有玩家地主确定
-                this.io.to(`room_${data.roomId}`).emit('landlord_selected', {
-                  playerId: room.landlord.id,
-                  playerName: room.landlord.name,
-                  bottomCards: room.bottomCards
-                });
-
-                // 只把底牌发给地主
-                this.io.to(room.landlord.id).emit('cards_dealt', {
-                  playerId: room.landlord.id,
-                  cards: room.bottomCards,
-                  isBottomCards: true
-                });
-
-                // 开始游戏出牌
-                this.startPlaying(data.roomId);
-              }
-            }
-          }
-        }
-      });
-
-      socket.on('play_cards', (data) => {
-        console.log('玩家出牌:', data);
-
-        if (this.gameRooms.has(data.roomId)) {
-          const room = this.gameRooms.get(data.roomId);
-          if (room && room.gameStarted && room.landlord) {
-            const player = room.players.find(p => p.id === socket.id);
-
-            // 验证出牌合法性（这里应该有完整的牌型验证逻辑）
-            if (player && this.validateCards(data.cards, player.cards)) {
-              // 出牌成功
-              socket.emit('play_result', { success: true });
-
-              // 通知其他玩家
-              socket.to(`room_${data.roomId}`).emit('cards_played', {
-                playerId: socket.id,
-                playerName: player.name,
-                cards: data.cards,
-                nextPlayerId: this.getNextPlayer(room, socket.id)
-              });
-
-              // 更新游戏状态
-              this.updateGameState(room, socket.id, data.cards);
-            } else {
-              // 出牌失败
-              socket.emit('play_result', {
-                success: false,
-                error: '出牌不符合规则'
-              });
-            }
-          }
-        }
-      });
-
-      socket.on('pass_turn', (data) => {
-        console.log('玩家跳过回合:', data);
-
-        if (this.gameRooms.has(data.roomId)) {
-          const room = this.gameRooms.get(data.roomId);
-          if (room && room.gameStarted) {
-            // 通知下一个玩家出牌
-            const nextPlayerId = this.getNextPlayer(room, socket.id);
-            this.io.to(`room_${data.roomId}`).emit('turn_changed', {
-              nextPlayerId: nextPlayerId,
-              lastPlayedCards: room.lastPlayedCards
-            });
-          }
-        }
-      });
-
-      socket.on('send_message', (data) => {
-        console.log('玩家发送消息:', data);
-
-        // 广播聊天消息给房间内所有玩家
-        socket.to(`room_${data.roomId}`).emit('message_received', {
-          playerName: data.playerName,
-          message: data.message
+          // 设置Socket事件处理器
+          this.setupSocketEventHandlers(socket);
         });
-      });
+      } else {
+        console.warn('认证中间件未初始化，直接设置Socket事件处理器');
+        // 直接设置Socket事件处理器
+        this.setupSocketEventHandlers(socket);
+      }
     });
+  }
+
+  private setupSocketEventHandlers(socket: any): void {
+    // 使用事件处理器服务处理所有Socket事件
+    socket.on('join_game', (data: any) => {
+      this.eventHandler.handleJoinGame(socket, data);
+    });
+
+    socket.on('leave_game', (data: any) => {
+      this.eventHandler.handleLeaveGame(socket, data);
+    });
+
+    socket.on('player_ready', (data: any) => {
+      this.eventHandler.handlePlayerReady(socket, data);
+    });
+
+    socket.on('play_cards', (data: any) => {
+      this.eventHandler.handlePlayCards(socket, data);
+    });
+
+    socket.on('pass_turn', (data: any) => {
+      this.eventHandler.handlePassTurn(socket, data);
+    });
+
+    socket.on('send_message', (data: any) => {
+      this.eventHandler.handleSendMessage(socket, data);
+    });
+
+    // 添加房间列表相关事件
+    socket.on('get_rooms_list', (data: any) => {
+      this.eventHandler.handleGetRoomsList(socket, data);
+    });
+
+    // 添加开始游戏事件
+    socket.on('start_game', (data: any) => {
+      this.handleStartGame(socket, data);
+    });
+  }
+
+  /**
+   * 处理开始游戏请求
+   */
+  private async handleStartGame(socket: any, data: any): Promise<void> {
+    try {
+      const { roomId, userId } = data;
+      console.log(`🎮 收到开始游戏请求: 房间 ${roomId}, 玩家 ${userId}`);
+
+      // 使用游戏引擎开始游戏
+      const gameEngine = this.container.resolve<any>('GameEngine');
+      const result = gameEngine.startGame(roomId);
+
+      if (result.success) {
+        console.log(`✅ 游戏开始成功，房间 ${roomId}`);
+
+        // 通知所有玩家游戏开始
+        const room = roomService.getRoom(roomId);
+        if (room) {
+          // 发牌给所有玩家
+          room.players.forEach((player: any) => {
+            this.io.to(player.id).emit('cards_dealt', {
+              playerId: player.id,
+              cards: player.cards || []
+            });
+          });
+
+          // 广播游戏状态更新
+          this.io.to(`room_${roomId}`).emit('game_state_updated', {
+            gameState: {
+              currentPlayer: room.players[0].id,
+              bottomCards: room.cards?.remaining || [],
+              players: room.players.map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                cardCount: p.cardCount
+              }))
+            }
+          });
+
+          // 广播房间更新
+          this.broadcastRoomsUpdate('game_started', roomId);
+        }
+      } else {
+        console.error(`❌ 游戏开始失败: ${result.error}`);
+        socket.emit('error', { message: result.error || '开始游戏失败' });
+      }
+    } catch (error) {
+      console.error('处理开始游戏请求失败:', error);
+      socket.emit('error', {
+        message: error instanceof Error ? error.message : '开始游戏过程中发生错误'
+      });
+    }
+  }
+
+  /**
+   * 广播房间列表更新
+   */
+  public broadcastRoomsUpdate(eventType: string, roomId: string, data?: any): void {
+    try {
+      // 获取更新后的房间列表
+      const rooms = roomService.getAllRooms();
+
+      // 广播给所有连接的客户端
+      this.io?.emit('rooms_updated', {
+        eventType: eventType,
+        roomId: roomId,
+        rooms: rooms,
+        data: data,
+        timestamp: new Date()
+      });
+
+      console.log(`广播房间更新: ${eventType}, 房间: ${roomId}, 客户端数量: ${this.io?.sockets?.sockets?.size || 0}`);
+    } catch (error) {
+      console.error('广播房间更新失败:', error);
+    }
   }
 
   // 开始游戏并发牌
   private startGame(roomId: string) {
-    if (!this.gameRooms.has(roomId)) return;
+    if (!gameRoomsService.getGameRoom(roomId)) return;
 
-    const room = this.gameRooms.get(roomId);
+    const room = gameRoomsService.getGameRoom(roomId);
     if (!room || room.gameStarted) return;
 
     room.gameStarted = true;
@@ -289,7 +278,7 @@ export class Application {
     room.players.forEach((player: Player) => {
       this.io.to(player.id).emit('cards_dealt', {
         playerId: player.id,
-        cards: player.cards
+        cards: player.cards || []
       });
     });
 
@@ -305,6 +294,9 @@ export class Application {
         }))
       }
     });
+
+    // 更新房间数据
+    gameRoomsService.setGameRoom(roomId, room);
 
     console.log(`游戏开始，房间 ${roomId} 发牌完成`);
   }
@@ -341,9 +333,9 @@ export class Application {
 
   // 开始游戏出牌阶段
   private startPlaying(roomId: string) {
-    if (!this.gameRooms.has(roomId)) return;
+    if (!gameRoomsService.getGameRoom(roomId)) return;
 
-    const room = this.gameRooms.get(roomId);
+    const room = gameRoomsService.getGameRoom(roomId);
     if (!room || !room.landlord) return;
 
     // 设置第一个出牌玩家为地主
@@ -354,6 +346,9 @@ export class Application {
       nextPlayerId: room.currentPlayer,
       lastPlayedCards: null
     });
+
+    // 更新房间数据
+    gameRoomsService.setGameRoom(roomId, room);
   }
 
   // 验证出牌合法性
@@ -368,10 +363,10 @@ export class Application {
   }
 
   // 获取下一个出牌玩家
-  private getNextPlayer(room: GameRoom, currentPlayerId: string): string {
+  private getNextPlayer(room: any, currentPlayerId: string): string {
     if (!room.players || room.players.length === 0) return '';
 
-    const currentIndex = room.players.findIndex(p => p.id === currentPlayerId);
+    const currentIndex = room.players.findIndex((p: any) => p.id === currentPlayerId);
     if (currentIndex === -1) return room.players[0].id;
 
     const nextIndex = (currentIndex + 1) % room.players.length;
@@ -379,15 +374,15 @@ export class Application {
   }
 
   // 更新游戏状态
-  private updateGameState(room: GameRoom, playerId: string, playedCards: string[]) {
+  private updateGameState(room: any, playerId: string, playedCards: string[]) {
     // 更新最后出牌信息
     room.lastPlayedCards = playedCards;
     room.currentPlayer = this.getNextPlayer(room, playerId);
 
     // 从玩家手牌中移除出的牌
-    const player = room.players.find(p => p.id === playerId);
+    const player = room.players.find((p: any) => p.id === playerId);
     if (player && player.cards) {
-      player.cards = player.cards.filter(card => !playedCards.includes(card));
+      player.cards = player.cards.filter((card: string) => !playedCards.includes(card));
       player.cardCount = player.cards.length;
     }
 
@@ -399,7 +394,7 @@ export class Application {
   }
 
   // 结束游戏
-  private endGame(room: GameRoom, winner: Player) {
+  private endGame(room: any, winner: any) {
     room.gameStarted = false;
 
     // 通知所有玩家游戏结束
@@ -409,11 +404,73 @@ export class Application {
     });
   }
 
+  /**
+   * 初始化服务注册器
+   */
+  private initializeServices(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        const serviceRegistry = new ServiceRegistry();
+        serviceRegistry.registerAllServices();
+
+        // 注意：现在container.resolve()会自动调用initialize()，所以这里不需要重复调用
+        // 但是我们仍然需要resolve主要的服务来确保它们被初始化
+        const tokens = this.container.getRegisteredTokens();
+        for (const token of tokens) {
+          // 解析服务但不重复调用initialize，因为resolve()已经调用了
+          this.container.resolve(token);
+        }
+
+        console.log('Socket事件处理器设置完成');
+      } catch (error) {
+        console.error('❌ 服务注册或初始化失败:', error);
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * 设置定时清理任务
+   */
+  private setupCleanupTasks(): void {
+    // 每5分钟清理一次过期会话和状态
+    setInterval(() => {
+      try {
+        const cleanedSessions = this.sessionManager.cleanupOfflineSessions();
+        const cleanedStates = this.stateRecovery.cleanupExpiredStates(30);
+        const cleanedUsers = this.userManager.cleanupOfflineUsers(60);
+
+        if (cleanedSessions > 0 || cleanedStates > 0 || cleanedUsers > 0) {
+          console.log(`🧹 清理过期资源: 会话 ${cleanedSessions} 个, 状态 ${cleanedStates} 个, 用户 ${cleanedUsers} 个`);
+        }
+      } catch (error) {
+        console.error('清理任务执行失败:', error);
+      }
+    }, 5 * 60 * 1000); // 5分钟
+
+    // 每小时输出系统状态
+    setInterval(() => {
+      try {
+        const sessionStats = this.sessionManager.getSessionStats();
+        const userStats = this.userManager.getUserStats();
+        const stateStats = this.stateRecovery.getStateStats();
+
+        console.log(`📊 系统状态: 用户(${userStats.online}/${userStats.total}), 会话(${sessionStats.online}/${sessionStats.total}), 状态(${stateStats.inRooms}/${stateStats.total})`);
+      } catch (error) {
+        console.error('状态统计失败:', error);
+      }
+    }, 60 * 60 * 1000); // 1小时
+  }
+
   public start(): void {
+    // 初始化Socket.IO服务器
+    this.setupSocketIO();
+
+    // 启动HTTP服务器
     this.server.listen(config.server.port, () => {
       console.log(`🚀 斗地主游戏服务器启动成功`);
       console.log(`📍 服务器地址: http://localhost:${config.server.port}`);
-      console.log(`🔧 环境: ${config.server.nodeEnv}`);
+      console.log(`🔧 环境: ${config.legacy.nodeEnv}`);
       console.log(`⏰ 启动时间: ${new Date().toLocaleString()}`);
       console.log(`📚 API文档: http://localhost:${config.server.port}/api`);
     });

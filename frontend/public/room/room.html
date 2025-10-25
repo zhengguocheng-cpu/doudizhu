@@ -85,7 +85,7 @@
                 <div class="chat-header">
                     <h3>房间聊天</h3>
                 </div>
-                <div class="chat-messages" id="roomMessageLog">
+                <div class="chat-messages" id="roomMessageLog" style="background-color: #27ae60; min-height: 100px;">
                     <!-- 聊天消息将动态添加 -->
                 </div>
                 <div class="chat-input-area">
@@ -98,7 +98,7 @@
         </div>
 
         <!-- 调试控制面板 -->
-        <div id="debugPanel" style="position: fixed; bottom: 20px; left: 200px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000;">
+        <div id="debugPanel" style="position: fixed; bottom: 20px; left: 200px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000; display: none;">
             <div><strong>调试面板</strong></div>
             <button onclick="testRoomJoined()" style="margin: 2px; padding: 2px 5px; font-size: 10px;">模拟room_joined</button>
             <button onclick="testPlayerJoined()" style="margin: 2px; padding:2px 5px; font-size: 10px;">模拟player_joined</button>
@@ -136,7 +136,8 @@
         </script>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script src="/room/js/room.js"></script>
+        <script src="/js/global-socket.js"></script>
+        <script src="/room/js/room-simple.js"></script>
     </div>
 </body>
 </html>

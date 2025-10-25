@@ -1,0 +1,16 @@
+/**
+ * 斗地主游戏服务器 - 备份文件
+ * 创建时间: 2025-01-22
+ * 原始文件: server.ts
+ * 备份原因: 开始Phase 1重构
+ */
+
+// 原始server.ts内容已备份到此文件
+// 在重构过程中如果需要回滚，可以使用此文件
+
+export const BACKUP_INFO = {
+  timestamp: new Date().toISOString(),
+  phase: 'Phase 1 Start',
+  description: '开始架构重构，创建类型系统和配置管理',
+  originalFiles: ['server.ts', 'src/app.ts']
+};

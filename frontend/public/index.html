@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗地主游戏</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .welcome-card h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .welcome-card p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .status-info {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .status-info.checking {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-info.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-card">
+        <h1>🎮 斗地主游戏</h1>
+        <p>享受经典的斗地主游戏体验</p>
+
+        <div class="btn-group">
+            <button id="startGameBtn" class="btn-large btn-play">
+                开始游戏
+            </button>
+        </div>
+
+        <div id="statusInfo" class="status-info" style="display: none;"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/global-socket.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startGameBtn = document.getElementById('startGameBtn');
+            const statusInfo = document.getElementById('statusInfo');
+
+            // 检查是否有保存的登录状态
+            function checkLoginStatus() {
+                const savedState = localStorage.getItem('doudizhu_page_state');
+                if (savedState) {
+                    try {
+                        const pageState = JSON.parse(savedState);
+                        const lobbyState = pageState.lobby;
+
+                        if (lobbyState && lobbyState.authenticated) {
+                            // 如果有有效的登录状态，直接跳转到大厅
+                            showStatus('检测到登录状态，正在跳转...', 'connected');
+                            setTimeout(() => {
+                                window.location.href = '/lobby/index.html';
+                            }, 1500);
+                            return;
+                        }
+                    } catch (error) {
+                        console.warn('检查登录状态失败:', error);
+                    }
+                }
+
+                // 没有登录状态，跳转到登录页面
+                showStatus('准备跳转到登录页面...', 'connected');
+                setTimeout(() => {
+                    window.location.href = '/login/index.html';
+                }, 1000);
+            }
+
+            function showStatus(message, type) {
+                if (statusInfo) {
+                    statusInfo.textContent = message;
+                    statusInfo.className = `status-info ${type}`;
+                    statusInfo.style.display = 'block';
+                }
+            }
+
+            // 绑定开始游戏按钮事件
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', function() {
+                    showStatus('正在连接服务器...', 'checking');
+                    startGameBtn.disabled = true;
+                    startGameBtn.textContent = '连接中...';
+
+                    // 检查连接状态
+                    const socketManager = window.GlobalSocketManager.getInstance();
+                    const socket = socketManager.connect();
+
+                    if (socketManager.isConnected) {
+                        checkLoginStatus();
+                    } else {
+                        // 等待连接建立
+                        socket.on('connect', () => {
+                            checkLoginStatus();
+                        });
+                    }
+                });
+            }
+
+            // 自动检查登录状态（如果已有连接）
+            setTimeout(() => {
+                checkLoginStatus();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

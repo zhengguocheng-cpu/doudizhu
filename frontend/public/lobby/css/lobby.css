@@ -27,18 +27,24 @@
     font-weight: bold;
 }
 
-/* 登录区域样式 */
-.login-section {
-    background-color: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    text-align: center;
-    margin-bottom: 20px;
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-.login-form h2 {
-    margin-bottom: 30px;
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-avatar {
+    font-size: 24px;
+}
+
+.player-name {
+    font-weight: bold;
     color: #2c3e50;
 }
 
@@ -48,31 +54,16 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.lobby-header {
+    flex: 1;
+    margin: 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;
-}
-
-.lobby-header h2 {
-    margin: 0;
-    color: #2c3e50;
-}
-
-.player-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* 房间列表样式 */
 .room-list-section {
-    margin-bottom: 30px;
+    flex: 1;
 }
 
 .section-header {
@@ -80,6 +71,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
 }
 
 .section-header h3 {
@@ -91,6 +84,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .room-item {
@@ -126,37 +121,38 @@
     gap: 10px;
 }
 
-/* 操作面板样式 */
-.action-panel {
+/* 快速操作区域 */
+.quick-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-.create-room-panel,
-.current-room-panel {
-    background-color: #f8f9fa;
+.action-card {
+    background: white;
     padding: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
     border: 2px solid #e9ecef;
+    transition: all 0.3s;
 }
 
-.create-room-panel h3,
-.current-room-panel h3 {
-    margin: 0 0 15px 0;
+.action-card:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
+
+.action-card h4 {
+    margin: 0 0 10px 0;
     color: #2c3e50;
-}
-
-.room-info p {
-    margin: 8px 0;
     font-size: 18px;
 }
 
-.room-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+.action-card p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 14px;
 }
 
 /* 消息日志样式 */
@@ -165,6 +161,7 @@
     border: 2px solid #e9ecef;
     padding: 20px;
     border-radius: 6px;
+    min-height: 150px;
 }
 
 .message-log h3 {
@@ -204,10 +201,46 @@
     color: #3498db;
 }
 
+.log-item.warning {
+    color: #f39c12;
+}
+
 /* 加载状态 */
 .loading {
     text-align: center;
     padding: 40px;
     color: #666;
     font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        height: auto;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .header-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .game-lobby {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .room-list {
+        grid-template-columns: 1fr;
+    }
 }

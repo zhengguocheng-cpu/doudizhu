@@ -1,39 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-
-// 类型定义
-interface Player {
-  id: string;
-  name: string;
-  joinedAt: Date;
-  ready?: boolean;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  maxPlayers: number;
-  players: Player[];
-  status: string;
-  createdAt: Date;
-}
-
-interface GamePlayer {
-  id: string;
-  name: string;
-  ready: boolean;
-  cards?: string[];
-  cardCount?: number;
-}
-
-interface GameRoom {
-  id: string;
-  players: GamePlayer[];
-  readyPlayers: string[];
-  gameStarted: boolean;
-  bottomCards?: string[];
-}
+import { Player, GamePlayer, Room, GameState } from '../src/types';
 
 const app = express();
 const server = createServer(app);
@@ -43,7 +11,7 @@ const io = new SocketIOServer(server);
 const rooms = new Map<string, Room>();
 
 // 游戏房间状态存储
-const gameRooms = new Map<string, GameRoom>();
+const gameRooms = new Map<string, GameState>();
 
 // 创建6个默认空房间
 for (let i = 1; i <= 6; i++) {
@@ -177,7 +145,8 @@ app.post('/api/games/rooms/:roomId/join', (req, res) => {
     const player = {
       id: socketId || Date.now().toString(), // 优先使用socketId，回退到时间戳
       name: playerName,
-      joinedAt: new Date()
+      joinedAt: new Date(),
+      ready: false
     };
 
     room.players.push(player);

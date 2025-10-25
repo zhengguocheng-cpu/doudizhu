@@ -287,7 +287,9 @@
     background-color: white;
     border-left: 1px solid #ddd;
     display: grid;
-    grid-template-rows: 50px 1fr 50px;
+    grid-template-rows: 50px 1fr 50px; /* chat-header: 50px, chat-messages: 占满剩余空间, chat-input-area: 50px */
+    grid-template-columns: 1fr;
+    gap: 0; /* 移除间距，确保占满空间 */
     height: 100%;
     border-radius: 0 8px 8px 0;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
@@ -300,88 +302,112 @@
     border-bottom: 1px solid #ddd;
     display: grid;
     align-items: center;
-}
-
-.chat-header h3 {
-    margin: 0;
-    font-size: 14px;
-    color: #2c3e50;
-    font-weight: 600;
+    grid-row: 1; /* 占据第一行 */
+    grid-column: 1; /* 占据第一列 */
+    /* 移除height: 50px，让Grid控制高度 */
 }
 
 .chat-messages {
-    display: grid;
-    grid-template-rows: 1fr; /* 占满剩余空间 */
-    padding: 12px;
+    /* 正确设置Grid位置 */
+    grid-row: 2; /* 占据第二行 */
+    grid-column: 1; /* 占据第一列 */
+    padding: 10px;
     overflow-y: auto;
-    background-color: #fafbfc;
-    min-height: 400px;
+    overflow-x: hidden; /* 防止水平滚动条 */
+    background-color: #27ae60; /* 背景色 - 浅绿色 */
+    border: 1px solid #dee2e6; /* 边框 - 灰色边框 */
+    border-radius: 8px;        /* 圆角 */
+    /* 移除display: flex，让Grid的1fr正确工作 */
+    min-height: 0; /* 允许缩小 */
+    word-wrap: break-word; /* 确保容器内文本正确换行 */
+    position: relative; /* 添加相对定位 */
+    display: flex; /* 添加flex布局 */
+    flex-direction: column; /* 垂直排列消息 */
 }
 
-.chat-message {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 15px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-.chat-message .time {
+.chat-messages:empty::before {
+    content: "暂无聊天消息";
     color: #999;
-    font-size: 11px;
-    margin-right: 8px;
-    font-weight: normal;
-}
-
-.chat-message .player {
-    color: #007bff;
-    font-weight: 600;
-    margin-right: 6px;
-}
-
-.chat-message .message {
-    color: #333;
-    font-size: 15px;
-    flex: 1;
-}
-
-/* 发送的聊天消息样式 */
-.chat-send {
-    background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
-}
-
-.chat-send .player {
-    color: #1976d2;
-}
-
-/* 接收的聊天消息样式 */
-.chat-receive {
-    background-color: #f5f5f5;
-    border-left: 3px solid #666;
-}
-
-.chat-receive .player {
-    color: #333;
-}
-
-/* 调试信息样式 */
-.debug {
-    background-color: #fff3cd;
-    border-left: 3px solid #ffc107;
-    color: #856404;
-    font-family: monospace;
-    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+    margin: auto; /* 居中显示 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%; /* 占满整个容器高度 */
+    width: 100%; /* 占满整个容器宽度 */
+    position: absolute; /* 绝对定位 */
+    top: 0;
+    left: 0;
+    pointer-events: none; /* 不响应鼠标事件 */
 }
 
 .chat-input-area {
     padding: 0px; /* 移除所有内边距 */
     border-top: 1px solid #ddd;
     background-color: white;
-    height: 40px; /* 固定高度 */
+    height: 50px; /* 固定高度 */
+    grid-row: 3; /* 占据第三行 */
+    grid-column: 1; /* 占据第一列 */
+}
+
+/* 调试信息样式 */
+
+/* 发送的聊天消息样式 */
+.chat-send {
+    background-color: #e3f2fd;
+    border-left-color: #2196f3;
+}
+
+.chat-send .player {
+    color: #1976d2;
+}
+
+.chat-send .message {
+    background-color: #e3f2fd;
+}
+
+/* 接收的聊天消息样式 */
+.chat-receive {
+    background-color: #f5f5f5;
+    border-left-color: #666;
+}
+
+.chat-receive .player {
+    color: #333;
+}
+
+.chat-receive .message {
+    background-color: #f5f5f5;
+}
+
+/* 调试信息样式 */
+.debug {
+    background-color: #fff3cd;
+    border-left-color: #ffc107;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.debug .player {
+    color: #856404;
+    font-weight: bold;
+}
+
+.debug .message {
+    background-color: #fff3cd;
+}
+
+/* 测试用：超长消息样式 */
+.chat-message.test-long {
+    background-color: #ffeaa7;
+    border-left-color: #fdcb6e;
+}
+
+.chat-message.test-long .message {
+    background-color: #ffeaa7;
+    color: #2d3436;
+    font-weight: bold;
 }
 
 .chat-input-container {
@@ -653,54 +679,60 @@
     padding-bottom: 5px;
 }
 
-.chat-messages {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    padding: 8px;
-    font-weight: bold;
-}
-
+/* 聊天消息样式 */
 .chat-message {
-    padding: 3px 0;
-    font-size: 15px;
+    padding: 8px 12px;
+    font-size: 14px; /* 调整字体大小，更适合聊天 */
     display: grid;
+    grid-template-rows: auto auto; /* 时间、玩家、消息 */
     grid-template-columns: auto auto 1fr; /* 时间、玩家、消息 */
-    gap: 5px;
-    align-items: center;
+    gap: 8px;
+    align-items: start; /* 改为start，让长文本正确对齐 */
+    margin-bottom: 8px;
+    background-color: rgba(255, 255, 255, 0.95); /* 白色半透明背景 */
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+    box-sizing: border-box;
+    width: 100%; /* 确保占满容器宽度 */
+    overflow: hidden; /* 防止内容溢出 */
+    backdrop-filter: blur(2px); /* 添加模糊效果 */
+    flex-shrink: 0; /* 防止消息被压缩 */
 }
 
 .chat-message .time {
-    color: #999;
-    
-    min-width: 35px;
+    color: #666; /* 调整时间颜色，在白色背景上更清晰 */
+    font-size: 12px;
+    min-width: 45px;
+    text-align: center;
+    padding-top: 2px; /* 微调对齐 */
 }
 
 .chat-message .player {
-    color: #3498db;
-   
-    min-width: 50px;
+    color: #007bff;
+    font-weight: 600;
+    min-width: 60px;
+    font-size: 12px;
+    padding-top: 2px; /* 微调对齐 */
 }
 
 .chat-message .message {
-    color: #2c3e50;
-    /* 在grid布局中不需要flex: 1，由grid-template-columns: auto auto 1fr控制 */
+    grid-row: 2; /* 占据第二行 */
+    color: #333;
+    font-size: 12px; /* 调整消息字体大小 */
+    word-wrap: break-word;
+    word-break: break-all; /* 确保超长单词也能换行 */
+    line-height: 1.4;
+    background-color: rgba(255, 255, 255, 0.95); /* 添加背景色确保覆盖整个区域 */
+    padding: 2px 4px; /* 添加内边距 */
+    border-radius: 4px; /* 轻微圆角 */
+    width: 100%; /* 占满剩余空间 */
+    box-sizing: border-box;
+    min-width: 0; /* 允许缩小 */
 }
+
+/* 游戏状态栏 */
 
 /* 游戏状态指示器 */
-.status-left, .status-center, .status-right {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* 自适应列数 */
-    gap: 20px;
-    align-items: center;
-}
-
-.room-info, .room-id {
-    font-size: 18px;
-    color: rgba(255,255,255,0.9);
-}
 
 .game-timer {
     background-color: rgba(231, 76, 60, 0.8);

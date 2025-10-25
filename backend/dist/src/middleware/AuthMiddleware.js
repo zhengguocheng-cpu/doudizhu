@@ -80,13 +80,10 @@ class AuthMiddleware extends BaseService_1.BaseService {
             });
         }
     }
-    async handleAuthentication(socket, data) {
-    }
-    async handleReconnection(socket, data) {
-    }
     handleDisconnection(socket) {
         this.log(types_1.LogLevel.INFO, 'Socket disconnected', {
-            socketId: socket.id
+            socketId: socket.id,
+            userId: socket.userId
         });
     }
     handleSocketError(socket, error) {
@@ -95,33 +92,6 @@ class AuthMiddleware extends BaseService_1.BaseService {
             socketId: socket.id,
             userId: socket.userId
         });
-    }
-    async authenticateUser(data) {
-        return { success: true };
-    }
-    async authenticateBySession(sessionId, socketId) {
-        return { success: true };
-    }
-    async authenticateByUserName(userName, socketId) {
-        try {
-            let user = this.userManager.findUserByName(userName);
-            if (!user) {
-                user = this.userManager.createUser(userName);
-                console.log(`新用户自动注册: ${userName}, ID: ${userName}`);
-            }
-            else {
-                this.userManager.updateUserConnection(userName, socketId);
-                console.log(`用户重连: ${userName}, ID: ${userName}`);
-            }
-            const sessionId = this.sessionManager.createUserSession(user, socketId);
-            return { success: true, user, sessionId };
-        }
-        catch (error) {
-            return {
-                success: false,
-                error: error instanceof Error ? error.message : '认证失败'
-            };
-        }
     }
     async authenticateByUserId(userId, socketId) {
         try {
@@ -149,12 +119,6 @@ class AuthMiddleware extends BaseService_1.BaseService {
     }
     emitUserDisconnectedEvent(userId, sessionId) {
         this.log(types_1.LogLevel.INFO, 'User disconnected event emitted', { userId });
-    }
-    requireAuth(handler) {
-        return handler;
-    }
-    requirePermission(permission) {
-        return (handler) => handler;
     }
 }
 exports.AuthMiddleware = AuthMiddleware;

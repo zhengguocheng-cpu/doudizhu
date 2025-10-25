@@ -21,17 +21,10 @@ export declare class AuthMiddleware extends BaseService {
     protected onDestroy(): Promise<void>;
     authenticateSocket(socket: AuthenticatedSocket, next: Function): void;
     private handleAuthFromConnection;
-    private handleAuthentication;
-    private handleReconnection;
     private handleDisconnection;
     private handleSocketError;
-    private authenticateUser;
-    private authenticateBySession;
-    private authenticateByUserName;
     private authenticateByUserId;
     private emitUserAuthenticatedEvent;
     private emitUserDisconnectedEvent;
-    requireAuth(handler: Function): Function;
-    requirePermission(permission: string): Function;
 }
 //# sourceMappingURL=AuthMiddleware.d.ts.map

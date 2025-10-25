@@ -129,154 +129,15 @@ export class AuthMiddleware extends BaseService {
     }
   }
 
-  /**
-   * 处理用户认证 - 注释掉
-   */
-  private async handleAuthentication(socket: AuthenticatedSocket, data: any): Promise<void> {
-    // 注释掉认证处理
-    // try {
-    //   console.log('🔐 后端收到认证请求:', {
-    //     socketId: socket.id,
-    //     socketAuthenticated: socket.authenticated,
-    //     socketUserId: socket.userId,
-    //     requestData: data
-    //   });
 
-    //   const result = await this.authenticateUser(data);
-
-    //   console.log('🔍 认证结果:', {
-    //     success: result.success,
-    //     user: result.user?.name,
-    //     sessionId: result.sessionId,
-    //     error: result.error
-    //   });
-
-    //   if (result.success && result.user && result.sessionId) {
-    //     // 绑定用户信息到Socket
-    //     socket.userId = result.user.name;
-    //     socket.userName = result.user.name;
-    //     socket.sessionId = result.sessionId;
-    //     socket.authenticated = true;
-    //     socket.user = result.user;
-
-    //     // 更新用户状态
-    //     if (result.user) {
-    //       await this.userManager.updateUserConnection(result.user.name, socket.id);
-    //     }
-
-    //     // 发送认证成功响应
-    //     if (result.user) {
-    //       socket.emit('authenticated', {
-    //         userId: result.user.name,
-    //         userName: result.user.name,
-    //         sessionId: result.sessionId
-    //       });
-    //     }
-
-    //     this.log(LogLevel.INFO, 'User authenticated successfully', {
-    //       userId: result.user?.name,
-    //       socketId: socket.id
-    //     });
-
-    //     // 发布认证成功事件
-    //     if (result.user) {
-    //       this.emitUserAuthenticatedEvent(result.user, result.sessionId, socket);
-    //     }
-
-    //   } else {
-    //     socket.emit('error', {
-    //       message: result.error || '认证失败'
-    //     });
-
-    //     this.log(LogLevel.WARN, 'User authentication failed', {
-    //       socketId: socket.id,
-    //       error: result.error
-    //     });
-    //   }
-
-    // } catch (error) {
-    //   this.log(LogLevel.ERROR, 'Authentication error', { error, socketId: socket.id });
-    //   socket.emit('error', {
-    //     message: error instanceof Error ? error.message : '认证过程中发生错误'
-    //   });
-    // }
-  }
 
   /**
-   * 处理用户重连 - 注释掉
-   */
-  private async handleReconnection(socket: AuthenticatedSocket, data: any): Promise<void> {
-    // 注释掉重连处理
-    // try {
-    //   this.log(LogLevel.INFO, 'Handling reconnection', { socketId: socket.id });
-
-    //   let result: AuthResult;
-
-    //   if (data.sessionId) {
-    //     // 通过sessionId重连
-    //     result = await this.authenticateBySession(data.sessionId, socket.id);
-    //   } else if (data.userName) {
-    //     // 通过用户名重连
-    //     result = await this.authenticateByUserName(data.userName, socket.id);
-    //   } else {
-    //     result = { success: false, error: '缺少认证信息' };
-    //   }
-
-    //   if (result.success) {
-    //     socket.userId = result.user?.name;
-    //     socket.userName = result.user?.name;
-    //     socket.sessionId = result.sessionId;
-    //     socket.authenticated = true;
-    //     socket.user = result.user;
-
-    //     socket.emit('authenticated', {
-    //       userId: result.user?.name,
-    //       userName: result.user?.name,
-    //       sessionId: result.sessionId
-    //     });
-
-    //     this.log(LogLevel.INFO, 'User reconnected successfully', {
-    //       userId: result.user?.name,
-    //       socketId: socket.id
-    //     });
-
-    //   } else {
-    //     socket.emit('error', {
-    //       message: result.error || '重连失败'
-    //     });
-    //   }
-
-    // } catch (error) {
-    //   this.log(LogLevel.ERROR, 'Reconnection error', { error, socketId: socket.id });
-    //   socket.emit('error', {
-    //     message: error instanceof Error ? error.message : '重连过程中发生错误'
-    //   });
-    // }
-  }
-
-  /**
-   * 处理断开连接 - 简化版
+   * 处理断开连接
    */
   private handleDisconnection(socket: AuthenticatedSocket): void {
-    // 注释掉用户断开处理
-    // if (socket.userId) {
-    //   this.userManager.setUserOffline(socket.userId);
-    //   if (socket.sessionId) {
-    //     this.sessionManager.setOnlineStatus(socket.sessionId, false);
-    //   }
-
-    //   this.log(LogLevel.INFO, 'User disconnected', {
-    //     userId: socket.userId,
-    //     socketId: socket.id
-    //   });
-
-    //   // 发布用户断开事件
-    //   this.emitUserDisconnectedEvent(socket.userId, socket.sessionId);
-    // }
-
-    // 简化断开处理
     this.log(LogLevel.INFO, 'Socket disconnected', {
-      socketId: socket.id
+      socketId: socket.id,
+      userId: socket.userId
     });
   }
 
@@ -291,84 +152,8 @@ export class AuthMiddleware extends BaseService {
     });
   }
 
-  /**
-   * 认证用户 - 注释掉
-   */
-  private async authenticateUser(data: any): Promise<AuthResult> {
-    // 注释掉用户认证方法
-    // const { userName } = data;
 
-    // if (!userName || userName.trim().length === 0) {
-    //   return { success: false, error: '用户名不能为空' };
-    // }
 
-    // try {
-    //   const user = this.userManager.authenticateUser(userName, ''); // Socket ID 稍后设置
-    //   const sessionId = this.sessionManager.createUserSession(user, '');
-
-    //   return { success: true, user, sessionId };
-    // } catch (error) {
-    //   return {
-    //     success: false,
-    //     error: error instanceof Error ? error.message : '认证失败'
-    //   };
-    // }
-
-    // 简化认证，总是成功
-    return { success: true };
-  }
-
-  /**
-   * 通过Session ID认证 - 注释掉
-   */
-  private async authenticateBySession(sessionId: string, socketId: string): Promise<AuthResult> {
-    // 注释掉Session认证方法
-    // const session = this.sessionManager.getSession(sessionId);
-
-    // if (!session || !session.player) {
-    //   return { success: false, error: '会话不存在或已过期' };
-    // }
-
-    // // 更新连接状态
-    // this.userManager.updateUserConnection(session.player.name, socketId);
-    // this.sessionManager.updateSocketId(sessionId, socketId);
-    // this.sessionManager.setOnlineStatus(sessionId, true);
-
-    // return { success: true, user: session.player, sessionId };
-
-    // 简化认证，总是成功
-    return { success: true };
-  }
-
-  /**
-   * 通过用户名认证
-   */
-  private async authenticateByUserName(userName: string, socketId: string): Promise<AuthResult> {
-    try {
-      // 查找用户
-      let user = this.userManager.findUserByName(userName);
-
-      if (!user) {
-        // 如果用户不存在，自动创建新用户
-        user = this.userManager.createUser(userName);
-        console.log(`新用户自动注册: ${userName}, ID: ${userName}`);
-      } else {
-        // 更新用户连接状态
-        this.userManager.updateUserConnection(userName, socketId);
-        console.log(`用户重连: ${userName}, ID: ${userName}`);
-      }
-
-      // 创建会话
-      const sessionId = this.sessionManager.createUserSession(user, socketId);
-
-      return { success: true, user, sessionId };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '认证失败'
-      };
-    }
-  }
 
   /**
    * 通过用户ID认证
@@ -416,47 +201,5 @@ export class AuthMiddleware extends BaseService {
     this.log(LogLevel.INFO, 'User disconnected event emitted', { userId });
   }
 
-  /**
-   * 权限检查中间件 - 注释掉
-   */
-  public requireAuth(handler: Function): Function {
-    // 注释掉权限检查
-    // return (socket: AuthenticatedSocket, data: any) => {
-    //   if (!socket.authenticated || !socket.userId) {
-    //     socket.emit('error', { message: '用户未认证' });
-    //     return;
-    //   }
 
-    //   if (socket.userId !== data.userId) {
-    //     socket.emit('error', { message: '用户身份验证失败' });
-    //     return;
-    //   }
-
-    //   return handler(socket, data);
-    // };
-
-    // 简化权限检查，直接执行
-    return handler;
-  }
-
-  /**
-   * 权限检查装饰器 - 注释掉
-   */
-  public requirePermission(permission: string): Function {
-    // 注释掉权限检查装饰器
-    // return (handler: Function) => {
-    //   return (socket: AuthenticatedSocket, data: any) => {
-    //     if (!socket.user) {
-    //       socket.emit('error', { message: '用户未认证' });
-    //       return;
-    //     }
-
-    //     // 这里可以添加具体的权限检查逻辑
-    //     return handler(socket, data);
-    //   };
-    // };
-
-    // 简化权限检查装饰器，直接执行
-    return (handler: Function) => handler;
-  }
 }

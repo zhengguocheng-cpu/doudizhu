@@ -34,65 +34,24 @@ class LoginController {
             });
         }
 
-        // 监听用户名输入变化
-        if (this.elements.playerNameInput) {
-            this.elements.playerNameInput.addEventListener('input', (e) => {
-                const playerName = e.target.value.trim();
-                // 注释掉认证请求发送
-                // if (playerName && this.socketManager.socket && this.socketManager.isConnected) {
-                //     console.log('🔄 用户名改变，重新发送认证请求:', playerName);
-                //     this.socketManager.socket.emit('authenticate', {
-                //         userName: playerName
-                //     });
-                // }
-            });
-        }
+        // 用户名输入不需要额外处理
     }
 
     /**
-     * 设置Socket事件监听（用户名认证模式）
+     * 设置Socket事件监听（极简版）
      */
     setupSocketListeners() {
-        // 连接成功后立即发送用户名认证
-        this.socketManager.socket.on('connect', () => {
-            this.updateConnectionStatus(true);
-            console.log('✅ Socket连接成功');
-
-            // 注释掉连接成功后的认证发送
-            // const playerName = this.elements.playerNameInput?.value?.trim();
-            // if (playerName) {
-            //     console.log('🔐 发送用户名认证请求:', playerName);
-            //     this.socketManager.socket.emit('authenticate', {
-            //         userName: playerName
-            //     });
-            // } else {
-            //     console.log('⚠️ 用户名为空，等待用户输入');
-            // }
-        });
-
-        this.socketManager.socket.on('disconnect', () => {
-            this.updateConnectionStatus(false);
-        });
-
-        // 注释掉认证响应监听
-        // this.socketManager.socket.on('authenticated', (data) => {
-        //     console.log('✅ 收到认证成功响应:', data);
-        //     this.onAuthenticationSuccess(data);
-        // });
-
-        this.socketManager.socket.on('error', (error) => {
-            console.error('❌ Socket错误:', error);
-        });
+        // Socket事件监听在GlobalSocketManager中统一处理
+        // 这里不需要额外的监听器
     }
 
     /**
-     * 处理登录提交（简化版 - 无认证）
+     * 处理登录提交（极简版 - 一次性认证）
      */
     async handleLogin() {
         const playerName = this.elements.playerNameInput.value.trim();
         const playerAvatar = this.elements.playerAvatarSelect.value;
 
-       
         console.log('🔄 开始登录流程:', {
             playerName: playerName,
             playerAvatar: playerAvatar
@@ -104,20 +63,20 @@ class LoginController {
             return;
         }
 
-        this.socketManager = window.GlobalSocketManager.getInstance();
-        //开始socket连接
-        this.socketManager.connect();
-
         try {
-            this.showStatus('正在进入游戏大厅...', 'success');
+            this.showStatus('正在连接服务器...', 'success');
             this.setFormEnabled(false);
 
-            console.log('✅ 准备跳转到大厅');
+            // 连接Socket并传递用户名进行认证
+            this.socketManager = window.GlobalSocketManager.getInstance();
+            this.socketManager.connect(playerName, playerName);
 
-            // 直接跳转到大厅，不需要认证
+            console.log('✅ Socket连接已建立，准备跳转到大厅');
+
+            // 等待连接建立后跳转
             setTimeout(() => {
                 this.redirectToLobby(playerName, playerAvatar);
-            }, 500);
+            }, 800);
 
         } catch (error) {
             console.error('❌ 登录过程出错:', error);

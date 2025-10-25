@@ -4,10 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const path_1 = __importDefault(require("path"));
 const config_1 = __importDefault(require("../config"));
 const router = express_1.default.Router();
 router.get('/', (req, res) => {
-    res.redirect('/lobby/');
+    res.redirect('/login/');
 });
 router.get('/health', (req, res) => {
     res.json({
@@ -35,6 +36,9 @@ router.get('/info', (req, res) => {
             corsOrigin: config_1.default.server.cors.origin
         }
     });
+});
+router.get('/login/', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../../../frontend/public/login/index.html'));
 });
 router.get('/lobby/', (req, res) => {
     res.sendFile(config_1.default.paths.frontend.lobby + '/index.html');

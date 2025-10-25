@@ -4,16 +4,9 @@ import config from '../config';
 
 const router = express.Router();
 
-// 首页路由
+// 首页路由 - 重定向到登录页面
 router.get('/', (req, res) => {
-  // 方法1: 直接返回HTML文件（推荐，避免404问题）
-  // res.sendFile(config.paths.frontend.lobby + '/index.html');
-
-  // 方法2: 由于已经设置了静态文件服务，也可以直接重定向
-  res.redirect('/lobby/');
-
-  // 方法3: 或者直接返回HTML内容（如果需要动态内容）
-  // res.sendFile(path.join(config.paths.frontend.lobby, 'index.html'));
+  res.redirect('/login/');
 });
 
 // 健康检查路由
@@ -45,6 +38,11 @@ router.get('/info', (req, res) => {
       corsOrigin: config.server.cors.origin
     }
   });
+});
+
+// 登录页面路由
+router.get('/login/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../frontend/public/login/index.html'));
 });
 
 // 大厅页面路由

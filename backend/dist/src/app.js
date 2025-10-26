@@ -39,14 +39,15 @@ class Application {
         this.app.use(express_1.default.json({ limit: '10mb' }));
         this.app.use(express_1.default.urlencoded({ extended: true, limit: '10mb' }));
         this.app.use((req, res, next) => {
+            res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss:; img-src 'self' data:;");
+            next();
+        });
+        this.app.use((req, res, next) => {
             console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
             next();
         });
     }
     setupRoutes() {
-        this.app.use('/', routes_1.default);
-        this.app.use('/api/games', gameRoutes_1.default);
-        this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
         this.app.get('/api', (req, res) => {
             res.json({
                 title: '斗地主游戏API文档',
@@ -63,6 +64,9 @@ class Application {
                 }
             });
         });
+        this.app.use('/api/games', gameRoutes_1.default);
+        this.app.use('/', routes_1.default);
+        this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
     }
     setupSocketIO() {
         this.server = (0, http_1.createServer)(this.app);

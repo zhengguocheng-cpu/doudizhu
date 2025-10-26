@@ -60,6 +60,15 @@ export class Application {
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+    // CSP头 - 允许内联脚本和样式
+    this.app.use((req, res, next) => {
+      res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss:; img-src 'self' data:;"
+      );
+      next();
+    });
+
     // 请求日志中间件
     this.app.use((req, res, next) => {
       console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
@@ -68,16 +77,7 @@ export class Application {
   }
 
   private setupRoutes(): void {
-    // 基础路由 - 必须在静态文件服务之前
-    this.app.use('/', indexRoutes);
-
-    // 游戏相关路由
-    this.app.use('/api/games', gameRoutes);
-
-    // 静态文件服务 - 放在最后，作为fallback
-    this.app.use(express.static(__dirname + '/../../frontend/public'));
-
-    // API文档路由
+    // API文档路由 - 最先匹配
     this.app.get('/api', (req, res) => {
       res.json({
         title: '斗地主游戏API文档',
@@ -94,6 +94,15 @@ export class Application {
         }
       });
     });
+
+    // 游戏相关路由
+    this.app.use('/api/games', gameRoutes);
+
+    // 基础路由 - 页面路由
+    this.app.use('/', indexRoutes);
+
+    // 静态文件服务 - 放在最后，作为fallback
+    this.app.use(express.static(__dirname + '/../../frontend/public'));
   }
 
   private setupSocketIO(): void {

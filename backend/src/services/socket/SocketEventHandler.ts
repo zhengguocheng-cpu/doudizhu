@@ -7,6 +7,7 @@ import { Socket } from 'socket.io';
 import { EventBus } from '../../core/EventBus';
 import { gameRoomsService } from '../game/gameRoomsService';
 import { roomService } from '../room/roomService';
+import { gameFlowHandler } from './GameFlowHandler';
 
 export interface AuthenticatedSocket extends Socket {
   userId?: string;
@@ -40,6 +41,7 @@ export class SocketEventHandler {
    */
   public initialize(io: any): void {
     this.io = io;
+    gameFlowHandler.initialize(io);
     console.log('SocketEventHandler initialized with IO instance');
   }
 
@@ -108,13 +110,14 @@ export class SocketEventHandler {
           return;
         }
 
-        console.log('✅ 房间加入成功，发送room_joined事件:', {
+        console.log('✅ 房间加入成功，发送join_game_success事件:', {
           roomId: roomId,
           roomName: room.name,
           players: room.players
         });
 
-        socket.emit('room_joined', {
+        socket.emit('join_game_success', {
+          roomId: roomId,
           room: {
             id: roomId,
             name: room.name,
@@ -208,8 +211,14 @@ export class SocketEventHandler {
       const result = roomService.togglePlayerReady(roomId, userId);
 
       if (result) {
-        // 通知其他玩家
-        socket.to(`room_${roomId}`).emit('player_ready', { playerId: userId });
+        // 获取房间信息
+        const room = roomService.getRoom(roomId);
+        
+        // 通知所有玩家（包括自己）
+        this.io.to(`room_${roomId}`).emit('player_ready', { 
+          playerId: userId,
+          playerName: userId
+        });
 
         // 广播房间更新给所有客户端
         this.broadcastRoomsUpdate('player_ready', roomId, {
@@ -217,6 +226,22 @@ export class SocketEventHandler {
         });
 
         console.log('准备成功:', roomId, userId);
+        
+        // 检查是否所有玩家都准备好
+        if (room && room.players) {
+          const allReady = room.players.every((p: any) => p.ready);
+          const hasEnoughPlayers = room.players.length === 3;
+          
+          console.log(`房间${roomId}状态: 玩家数=${room.players.length}, 全部准备=${allReady}`);
+          
+          if (allReady && hasEnoughPlayers) {
+            console.log(`🎮 房间${roomId}所有玩家准备完毕，开始游戏！`);
+            // 延迟1秒开始游戏，让客户端有时间更新UI
+            setTimeout(() => {
+              gameFlowHandler.startGame(roomId);
+            }, 1000);
+          }
+        }
       } else {
         socket.emit('error', { message: '准备失败' });
       }

@@ -4,6 +4,7 @@ exports.socketEventHandler = exports.SocketEventHandler = void 0;
 const EventBus_1 = require("../../core/EventBus");
 const gameRoomsService_1 = require("../game/gameRoomsService");
 const roomService_1 = require("../room/roomService");
+const GameFlowHandler_1 = require("./GameFlowHandler");
 class SocketEventHandler {
     constructor() {
         this.eventBus = EventBus_1.EventBus.getInstance();
@@ -17,6 +18,7 @@ class SocketEventHandler {
     }
     initialize(io) {
         this.io = io;
+        GameFlowHandler_1.gameFlowHandler.initialize(io);
         console.log('SocketEventHandler initialized with IO instance');
     }
     async handleGetRoomsList(socket, data) {
@@ -55,12 +57,13 @@ class SocketEventHandler {
                     socket.emit('error', { message: '房间不存在' });
                     return;
                 }
-                console.log('✅ 房间加入成功，发送room_joined事件:', {
+                console.log('✅ 房间加入成功，发送join_game_success事件:', {
                     roomId: roomId,
                     roomName: room.name,
                     players: room.players
                 });
-                socket.emit('room_joined', {
+                socket.emit('join_game_success', {
+                    roomId: roomId,
                     room: {
                         id: roomId,
                         name: room.name,
@@ -119,11 +122,26 @@ class SocketEventHandler {
             console.log('玩家准备:', roomId, userId);
             const result = roomService_1.roomService.togglePlayerReady(roomId, userId);
             if (result) {
-                socket.to(`room_${roomId}`).emit('player_ready', { playerId: userId });
+                const room = roomService_1.roomService.getRoom(roomId);
+                this.io.to(`room_${roomId}`).emit('player_ready', {
+                    playerId: userId,
+                    playerName: userId
+                });
                 this.broadcastRoomsUpdate('player_ready', roomId, {
                     playerId: userId
                 });
                 console.log('准备成功:', roomId, userId);
+                if (room && room.players) {
+                    const allReady = room.players.every((p) => p.ready);
+                    const hasEnoughPlayers = room.players.length === 3;
+                    console.log(`房间${roomId}状态: 玩家数=${room.players.length}, 全部准备=${allReady}`);
+                    if (allReady && hasEnoughPlayers) {
+                        console.log(`🎮 房间${roomId}所有玩家准备完毕，开始游戏！`);
+                        setTimeout(() => {
+                            GameFlowHandler_1.gameFlowHandler.startGame(roomId);
+                        }, 1000);
+                    }
+                }
             }
             else {
                 socket.emit('error', { message: '准备失败' });

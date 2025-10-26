@@ -77,7 +77,7 @@ export class Application {
   }
 
   private setupRoutes(): void {
-    // API文档路由 - 最先匹配
+    // 1. API路由 - 最具体的路径优先
     this.app.get('/api', (req, res) => {
       res.json({
         title: '斗地主游戏API文档',
@@ -95,13 +95,13 @@ export class Application {
       });
     });
 
-    // 游戏相关路由
+    // 2. 游戏API路由 - 前缀匹配 /api/games/*
     this.app.use('/api/games', gameRoutes);
 
-    // 基础路由 - 页面路由
-    this.app.use('/', indexRoutes);
+    // 3. 页面路由 - 直接挂载，不使用前缀
+    this.app.use(indexRoutes);
 
-    // 静态文件服务 - 放在最后，作为fallback
+    // 4. 静态文件服务 - 最后作为fallback
     this.app.use(express.static(__dirname + '/../../frontend/public'));
   }
 

@@ -65,7 +65,7 @@ class Application {
             });
         });
         this.app.use('/api/games', gameRoutes_1.default);
-        this.app.use('/', routes_1.default);
+        this.app.use(routes_1.default);
         this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
     }
     setupSocketIO() {

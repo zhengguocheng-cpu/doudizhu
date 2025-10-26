@@ -10,7 +10,9 @@ export declare class Application {
     private authMiddleware;
     private eventHandler;
     private container;
+    private initialized;
     constructor();
+    private initialize;
     private setupMiddleware;
     private setupRoutes;
     private setupSocketIO;
@@ -27,7 +29,7 @@ export declare class Application {
     private endGame;
     private initializeServices;
     private setupCleanupTasks;
-    start(): void;
+    start(): Promise<void>;
     getApp(): express.Application;
     getServer(): any;
     getIO(): SocketIOServer;

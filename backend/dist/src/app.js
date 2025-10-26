@@ -19,20 +19,30 @@ const ServiceRegistry_1 = require("./core/ServiceRegistry");
 const container_1 = require("./core/container");
 class Application {
     constructor() {
+        this.initialized = false;
         this.app = (0, express_1.default)();
         this.container = container_1.DependencyContainer.getInstance();
-        this.initializeServices().then(() => {
-            this.sessionManager = this.container.resolve('SessionManager');
-            this.userManager = this.container.resolve('UserManager');
-            this.authMiddleware = this.container.resolve('AuthMiddleware');
-            this.stateRecovery = new stateRecovery_1.StateRecoveryService();
-            this.setupMiddleware();
-            this.setupRoutes();
-            this.setupCleanupTasks();
-        }).catch(error => {
-            console.error('Application初始化失败:', error);
-            process.exit(1);
-        });
+    }
+    async initialize() {
+        if (this.initialized) {
+            console.log('⏭️ 已初始化，跳过');
+            return;
+        }
+        console.log('1️⃣ 初始化服务...');
+        await this.initializeServices();
+        console.log('2️⃣ 解析依赖...');
+        this.sessionManager = this.container.resolve('SessionManager');
+        this.userManager = this.container.resolve('UserManager');
+        this.authMiddleware = this.container.resolve('AuthMiddleware');
+        this.stateRecovery = new stateRecovery_1.StateRecoveryService();
+        console.log('3️⃣ 设置中间件...');
+        this.setupMiddleware();
+        console.log('4️⃣ 设置路由...');
+        this.setupRoutes();
+        console.log('5️⃣ 设置清理任务...');
+        this.setupCleanupTasks();
+        this.initialized = true;
+        console.log('✅ 所有初始化步骤完成');
     }
     setupMiddleware() {
         this.app.use((0, cors_1.default)(config_1.config.legacy.cors));
@@ -298,6 +308,7 @@ class Application {
                     this.container.resolve(token);
                 }
                 console.log('Socket事件处理器设置完成');
+                resolve();
             }
             catch (error) {
                 console.error('❌ 服务注册或初始化失败:', error);
@@ -331,15 +342,34 @@ class Application {
             }
         }, 60 * 60 * 1000);
     }
-    start() {
-        this.setupSocketIO();
-        this.server.listen(config_1.config.server.port, () => {
-            console.log(`🚀 斗地主游戏服务器启动成功`);
-            console.log(`📍 服务器地址: http://localhost:${config_1.config.server.port}`);
-            console.log(`🔧 环境: ${config_1.config.legacy.nodeEnv}`);
-            console.log(`⏰ 启动时间: ${new Date().toLocaleString()}`);
-            console.log(`📚 API文档: http://localhost:${config_1.config.server.port}/api`);
-        });
+    async start() {
+        try {
+            console.log('🔄 开始初始化服务...');
+            await this.initialize();
+            console.log('✅ 初始化完成');
+            this.setupSocketIO();
+            console.log('✅ Socket.IO初始化完成');
+            console.log('🔄 开始监听端口...');
+            await new Promise((resolve, reject) => {
+                this.server.listen(config_1.config.server.port, () => {
+                    console.log(`🚀 斗地主游戏服务器启动成功`);
+                    console.log(`📍 服务器地址: http://localhost:${config_1.config.server.port}`);
+                    console.log(`🔧 环境: ${config_1.config.legacy.nodeEnv}`);
+                    console.log(`⏰ 启动时间: ${new Date().toLocaleString()}`);
+                    console.log(`📚 API文档: http://localhost:${config_1.config.server.port}/api`);
+                    resolve();
+                });
+                this.server.on('error', (error) => {
+                    console.error('❌ 服务器监听错误:', error);
+                    reject(error);
+                });
+            });
+            console.log('✅ 服务器启动流程完成');
+        }
+        catch (error) {
+            console.error('❌ 服务器启动失败:', error);
+            process.exit(1);
+        }
     }
     getApp() {
         return this.app;

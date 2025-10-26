@@ -1,0 +1,50 @@
+{
+  "name": "doudizhu-mobile",
+  "version": "1.0.0",
+  "description": "斗地主游戏移动端 - 支持微信小程序、抖音小程序等多平台",
+  "main": "index.js",
+  "scripts": {
+    "dev:wechat": "taro build --type weapp --watch",
+    "dev:tt": "taro build --type tt --watch",
+    "dev:alipay": "taro build --type alipay --watch",
+    "build:wechat": "taro build --type weapp",
+    "build:tt": "taro build --type tt",
+    "build:alipay": "taro build --type alipay",
+    "build:all": "npm run build:wechat && npm run build:tt && npm run build:alipay"
+  },
+  "dependencies": {
+    "@tarojs/components": "^3.6.0",
+    "@tarojs/runtime": "^3.6.0",
+    "@tarojs/taro": "^3.6.0",
+    "@tarojs/plugin-platform-weapp": "^3.6.0",
+    "@tarojs/plugin-platform-tt": "^3.6.0",
+    "@tarojs/plugin-platform-alipay": "^3.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "mobx": "^6.8.0",
+    "mobx-react": "^7.6.0",
+    "socket.io-client": "^4.7.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/preset-typescript": "^7.22.0",
+    "@tarojs/cli": "^3.6.0",
+    "@tarojs/webpack5-runner": "^3.6.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.1.0",
+    "webpack": "^5.88.0"
+  },
+  "keywords": [
+    "doudizhu",
+    "mobile",
+    "miniprogram",
+    "wechat",
+    "douyin",
+    "alipay"
+  ],
+  "author": "Doudizhu Team",
+  "license": "MIT"
+}

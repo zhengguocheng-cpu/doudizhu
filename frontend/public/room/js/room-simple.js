@@ -6,9 +6,15 @@ class DoudizhuRoomClient {
         this.currentRoom = null;
         this.currentPlayer = null;
         this.currentPlayerId = null;
+        this.playerAvatar = null; // 玩家头像
         this.playerHand = [];
         this.gameStarted = false;
         this.isMyTurn = false;
+        this.selectedCards = [];
+        this.roomPlayers = []; // 房间内所有玩家
+        this.alreadyJoined = false; // 标记是否已经在大厅加入
+        this.eventsAlreadyBound = false; // 标记事件是否已经绑定
+        this.biddingTimerInterval = null; // 抢地主倒计时定时器
 
         // 从URL获取用户信息
         this.initializeFromUrl();
@@ -22,6 +28,8 @@ class DoudizhuRoomClient {
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get('roomId');
         const playerName = urlParams.get('playerName');
+        const playerAvatar = urlParams.get('playerAvatar'); // 获取头像参数
+        const alreadyJoined = urlParams.get('joined') === 'true'; // 检查是否已经在大厅加入
 
         if (!roomId || !playerName) {
             alert('缺少房间或玩家信息，请从大厅进入房间');
@@ -30,16 +38,56 @@ class DoudizhuRoomClient {
         }
 
         // 用户名就是唯一标识
-        this.currentPlayer = playerName;
-        this.currentPlayerId = playerName;
+        this.currentPlayer = decodeURIComponent(playerName);
+        this.currentPlayerId = decodeURIComponent(playerName);
+        this.playerAvatar = playerAvatar ? decodeURIComponent(playerAvatar) : '👑'; // 保存头像
         this.currentRoom = { id: roomId };
+        this.alreadyJoined = alreadyJoined; // 保存是否已加入的状态
 
         // 设置全局状态
-        this.socketManager.userName = playerName;
-        this.socketManager.userId = playerName;
+        this.socketManager.userName = this.currentPlayer;
+        this.socketManager.userId = this.currentPlayer;
         this.socketManager.authenticated = true;
 
-        console.log('房间初始化:', { playerName, roomId });
+        // 更新页面显示当前玩家信息
+        this.updateCurrentPlayerDisplay();
+
+        console.log('房间初始化:', { playerName: this.currentPlayer, playerAvatar: this.playerAvatar, roomId, alreadyJoined });
+    }
+
+    /**
+     * 更新当前玩家显示
+     */
+    updateCurrentPlayerDisplay() {
+        // 更新当前玩家头像
+        const avatarElement = document.getElementById('currentPlayerAvatar');
+        if (avatarElement) {
+            avatarElement.textContent = this.playerAvatar;
+        }
+
+        // 更新当前玩家名字
+        const nameElement = document.getElementById('currentPlayerNameDisplay');
+        if (nameElement) {
+            nameElement.textContent = this.currentPlayer;
+        }
+
+        console.log('✅ 更新当前玩家显示:', { avatar: this.playerAvatar, name: this.currentPlayer });
+    }
+
+    /**
+     * 更新连接状态显示
+     */
+    updateConnectionStatus(connected) {
+        const statusElement = document.getElementById('connectionStatus');
+        if (statusElement) {
+            if (connected) {
+                statusElement.textContent = '已连接';
+                statusElement.style.color = '#27ae60';
+            } else {
+                statusElement.textContent = '未连接';
+                statusElement.style.color = '#e74c3c';
+            }
+        }
     }
 
     /**
@@ -51,6 +99,7 @@ class DoudizhuRoomClient {
         // 连接成功后加入房间
         this.socket.on('connect', () => {
             console.log('房间连接成功');
+            this.updateConnectionStatus(true);
 
             // 显示房间号
             const roomIdElement = document.getElementById('currentRoomId');
@@ -58,25 +107,52 @@ class DoudizhuRoomClient {
                 roomIdElement.textContent = this.currentRoom.id;
             }
 
-            // 直接加入房间
+            // 🔥 重要：即使已经在大厅加入，新的Socket连接也必须重新加入Socket.IO房间
+            // 因为页面跳转会创建新的Socket连接，旧的Socket已经断开
+            console.log('🔄 Socket连接成功，重新加入房间（确保新Socket在房间内）');
+            
+            // 总是发送join_game请求，让新的Socket加入房间
             this.joinRoom();
         });
 
         // 房间事件
+        this.socket.on('join_game_success', (data) => this.onJoinGameSuccess(data));
+        this.socket.on('join_game_failed', (data) => this.onJoinGameFailed(data));
         this.socket.on('room_joined', (data) => this.onRoomJoined(data));
         this.socket.on('room_left', (data) => this.onRoomLeft(data));
-        this.socket.on('player_joined', (data) => this.onPlayerJoined(data));
+        this.socket.on('player_joined', (data) => {
+            console.log('🔔 [Socket事件] 收到 player_joined 事件');
+            this.onPlayerJoined(data);
+        });
         this.socket.on('player_left', (data) => this.onPlayerLeft(data));
+        this.socket.on('player_ready', (data) => {
+            console.log('🔔 [Socket事件] 收到 player_ready 事件');
+            this.onPlayerReady(data);
+        });
 
         // 游戏事件
+        this.socket.on('game_started', (data) => this.onGameStarted(data));
+        this.socket.on('deal_cards', (data) => this.onDealCards(data));
+        this.socket.on('deal_cards_all', (data) => this.onDealCardsAll(data)); // 新增：房间广播发牌
         this.socket.on('cards_dealt', (data) => this.onCardsDealt(data));
+        this.socket.on('bidding_start', (data) => this.onBiddingStart(data));
+        this.socket.on('bid_result', (data) => this.onBidResult(data));
+        this.socket.on('landlord_determined', (data) => this.onLandlordDetermined(data));
         this.socket.on('game_state_updated', (data) => this.onGameStateUpdated(data));
+        this.socket.on('turn_to_play', (data) => this.onTurnToPlay(data));
         this.socket.on('turn_changed', (data) => this.onTurnChanged(data));
         this.socket.on('cards_played', (data) => this.onCardsPlayed(data));
+        this.socket.on('game_over', (data) => this.onGameOver(data));
         this.socket.on('game_ended', (data) => this.onGameEnded(data));
 
         // 聊天消息监听
         this.socket.on('message_received', (data) => this.onMessageReceived(data));
+
+        // 监听断开连接
+        this.socket.on('disconnect', () => {
+            console.log('房间连接断开');
+            this.updateConnectionStatus(false);
+        });
 
         // 连接成功后绑定事件
         this.socket.on('connect', () => {
@@ -88,15 +164,36 @@ class DoudizhuRoomClient {
      * 绑定UI事件监听器
      */
     bindEvents() {
+        // 防止重复绑定
+        if (this.eventsAlreadyBound) {
+            console.log('⚠️ 事件已经绑定，跳过重复绑定');
+            return;
+        }
+        
+        console.log('🔗 绑定UI事件监听器');
+        this.eventsAlreadyBound = true;
+        
         // 绑定开始游戏按钮
         const startGameBtn = document.getElementById('startGameBtn');
         if (startGameBtn) {
             startGameBtn.addEventListener('click', () => {
-                this.socket.emit('start_game', {
+                // 点击开始游戏实际上是准备
+                this.socket.emit('player_ready', {
                     roomId: this.currentRoom.id,
                     userId: this.currentPlayerId
                 });
-                this.addMessage('请求开始游戏');
+                this.addGameMessage('✅ 你已准备，等待其他玩家...', 'system');
+                
+                // 立即更新本地状态
+                const currentPlayer = this.roomPlayers.find(p => p.id === this.currentPlayerId || p.name === this.currentPlayer);
+                if (currentPlayer) {
+                    currentPlayer.ready = true;
+                    this.updateRoomPlayers();
+                }
+                
+                // 隐藏开始游戏按钮
+                startGameBtn.style.display = 'none';
+                this.log('🎮 开始游戏按钮已隐藏');
             });
         }
 
@@ -163,7 +260,27 @@ class DoudizhuRoomClient {
     onMessageReceived(data) {
         const playerName = data.playerName || '未知玩家';
         const message = data.message || '';
-        this.addMessage(`${playerName}: ${message}`);
+        
+        // 使用更好的格式显示聊天消息
+        const messageLog = document.getElementById('roomMessageLog');
+        if (!messageLog) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message';
+
+        const time = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        messageDiv.innerHTML = `
+            <span class="time">${time}</span>
+            <span class="player">${playerName}</span>
+            <span class="message">${message}</span>
+        `;
+
+        messageLog.appendChild(messageDiv);
+        messageLog.scrollTop = messageLog.scrollHeight;
     }
 
     /**
@@ -196,6 +313,46 @@ class DoudizhuRoomClient {
     }
 
     /**
+     * 加入游戏成功
+     */
+    onJoinGameSuccess(data) {
+        console.log('加入游戏成功:', data);
+        this.addGameMessage(`✅ 成功加入房间 ${data.roomId}`, 'system');
+        
+        // 更新房间玩家列表
+        if (data.players) {
+            // 为每个玩家补充avatar字段
+            this.roomPlayers = this.enrichPlayersWithAvatars(data.players);
+            this.updateRoomPlayers();
+            
+            // 显示所有玩家的准备状态
+            this.addGameMessage(`👥 房间玩家 (${data.players.length}/3):`, 'system');
+            data.players.forEach(player => {
+                const status = player.ready ? '✅已准备' : '⏳未准备';
+                this.addGameMessage(`  ${status} ${player.name}`, 'system');
+            });
+        }
+        
+        this.showRoomActions();
+        this.bindEvents();
+    }
+
+    /**
+     * 加入游戏失败
+     */
+    onJoinGameFailed(data) {
+        console.error('加入房间失败:', data.message);
+        
+        // 显示错误提示
+        this.showErrorMessage(data.message || '无法加入房间');
+        
+        // 立即返回大厅（不等待）
+        setTimeout(() => {
+            this.backToLobby();
+        }, 1500);
+    }
+
+    /**
      * 房间加入成功
      */
     onRoomJoined(data) {
@@ -217,8 +374,68 @@ class DoudizhuRoomClient {
      * 玩家加入
      */
     onPlayerJoined(data) {
+        console.log('🎯 [玩家加入事件] 收到数据:', data);
+        console.log('🎯 [玩家加入事件] 当前玩家列表:', this.roomPlayers);
+        
         if (data.playerName !== this.currentPlayer) {
-            this.addMessage(`玩家 ${data.playerName} 加入了房间`);
+            this.addGameMessage(`👤 ${data.playerName} 加入了房间`, 'system');
+        }
+        
+        // 如果服务器发送了完整的玩家列表，使用它来更新
+        if (data.players && Array.isArray(data.players)) {
+            console.log('📋 收到完整玩家列表，更新房间玩家:', data.players);
+            // 为每个玩家补充avatar字段
+            this.roomPlayers = this.enrichPlayersWithAvatars(data.players);
+            console.log('📋 更新后的玩家列表:', this.roomPlayers);
+            this.updateRoomPlayers();
+            console.log('✅ updateRoomPlayers 已调用');
+        } else {
+            // 兼容旧版本：只收到单个玩家信息
+            console.log('⚠️ 未收到完整玩家列表，使用单个玩家信息');
+            const existingPlayer = this.roomPlayers.find(p => p.id === data.playerId || p.name === data.playerName);
+            if (!existingPlayer) {
+                this.roomPlayers.push({
+                    id: data.playerId || data.playerName,
+                    name: data.playerName,
+                    avatar: this.getPlayerAvatar(this.roomPlayers.length),
+                    ready: false
+                });
+            }
+            this.updateRoomPlayers();
+        }
+        
+        // 显示当前房间玩家数
+        this.addGameMessage(`👥 房间玩家数: ${this.roomPlayers.length}/3`, 'system');
+    }
+
+    /**
+     * 玩家准备
+     */
+    onPlayerReady(data) {
+        console.log('🎯 [玩家准备事件] 收到数据:', data);
+        console.log('🎯 [玩家准备事件] 当前玩家列表:', this.roomPlayers);
+        
+        // 显示准备消息（包括自己）
+        this.addGameMessage(`✅ ${data.playerName} 已准备`, 'system');
+        
+        // 如果服务器发送了完整的玩家列表，使用它来更新
+        if (data.players && Array.isArray(data.players)) {
+            console.log('📋 收到完整玩家列表（准备状态更新）:', data.players);
+            // 为每个玩家补充avatar字段
+            this.roomPlayers = this.enrichPlayersWithAvatars(data.players);
+            console.log('📋 更新后的玩家列表:', this.roomPlayers);
+            this.updateRoomPlayers();
+            console.log('✅ updateRoomPlayers 已调用');
+        } else {
+            // 兼容旧版本：只更新单个玩家状态
+            console.log('⚠️ 未收到完整玩家列表，使用单个玩家信息');
+            const player = this.roomPlayers.find(p => p.name === data.playerName);
+            if (player) {
+                player.ready = true;
+                this.updateRoomPlayers();
+            } else {
+                console.error('❌ 未找到玩家:', data.playerName);
+            }
         }
     }
 
@@ -226,21 +443,236 @@ class DoudizhuRoomClient {
      * 玩家离开
      */
     onPlayerLeft(data) {
-        this.addMessage(`玩家 ${data.playerName} 离开了房间`);
+        console.log('玩家离开:', data);
+        if (data.playerName) {
+            this.addGameMessage(`👋 ${data.playerName} 离开了房间`, 'system');
+        }
+        
+        // 如果服务器发送了完整的玩家列表，使用它来更新
+        if (data.players && Array.isArray(data.players)) {
+            console.log('📋 收到完整玩家列表（玩家离开）:', data.players);
+            // 为每个玩家补充avatar字段
+            this.roomPlayers = this.enrichPlayersWithAvatars(data.players);
+            this.updateRoomPlayers();
+        } else {
+            // 兼容旧版本：手动移除玩家
+            this.roomPlayers = this.roomPlayers.filter(p => 
+                p.id !== data.playerId && p.name !== data.playerName
+            );
+            this.updateRoomPlayers();
+        }
+        
+        // 显示当前房间玩家数
+        this.addGameMessage(`👥 房间玩家数: ${this.roomPlayers.length}/3`, 'system');
     }
 
     /**
-     * 发牌
+     * 游戏开始
+     */
+    onGameStarted(data) {
+        console.log('游戏开始:', data);
+        this.addGameMessage(`🎮 游戏开始！所有玩家已准备完毕`, 'important');
+        
+        // 隐藏房间操作按钮
+        this.hideRoomActions();
+        
+        // 显示游戏区域
+        this.showGameArea();
+    }
+
+    /**
+     * 发牌事件（房间广播版本）
+     */
+    onDealCardsAll(data) {
+        console.log('🎯 [发牌事件-广播] 收到数据:', data);
+        
+        // 找到当前玩家的牌
+        const myCards = data.players.find(p => p.playerId === this.currentPlayerId);
+        
+        if (myCards && myCards.cards && myCards.cards.length > 0) {
+            console.log('🎴 找到我的牌，开始发牌动画，牌数:', myCards.cards.length);
+            
+            // 确保游戏区域可见
+            this.showGameArea();
+            
+            // 隐藏房间按钮
+            this.hideRoomActions();
+            
+            // 播放发牌动画
+            this.dealCardsWithAnimation(myCards.cards);
+        } else {
+            console.error('❌ 未找到我的牌数据，currentPlayerId:', this.currentPlayerId);
+            console.error('❌ 所有玩家数据:', data.players);
+        }
+    }
+
+    /**
+     * 发牌事件（旧版本，保留兼容）
+     */
+    onDealCards(data) {
+        console.log('🎯 [发牌事件-单播] 收到数据:', data);
+        
+        if (data.cards && data.cards.length > 0) {
+            console.log('🎴 开始发牌动画，牌数:', data.cards.length);
+            
+            // 确保游戏区域可见
+            this.showGameArea();
+            
+            // 隐藏房间按钮
+            this.hideRoomActions();
+            
+            // 播放发牌动画
+            this.dealCardsWithAnimation(data.cards);
+        } else {
+            console.error('❌ 未收到牌数据');
+        }
+    }
+
+    /**
+     * 发牌（旧事件兼容）
      */
     onCardsDealt(data) {
         if (data.playerId === this.currentPlayerId) {
             this.playerHand = data.cards;
             this.gameStarted = true;
-            this.renderPlayerHand();
-            this.addMessage(`游戏开始，您获得了 ${data.cards.length} 张牌`);
-
+            this.addGameMessage(`🎴 您获得了 ${data.cards.length} 张牌`, 'game');
+            this.dealCardsWithAnimation(data.cards);
             this.hideRoomActions();
+        }
+    }
+
+    /**
+     * 抢地主开始
+     */
+    onBiddingStart(data) {
+        console.log('抢地主开始:', data);
+        this.addGameMessage(`🎲 开始抢地主！第一个玩家：${data.firstBidderName}`, 'game');
+        
+        // 如果是当前玩家的回合，显示抢地主按钮
+        if (data.firstBidderName === this.currentPlayer) {
+            this.showBiddingActions();
+        }
+    }
+
+    /**
+     * 显示抢地主按钮
+     */
+    showBiddingActions() {
+        const overlay = document.getElementById('gameControlsOverlay');
+        const biddingActions = document.getElementById('biddingActions');
+        const bidBtn = document.getElementById('bidBtn');
+        const noBidBtn = document.getElementById('noBidBtn');
+        
+        if (!overlay || !biddingActions) return;
+        
+        // 显示抢地主界面
+        overlay.style.display = 'flex';
+        biddingActions.style.display = 'flex';
+        
+        // 开始倒计时
+        this.startBiddingTimer(15);
+        
+        // 绑定按钮事件
+        bidBtn.onclick = () => this.handleBid(true);
+        noBidBtn.onclick = () => this.handleBid(false);
+    }
+
+    /**
+     * 隐藏抢地主按钮
+     */
+    hideBiddingActions() {
+        const biddingActions = document.getElementById('biddingActions');
+        if (biddingActions) {
+            biddingActions.style.display = 'none';
+        }
+        
+        // 停止倒计时
+        if (this.biddingTimerInterval) {
+            clearInterval(this.biddingTimerInterval);
+            this.biddingTimerInterval = null;
+        }
+    }
+
+    /**
+     * 开始抢地主倒计时
+     */
+    startBiddingTimer(seconds) {
+        const timerElement = document.getElementById('biddingTimer');
+        if (!timerElement) return;
+        
+        let remaining = seconds;
+        timerElement.textContent = remaining;
+        
+        // 清除之前的计时器
+        if (this.biddingTimerInterval) {
+            clearInterval(this.biddingTimerInterval);
+        }
+        
+        this.biddingTimerInterval = setInterval(() => {
+            remaining--;
+            timerElement.textContent = remaining;
+            
+            // 倒计时结束，自动选择不抢
+            if (remaining <= 0) {
+                clearInterval(this.biddingTimerInterval);
+                this.handleBid(false);
+            }
+        }, 1000);
+    }
+
+    /**
+     * 处理抢地主选择
+     */
+    handleBid(bid) {
+        console.log('选择抢地主:', bid);
+        
+        // 发送选择到服务器
+        this.socket.emit('bid', {
+            roomId: this.currentRoom.id,
+            userId: this.currentPlayerId,
+            bid: bid
+        });
+        
+        // 隐藏抢地主按钮
+        this.hideBiddingActions();
+        
+        // 显示消息
+        const bidText = bid ? '抢地主' : '不抢';
+        this.addGameMessage(`您选择：${bidText}`, 'game');
+    }
+
+    /**
+     * 抢地主结果
+     */
+    onBidResult(data) {
+        const bidText = data.bid ? '抢' : '不抢';
+        this.addGameMessage(`${data.userName} 选择：${bidText}`, 'game');
+    }
+
+    /**
+     * 地主确定
+     */
+    onLandlordDetermined(data) {
+        console.log('地主确定:', data);
+        this.addGameMessage(`👑 ${data.landlordName} 成为地主！`, 'important');
+        if (data.bottomCards) {
+            this.addGameMessage(`底牌：${data.bottomCards.join(' ')}`, 'game');
+        }
+    }
+
+    /**
+     * 轮到出牌
+     */
+    onTurnToPlay(data) {
+        console.log('轮到出牌:', data);
+        if (data.playerId === this.currentPlayerId) {
+            this.isMyTurn = true;
             this.showGameActions();
+            this.addGameMessage('🎯 轮到你出牌了！', 'important');
+        } else {
+            this.isMyTurn = false;
+            this.hideGameActions();
+            this.addGameMessage(`等待 ${data.playerName} 出牌...`, 'system');
         }
     }
 
@@ -291,9 +723,305 @@ class DoudizhuRoomClient {
         this.hideGameActions();
 
         const winnerName = data.winner?.name || '未知玩家';
-        this.addMessage(`游戏结束！${winnerName} 获胜！`);
+        this.addGameMessage(`🎊 游戏结束！${winnerName} 获胜！`, 'important');
 
         this.showRoomActions();
+    }
+
+    /**
+     * 游戏结束（新事件）
+     */
+    onGameOver(data) {
+        console.log('游戏结束:', data);
+        this.gameStarted = false;
+        this.isMyTurn = false;
+        this.hideGameActions();
+
+        const winnerName = data.winnerName || '未知玩家';
+        const role = data.winnerRole === 'landlord' ? '地主' : '农民';
+        this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
+
+        this.showRoomActions();
+    }
+
+    /**
+     * 更新房间玩家显示（逆时针排列）
+     */
+    updateRoomPlayers() {
+        if (!this.roomPlayers || this.roomPlayers.length === 0) return;
+
+        // 找到当前玩家的索引
+        const myIndex = this.roomPlayers.findIndex(p => 
+            p.id === this.currentPlayerId || p.name === this.currentPlayer
+        );
+        
+        if (myIndex === -1) return;
+
+        // 更新当前玩家（底部）
+        this.updatePlayerPosition('current', this.roomPlayers[myIndex]);
+
+        // 更新左侧玩家（逆时针下一位）
+        if (this.roomPlayers.length >= 2) {
+            const leftIndex = (myIndex + 1) % this.roomPlayers.length;
+            this.updatePlayerPosition('topLeft', this.roomPlayers[leftIndex]);
+        }
+
+        // 更新右侧玩家（逆时针再下一位）
+        if (this.roomPlayers.length >= 3) {
+            const rightIndex = (myIndex + 2) % this.roomPlayers.length;
+            this.updatePlayerPosition('topRight', this.roomPlayers[rightIndex]);
+        }
+    }
+
+    /**
+     * 更新单个玩家位置
+     */
+    updatePlayerPosition(position, player) {
+        if (!player) return;
+
+        const positionMap = {
+            'current': {
+                container: 'currentPlayerPosition',
+                avatar: 'currentPlayerAvatar',
+                name: 'currentPlayerNameDisplay',
+                status: 'currentPlayerCardCount'
+            },
+            'topLeft': {
+                container: 'topLeftPlayer',
+                avatar: 'topLeftPlayerAvatar',
+                name: 'topLeftPlayerName',
+                status: 'topLeftCardCount'
+            },
+            'topRight': {
+                container: 'topRightPlayer',
+                avatar: 'topRightPlayerAvatar',
+                name: 'topRightPlayerName',
+                status: 'topRightCardCount'
+            }
+        };
+
+        const ids = positionMap[position];
+        if (!ids) return;
+
+        // 显示容器
+        const container = document.getElementById(ids.container);
+        if (container) {
+            container.classList.remove('hidden');
+        }
+
+        // 更新头像 - 对于当前玩家使用保存的头像
+        const avatar = document.getElementById(ids.avatar);
+        if (avatar) {
+            if (position === 'current' && this.playerAvatar) {
+                avatar.textContent = this.playerAvatar;
+            } else {
+                avatar.textContent = player.avatar || '👤';
+            }
+        }
+
+        // 更新名称
+        const name = document.getElementById(ids.name);
+        if (name) {
+            name.textContent = player.name;
+        }
+
+        // 更新状态
+        const status = document.getElementById(ids.status);
+        if (status) {
+            status.textContent = player.ready ? '已准备' : '未准备';
+        }
+    }
+
+    /**
+     * 获取玩家头像
+     */
+    getPlayerAvatar(index) {
+        const avatars = ['👑', '🎲', '🎯', '🎪', '🎨'];
+        return avatars[index % avatars.length];
+    }
+
+    /**
+     * 为玩家列表补充avatar字段
+     * 优先使用服务器返回的avatar，确保所有客户端看到的头像一致
+     */
+    enrichPlayersWithAvatars(players) {
+        if (!players || !Array.isArray(players)) return [];
+        
+        return players.map((player, index) => {
+            // 优先使用服务器返回的avatar（服务器基于玩家名称生成固定头像）
+            if (player.avatar) {
+                return player;
+            }
+            
+            // 如果是当前玩家且有保存的头像，使用它
+            if ((player.id === this.currentPlayerId || player.name === this.currentPlayer) && this.playerAvatar) {
+                return {
+                    ...player,
+                    avatar: this.playerAvatar
+                };
+            }
+            
+            // 尝试从旧的roomPlayers中找到对应玩家的avatar
+            const existingPlayer = this.roomPlayers?.find(p => 
+                p.id === player.id || p.name === player.name
+            );
+            
+            if (existingPlayer && existingPlayer.avatar) {
+                return {
+                    ...player,
+                    avatar: existingPlayer.avatar
+                };
+            }
+            
+            // 最后才使用本地生成的avatar（作为后备方案）
+            return {
+                ...player,
+                avatar: this.getPlayerAvatar(index)
+            };
+        });
+    }
+
+    /**
+     * 添加游戏消息
+     */
+    addGameMessage(message, type = 'game') {
+        const messageLog = document.getElementById('roomMessageLog');
+        if (!messageLog) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+
+        const time = new Date().toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        messageDiv.innerHTML = `
+            <span class="message-time">[${time}]</span>
+            <span class="message-content">${message}</span>
+        `;
+
+        messageLog.appendChild(messageDiv);
+        messageLog.scrollTop = messageLog.scrollHeight;
+    }
+
+    /**
+     * 发牌动画
+     */
+    async dealCardsWithAnimation(cards) {
+        if (!cards || cards.length === 0) return;
+
+        this.playerHand = cards;
+        this.gameStarted = true;
+
+        // 显示桌面中央发牌动画
+        await this.showCenterDealingAnimation();
+
+        const cardContainer = document.getElementById('playerHand');
+        if (!cardContainer) return;
+
+        // 显示发牌提示
+        this.addGameMessage('🎴 开始发牌...', 'game');
+        
+        // 清空容器
+        cardContainer.innerHTML = '';
+        cardContainer.style.display = 'flex';
+
+        // 逐张发牌动画
+        for (let i = 0; i < cards.length; i++) {
+            await this.animateCard(cards[i], i);
+            await this.sleep(50); // 每张牌间隔50ms，更流畅
+        }
+
+        // 动画完成后显示最终手牌
+        setTimeout(() => {
+            this.addGameMessage(`✅ 发牌完成！您获得了 ${cards.length} 张牌`, 'success');
+            this.renderPlayerHand();
+            // 隐藏中央发牌动画
+            this.hideCenterDealingAnimation();
+        }, 500);
+    }
+
+    /**
+     * 显示桌面中央发牌动画
+     */
+    async showCenterDealingAnimation() {
+        console.log('🎬 [发牌动画] 开始显示中央发牌动画');
+        
+        const centerArea = document.getElementById('centerDealingArea');
+        const cardsContainer = document.getElementById('dealingCardsContainer');
+        const message = document.getElementById('dealingMessage');
+        
+        console.log('🎬 [发牌动画] 元素查找结果:', {
+            centerArea: !!centerArea,
+            cardsContainer: !!cardsContainer,
+            message: !!message
+        });
+        
+        if (!centerArea || !cardsContainer) {
+            console.error('❌ [发牌动画] 找不到发牌动画元素！');
+            return;
+        }
+
+        // 显示区域
+        centerArea.style.display = 'block';
+        message.textContent = '正在发牌...';
+        
+        console.log('🎬 [发牌动画] 已设置display=block');
+        
+        // 清空容器
+        cardsContainer.innerHTML = '';
+        
+        // 创建3张扑克牌动画（代表发给3个玩家）
+        for (let i = 0; i < 3; i++) {
+            await this.sleep(200);
+            const card = document.createElement('div');
+            card.className = 'dealing-card';
+            card.textContent = '🎴';
+            cardsContainer.appendChild(card);
+            console.log(`🎬 [发牌动画] 添加第${i+1}张牌`);
+        }
+        
+        console.log('🎬 [发牌动画] 所有牌已添加，等待500ms');
+        await this.sleep(500);
+        console.log('🎬 [发牌动画] 中央动画完成');
+    }
+
+    /**
+     * 隐藏桌面中央发牌动画
+     */
+    hideCenterDealingAnimation() {
+        const centerArea = document.getElementById('centerDealingArea');
+        if (centerArea) {
+            centerArea.style.display = 'none';
+        }
+    }
+
+    /**
+     * 单张牌动画
+     */
+    async animateCard(card, index) {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card card-dealing';
+        cardElement.textContent = card;
+        cardElement.style.setProperty('--deal-delay', `${index * 0.03}s`);
+
+        const container = document.getElementById('playerHand');
+        if (container) {
+            container.appendChild(cardElement);
+        }
+
+        return new Promise(resolve => {
+            setTimeout(resolve, 100);
+        });
+    }
+
+    /**
+     * 延迟函数
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     /**
@@ -313,11 +1041,29 @@ class DoudizhuRoomClient {
      * 隐藏房间操作按钮
      */
     hideRoomActions() {
+        console.log('🎯 [隐藏房间按钮] 开始隐藏房间操作按钮');
+        
         const roomActions = document.getElementById('roomActions');
         const overlay = document.getElementById('gameControlsOverlay');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const leaveRoomBtn = document.getElementById('leaveRoomBtn');
 
-        if (roomActions) roomActions.style.display = 'none';
-        if (overlay) overlay.style.display = 'none';
+        if (roomActions) {
+            roomActions.style.display = 'none';
+            console.log('✅ roomActions 已隐藏');
+        }
+        if (overlay) {
+            overlay.style.display = 'none';
+            console.log('✅ overlay 已隐藏');
+        }
+        if (startGameBtn) {
+            startGameBtn.style.display = 'none';
+            console.log('✅ startGameBtn 已隐藏');
+        }
+        if (leaveRoomBtn) {
+            leaveRoomBtn.style.display = 'none';
+            console.log('✅ leaveRoomBtn 已隐藏');
+        }
     }
 
     /**
@@ -337,6 +1083,31 @@ class DoudizhuRoomClient {
     hideGameActions() {
         const gameActions = document.getElementById('gameActions');
         if (gameActions) gameActions.style.display = 'none';
+    }
+
+    /**
+     * 显示游戏区域（扑克牌区域）
+     */
+    showGameArea() {
+        const gameArea = document.getElementById('gameArea');
+        const playerHand = document.getElementById('playerHand');
+        
+        if (gameArea) {
+            gameArea.style.display = 'block';
+            this.log('🎴 游戏区域已显示');
+        }
+        
+        if (playerHand) {
+            playerHand.style.display = 'flex';
+            this.log('🃏 手牌区域已显示');
+        }
+    }
+
+    /**
+     * 日志输出
+     */
+    log(message) {
+        console.log(`[房间] ${message}`);
     }
 
     /**
@@ -431,6 +1202,32 @@ class DoudizhuRoomClient {
     }
 
     /**
+     * 显示错误消息
+     */
+    showErrorMessage(message) {
+        // 创建错误提示框
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message-overlay';
+        errorDiv.innerHTML = `
+            <div class="error-message-box">
+                <div class="error-icon">⚠️</div>
+                <div class="error-title">无法加入房间</div>
+                <div class="error-content">${message}</div>
+                <div class="error-footer">3秒后自动返回大厅...</div>
+            </div>
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        // 3秒后移除提示框
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 3000);
+    }
+
+    /**
      * 返回大厅
      */
     backToLobby() {
@@ -440,5 +1237,6 @@ class DoudizhuRoomClient {
 
 // 页面加载完成后初始化
 window.addEventListener('load', () => {
-    new DoudizhuRoomClient();
+    window.roomClient = new DoudizhuRoomClient();
+    console.log('✅ roomClient 已暴露到全局变量');
 });

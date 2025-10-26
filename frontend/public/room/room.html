@@ -54,6 +54,14 @@
                             <div class="player-cards-count" id="currentPlayerCardCount">未准备</div>
                         </div>
                     </div>
+
+                    <!-- 桌面中央发牌动画区域 - 移到game-table内部 -->
+                    <div class="center-dealing-area" id="centerDealingArea" style="display: none;">
+                        <div class="dealing-cards-container" id="dealingCardsContainer">
+                            <!-- 发牌动画将在这里显示 -->
+                        </div>
+                        <div class="dealing-message" id="dealingMessage">正在发牌...</div>
+                    </div>
                 </div>
 
                 <!-- 当前玩家手牌区域 -->
@@ -69,6 +77,16 @@
                     <div class="room-actions" id="roomActions">
                         <button id="startGameBtn" class="btn btn-success btn-lg">开始游戏</button>
                         <button id="leaveRoomBtn" class="btn btn-danger btn-lg">返回大厅</button>
+                    </div>
+
+                    <!-- 抢地主操作按钮 - 抢地主阶段显示 -->
+                    <div class="bidding-actions" id="biddingActions" style="display: none;">
+                        <div class="bidding-timer" id="biddingTimer">15</div>
+                        <div class="bidding-buttons">
+                            <button id="bidBtn" class="btn btn-warning btn-lg">抢地主</button>
+                            <button id="noBidBtn" class="btn btn-secondary btn-lg">不抢</button>
+                        </div>
+                        <div class="bidding-hint" id="biddingHint">请选择是否抢地主</div>
                     </div>
 
                     <!-- 出牌操作按钮 - 轮到玩家时显示 -->

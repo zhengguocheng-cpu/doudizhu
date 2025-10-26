@@ -97,7 +97,7 @@ class RoomManager {
     }
 
     /**
-     * 加入房间（简化版）
+     * 加入房间（简化版）- 等待服务器响应
      */
     async joinRoom(roomId) {
         console.log('开始加入房间:', roomId);
@@ -109,19 +109,58 @@ class RoomManager {
         }
 
         try {
-            // 使用全局Socket管理器发送加入游戏事件
-            const joinSuccess = this.socketManager.joinGame({
-                roomId: roomId,
-                userId: this.currentPlayer,    // 用户名作为userId
-                playerName: this.currentPlayer
+            // 使用Promise等待服务器响应
+            const result = await new Promise((resolve, reject) => {
+                // 设置超时
+                const timeout = setTimeout(() => {
+                    this.socketManager.socket.off('join_game_success');
+                    this.socketManager.socket.off('join_game_failed');
+                    reject(new Error('加入房间超时'));
+                }, 5000);
+
+                // 监听成功事件
+                const onSuccess = (data) => {
+                    clearTimeout(timeout);
+                    this.socketManager.socket.off('join_game_success', onSuccess);
+                    this.socketManager.socket.off('join_game_failed', onFailed);
+                    console.log('✅ 大厅收到加入成功响应:', data);
+                    resolve({ success: true, data });
+                };
+
+                // 监听失败事件
+                const onFailed = (data) => {
+                    clearTimeout(timeout);
+                    this.socketManager.socket.off('join_game_success', onSuccess);
+                    this.socketManager.socket.off('join_game_failed', onFailed);
+                    console.log('❌ 大厅收到加入失败响应:', data);
+                    resolve({ success: false, message: data.message });
+                };
+
+                // 注册事件监听
+                this.socketManager.socket.once('join_game_success', onSuccess);
+                this.socketManager.socket.once('join_game_failed', onFailed);
+
+                // 发送加入请求
+                const sendSuccess = this.socketManager.joinGame({
+                    roomId: roomId,
+                    userId: this.currentPlayer,
+                    playerName: this.currentPlayer
+                });
+
+                if (!sendSuccess) {
+                    clearTimeout(timeout);
+                    this.socketManager.socket.off('join_game_success', onSuccess);
+                    this.socketManager.socket.off('join_game_failed', onFailed);
+                    reject(new Error('Socket连接错误'));
+                }
             });
 
-            if (joinSuccess) {
-                console.log('房间加入成功');
+            if (result.success) {
+                console.log('✅ 房间加入成功，可以跳转');
                 return true;
             } else {
-                console.error('Socket连接错误');
-                this.uiManager.addError('加入房间失败：连接错误');
+                console.error('❌ 房间加入失败:', result.message);
+                this.uiManager.addError(result.message || '加入房间失败');
                 return false;
             }
         } catch (error) {

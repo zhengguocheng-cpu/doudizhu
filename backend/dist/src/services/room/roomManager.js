@@ -38,6 +38,11 @@ class RoomManager {
         if (!room) {
             throw new Error('房间不存在');
         }
+        const existingPlayer = room.players.find(p => p.id === playerName || p.name === playerName);
+        if (existingPlayer) {
+            console.log(`玩家 ${playerName} 已在房间 ${roomId} 中，返回现有玩家信息`);
+            return existingPlayer;
+        }
         const joinValidation = roomValidator_1.RoomValidator.validateRoomJoinable(room);
         if (!joinValidation.valid) {
             throw new Error(joinValidation.error);
@@ -51,6 +56,7 @@ class RoomManager {
         };
         room.players.push(player);
         room.updatedAt = new Date();
+        console.log(`玩家 ${playerName} 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
         return player;
     }
     addExistingUserToRoom(roomId, user) {

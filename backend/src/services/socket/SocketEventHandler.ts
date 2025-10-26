@@ -71,6 +71,51 @@ export class SocketEventHandler {
   }
 
   /**
+   * 处理获取房间状态请求
+   */
+  public async handleGetRoomState(socket: AuthenticatedSocket, data: any): Promise<void> {
+    try {
+      const { roomId, userId } = data;
+      console.log('🔍 收到获取房间状态请求:', { roomId, userId });
+
+      const room = roomService.getRoom(roomId);
+      if (!room) {
+        socket.emit('room_state_error', { message: '房间不存在' });
+        return;
+      }
+
+      // 检查玩家是否在房间中
+      const playerInRoom = room.players?.some((p: any) => p.id === userId);
+      if (!playerInRoom) {
+        socket.emit('room_state_error', { message: '您不在此房间中' });
+        return;
+      }
+
+      // 发送房间状态
+      socket.emit('join_game_success', {
+        roomId: roomId,
+        roomName: room.name,
+        players: room.players || [],
+        room: {
+          id: roomId,
+          name: room.name,
+          players: room.players || [],
+          maxPlayers: room.maxPlayers || 3,
+          status: room.status || 'waiting'
+        }
+      });
+
+      console.log('✅ 发送房间状态成功:', roomId);
+
+    } catch (error) {
+      console.error('获取房间状态错误:', error);
+      socket.emit('room_state_error', {
+        message: error instanceof Error ? error.message : '获取房间状态失败'
+      });
+    }
+  }
+
+  /**
    * 处理加入游戏事件 - 简化版
    */
   public async handleJoinGame(socket: AuthenticatedSocket, data: any): Promise<void> {
@@ -96,58 +141,66 @@ export class SocketEventHandler {
       // 简化用户信息处理
       const user = { name: userId }; // 直接使用用户名作为用户对象
 
-      // 加入房间
-      const result = roomService.joinRoom(roomId, user.name);
+      // 加入房间（会抛出错误如果失败）
+      const result = roomService.joinRoom(roomId, userId);
 
-      if (result) {
-        // 加入Socket房间
-        socket.join(`room_${roomId}`);
-
-        // 发送成功响应
-        const room = roomService.getRoom(roomId);
-        if (!room) {
-          socket.emit('error', { message: '房间不存在' });
-          return;
-        }
-
-        console.log('✅ 房间加入成功，发送join_game_success事件:', {
-          roomId: roomId,
-          roomName: room.name,
-          players: room.players
-        });
-
-        socket.emit('join_game_success', {
-          roomId: roomId,
-          room: {
-            id: roomId,
-            name: room.name,
-            players: room.players || [],
-            maxPlayers: room.maxPlayers || 3,
-            status: room.status || 'waiting'
-          }
-        });
-
-        // 通知其他玩家
-        socket.to(`room_${roomId}`).emit('player_joined', {
-          playerId: userId,
-          playerName: user.name
-        });
-
-        // 广播房间更新给所有客户端
-        this.broadcastRoomsUpdate('player_joined', roomId, {
-          playerName: user.name
-        });
-
-        console.log('加入游戏成功:', roomId, userId);
-
-      } else {
-        socket.emit('error', { message: '加入游戏失败' });
+      // 获取房间信息
+      const room = roomService.getRoom(roomId);
+      if (!room) {
+        socket.emit('join_game_failed', { message: '房间不存在' });
+        return;
       }
 
+      // 加入Socket房间（异步操作）
+      await socket.join(`room_${roomId}`);
+      console.log(`✅ Socket ${socket.id} 已加入房间 room_${roomId}`);
+
+      console.log('✅ 房间加入成功，发送join_game_success事件:', {
+        roomId: roomId,
+        roomName: room.name,
+        //players: room.players
+      });
+
+      // 发送成功响应给当前玩家
+      socket.emit('join_game_success', {
+        roomId: roomId,
+        roomName: room.name,
+        players: room.players || [],
+        room: {
+          id: roomId,
+          name: room.name,
+          players: room.players || [],
+          maxPlayers: room.maxPlayers || 3,
+          status: room.status || 'waiting'
+        }
+      });
+
+      // 通知房间内其他玩家（发送完整的房间玩家列表）
+      console.log(`📢 向房间 room_${roomId} 的其他玩家广播 player_joined 事件`);
+      console.log(`📢 当前房间内的所有socket:`, Array.from(this.io.sockets.adapter.rooms.get(`room_${roomId}`) || []));
+      console.log(`📢 当前socket ID: ${socket.id}`);
+      
+      socket.to(`room_${roomId}`).emit('player_joined', {
+        playerId: userId,
+        playerName: user.name,
+        players: room.players || [] // 发送完整的玩家列表
+      });
+      
+      console.log(`✅ player_joined 事件已发送`);
+
+      // 广播房间更新给所有客户端
+      this.broadcastRoomsUpdate('player_joined', roomId, {
+        playerName: user.name
+      });
+
+      console.log('加入游戏成功:', roomId, userId);
+
     } catch (error) {
-      console.error('加入游戏错误:', error);
-      socket.emit('error', {
-        message: error instanceof Error ? error.message : '加入游戏过程中发生错误'
+      console.error('❌ 加入游戏错误:', error);
+      const errorMessage = error instanceof Error ? error.message : '加入游戏过程中发生错误';
+      console.error('❌ 发送错误消息给客户端:', errorMessage);
+      socket.emit('join_game_failed', {
+        message: errorMessage
       });
     }
   }
@@ -173,8 +226,15 @@ export class SocketEventHandler {
         // 离开Socket房间
         socket.leave(`room_${roomId}`);
 
-        // 通知其他玩家
-        socket.to(`room_${roomId}`).emit('player_left', { playerId: userId });
+        // 获取更新后的房间信息
+        const room = roomService.getRoom(roomId);
+
+        // 通知其他玩家（发送完整的玩家列表）
+        socket.to(`room_${roomId}`).emit('player_left', { 
+          playerId: userId,
+          playerName: userId,
+          players: room?.players || [] // 发送更新后的玩家列表
+        });
 
         // 广播房间更新给所有客户端
         this.broadcastRoomsUpdate('player_left', roomId, {
@@ -214,10 +274,11 @@ export class SocketEventHandler {
         // 获取房间信息
         const room = roomService.getRoom(roomId);
         
-        // 通知所有玩家（包括自己）
+        // 通知所有玩家（包括自己），发送完整的玩家列表
         this.io.to(`room_${roomId}`).emit('player_ready', { 
           playerId: userId,
-          playerName: userId
+          playerName: userId,
+          players: room?.players || [] // 发送完整的玩家列表
         });
 
         // 广播房间更新给所有客户端
@@ -255,65 +316,41 @@ export class SocketEventHandler {
   }
 
   /**
-   * 处理出牌事件 - 简化版
+   * 处理抢地主事件
+   */
+  public async handleBidLandlord(socket: AuthenticatedSocket, data: any): Promise<void> {
+    try {
+      const { roomId, userId, bid } = data;
+      console.log('🎲 收到抢地主请求:', { roomId, userId, bid });
+
+      // 调用GameFlowHandler处理抢地主
+      gameFlowHandler.handleBidLandlord(roomId, userId, bid);
+
+    } catch (error) {
+      console.error('抢地主错误:', error);
+      socket.emit('error', {
+        message: error instanceof Error ? error.message : '抢地主过程中发生错误'
+      });
+    }
+  }
+
+  /**
+   * 处理出牌事件
    */
   public async handlePlayCards(socket: AuthenticatedSocket, data: any): Promise<void> {
     try {
-      // 注释掉认证检查
-      // if (!this.validateAuthentication(socket, data.userId)) {
-      //   socket.emit('error', { message: '用户未认证' });
-      //   return;
-      // }
-
       const { roomId, userId, cards } = data;
-      console.log('玩家出牌:', roomId, userId, cards?.length);
+      console.log('🎴 收到出牌请求:', { roomId, userId, cards });
 
-      const room = roomService.getRoom(roomId);
-      if (!room) {
-        socket.emit('error', { message: '房间不存在' });
+      // 使用CardPlayHandler处理出牌
+      const cardPlayHandler = gameFlowHandler.getCardPlayHandler();
+      if (!cardPlayHandler) {
+        console.error('❌ CardPlayHandler未初始化');
+        socket.emit('error', { message: '游戏系统错误' });
         return;
       }
 
-      const player = room.players?.find((p: any) => p.id === userId);
-      if (!player) {
-        socket.emit('error', { message: '玩家不在房间中' });
-        return;
-      }
-
-      // 简单的出牌验证
-      if (!cards || !Array.isArray(cards) || cards.length === 0) {
-        socket.emit('play_result', {
-          success: false,
-          error: '无效的出牌'
-        });
-        return;
-      }
-
-      // 验证玩家是否有这些牌
-      const hasAllCards = cards.every((card: string) =>
-        player.cards && player.cards.includes(card)
-      );
-
-      if (!hasAllCards) {
-        socket.emit('play_result', {
-          success: false,
-          error: '您没有这些牌'
-        });
-        return;
-      }
-
-      // 出牌成功
-      socket.emit('play_result', { success: true });
-
-      // 通知其他玩家
-      socket.to(`room_${roomId}`).emit('cards_played', {
-        playerId: userId,
-        playerName: player.name,
-        cards: cards,
-        nextPlayerId: this.getNextPlayer(room, userId)
-      });
-
-      console.log('出牌成功:', roomId, userId);
+      cardPlayHandler.handlePlayCards(roomId, userId, cards);
 
     } catch (error) {
       console.error('出牌错误:', error);
@@ -324,38 +361,27 @@ export class SocketEventHandler {
   }
 
   /**
-   * 处理跳过回合事件 - 简化版
+   * 处理跳过回合事件（不出）
    */
   public async handlePassTurn(socket: AuthenticatedSocket, data: any): Promise<void> {
     try {
-      // 注释掉认证检查
-      // if (!this.validateAuthentication(socket, data.userId)) {
-      //   socket.emit('error', { message: '用户未认证' });
-      //   return;
-      // }
-
       const { roomId, userId } = data;
-      console.log('玩家跳过回合:', roomId, userId);
+      console.log('🚫 收到不出请求:', { roomId, userId });
 
-      const room = roomService.getRoom(roomId);
-      if (!room) {
-        socket.emit('error', { message: '房间不存在' });
+      // 使用CardPlayHandler处理不出
+      const cardPlayHandler = gameFlowHandler.getCardPlayHandler();
+      if (!cardPlayHandler) {
+        console.error('❌ CardPlayHandler未初始化');
+        socket.emit('error', { message: '游戏系统错误' });
         return;
       }
 
-      // 通知下一个玩家出牌
-      const nextPlayerId = this.getNextPlayer(room, userId);
-      socket.to(`room_${roomId}`).emit('turn_changed', {
-        nextPlayerId: nextPlayerId,
-        lastPlayedCards: null
-      });
-
-      console.log('跳过回合成功:', roomId, userId, nextPlayerId);
+      cardPlayHandler.handlePass(roomId, userId);
 
     } catch (error) {
-      console.error('跳过回合错误:', error);
+      console.error('不出错误:', error);
       socket.emit('error', {
-        message: error instanceof Error ? error.message : '跳过回合过程中发生错误'
+        message: error instanceof Error ? error.message : '不出过程中发生错误'
       });
     }
   }

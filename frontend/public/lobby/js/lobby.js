@@ -214,11 +214,12 @@ class LobbyController {
         try {
             const success = await this.roomManager.joinRoom(roomId);
             if (success) {
-                // 跳转到房间页面
+                // 跳转到房间页面，添加joined=true参数表示已在大厅加入成功
                 const params = new URLSearchParams({
                     roomId: roomId,
                     playerName: encodeURIComponent(this.currentPlayer),
-                    playerAvatar: encodeURIComponent(this.playerAvatar)
+                    playerAvatar: encodeURIComponent(this.playerAvatar),
+                    joined: 'true'  // 标记已经在大厅加入成功
                 });
                 window.location.href = `/room/room.html?${params.toString()}`;
             }

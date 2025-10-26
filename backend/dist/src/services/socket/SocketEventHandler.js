@@ -154,43 +154,30 @@ class SocketEventHandler {
             });
         }
     }
+    async handleBidLandlord(socket, data) {
+        try {
+            const { roomId, userId, bid } = data;
+            console.log('🎲 收到抢地主请求:', { roomId, userId, bid });
+            GameFlowHandler_1.gameFlowHandler.handleBidLandlord(roomId, userId, bid);
+        }
+        catch (error) {
+            console.error('抢地主错误:', error);
+            socket.emit('error', {
+                message: error instanceof Error ? error.message : '抢地主过程中发生错误'
+            });
+        }
+    }
     async handlePlayCards(socket, data) {
         try {
             const { roomId, userId, cards } = data;
-            console.log('玩家出牌:', roomId, userId, cards?.length);
-            const room = roomService_1.roomService.getRoom(roomId);
-            if (!room) {
-                socket.emit('error', { message: '房间不存在' });
+            console.log('🎴 收到出牌请求:', { roomId, userId, cards });
+            const cardPlayHandler = GameFlowHandler_1.gameFlowHandler.getCardPlayHandler();
+            if (!cardPlayHandler) {
+                console.error('❌ CardPlayHandler未初始化');
+                socket.emit('error', { message: '游戏系统错误' });
                 return;
             }
-            const player = room.players?.find((p) => p.id === userId);
-            if (!player) {
-                socket.emit('error', { message: '玩家不在房间中' });
-                return;
-            }
-            if (!cards || !Array.isArray(cards) || cards.length === 0) {
-                socket.emit('play_result', {
-                    success: false,
-                    error: '无效的出牌'
-                });
-                return;
-            }
-            const hasAllCards = cards.every((card) => player.cards && player.cards.includes(card));
-            if (!hasAllCards) {
-                socket.emit('play_result', {
-                    success: false,
-                    error: '您没有这些牌'
-                });
-                return;
-            }
-            socket.emit('play_result', { success: true });
-            socket.to(`room_${roomId}`).emit('cards_played', {
-                playerId: userId,
-                playerName: player.name,
-                cards: cards,
-                nextPlayerId: this.getNextPlayer(room, userId)
-            });
-            console.log('出牌成功:', roomId, userId);
+            cardPlayHandler.handlePlayCards(roomId, userId, cards);
         }
         catch (error) {
             console.error('出牌错误:', error);
@@ -202,23 +189,19 @@ class SocketEventHandler {
     async handlePassTurn(socket, data) {
         try {
             const { roomId, userId } = data;
-            console.log('玩家跳过回合:', roomId, userId);
-            const room = roomService_1.roomService.getRoom(roomId);
-            if (!room) {
-                socket.emit('error', { message: '房间不存在' });
+            console.log('🚫 收到不出请求:', { roomId, userId });
+            const cardPlayHandler = GameFlowHandler_1.gameFlowHandler.getCardPlayHandler();
+            if (!cardPlayHandler) {
+                console.error('❌ CardPlayHandler未初始化');
+                socket.emit('error', { message: '游戏系统错误' });
                 return;
             }
-            const nextPlayerId = this.getNextPlayer(room, userId);
-            socket.to(`room_${roomId}`).emit('turn_changed', {
-                nextPlayerId: nextPlayerId,
-                lastPlayedCards: null
-            });
-            console.log('跳过回合成功:', roomId, userId, nextPlayerId);
+            cardPlayHandler.handlePass(roomId, userId);
         }
         catch (error) {
-            console.error('跳过回合错误:', error);
+            console.error('不出错误:', error);
             socket.emit('error', {
-                message: error instanceof Error ? error.message : '跳过回合过程中发生错误'
+                message: error instanceof Error ? error.message : '不出过程中发生错误'
             });
         }
     }

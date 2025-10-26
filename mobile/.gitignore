@@ -1,0 +1,54 @@
+# 依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 构建输出
+dist/
+build/
+
+# 开发工具
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 临时文件
+*.tmp
+*.temp
+
+# 小程序相关
+project.config.json
+project.private.config.json
+sitemap.json
+
+# 平台特定文件
+# 微信小程序
+miniprogram_npm/
+
+# 抖音小程序
+.tt/
+
+# 支付宝小程序
+.alipay/
+
+# 百度小程序
+.swan/
+
+# H5
+.h5/

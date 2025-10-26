@@ -3,6 +3,7 @@
 export interface Player {
   id: string;           // 用户名（作为唯一标识符）
   name: string;
+  avatar?: string;      // 玩家头像（emoji）
   ready: boolean;
   cards?: string[];
   cardCount?: number;

@@ -67,16 +67,28 @@ export class RoomManager {
       throw new Error('房间不存在');
     }
 
+    // 检查玩家是否已在房间中
+    const existingPlayer = room.players.find(p => p.id === playerName || p.name === playerName);
+    if (existingPlayer) {
+      console.log(`玩家 ${playerName} 已在房间 ${roomId} 中，返回现有玩家信息`);
+      return existingPlayer;
+    }
+
     // 验证是否可以加入
     const joinValidation = RoomValidator.validateRoomJoinable(room);
     if (!joinValidation.valid) {
       throw new Error(joinValidation.error);
     }
 
+    // 为玩家分配头像（基于玩家名称的哈希值，确保同一玩家始终获得相同头像）
+    const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
+    const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
+    
     // 创建玩家（使用用户名作为ID）
     const player: Player = {
       id: playerName, // 使用用户名作为ID
       name: playerName,
+      avatar: avatars[avatarIndex], // 添加头像字段
       ready: false,
       cards: [],
       cardCount: 0
@@ -85,6 +97,8 @@ export class RoomManager {
     // 添加玩家到房间
     room.players.push(player);
     room.updatedAt = new Date();
+
+    console.log(`玩家 ${playerName} 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
 
     return player;
   }
@@ -333,5 +347,19 @@ export class RoomManager {
     });
 
     return stats;
+  }
+
+  /**
+   * 基于玩家名称生成一致的头像索引
+   * 使用简单的字符串哈希算法
+   */
+  private getPlayerAvatarIndex(playerName: string, avatarCount: number): number {
+    let hash = 0;
+    for (let i = 0; i < playerName.length; i++) {
+      const char = playerName.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash) % avatarCount;
   }
 }

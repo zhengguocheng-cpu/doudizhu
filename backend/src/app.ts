@@ -181,58 +181,68 @@ export class Application {
       this.eventHandler.handleGetRoomsList(socket, data);
     });
 
+    // 添加获取房间状态事件
+    socket.on('get_room_state', (data: any) => {
+      this.eventHandler.handleGetRoomState(socket, data);
+    });
+
     // 添加开始游戏事件
     socket.on('start_game', (data: any) => {
       this.handleStartGame(socket, data);
+    });
+
+    // 添加抢地主事件
+    socket.on('bid_landlord', (data: any) => {
+      this.eventHandler.handleBidLandlord(socket, data);
+    });
+
+    // 添加出牌事件
+    socket.on('play_cards', (data: any) => {
+      this.eventHandler.handlePlayCards(socket, data);
+    });
+
+    // 添加不出事件
+    socket.on('pass_turn', (data: any) => {
+      this.eventHandler.handlePassTurn(socket, data);
     });
   }
 
   /**
    * 处理开始游戏请求
+   * 注意：游戏实际上在所有玩家准备后通过GameFlowHandler自动开始
+   * 这个方法主要用于记录日志和处理手动开始游戏的请求
    */
   private async handleStartGame(socket: any, data: any): Promise<void> {
     try {
       const { roomId, userId } = data;
       console.log(`🎮 收到开始游戏请求: 房间 ${roomId}, 玩家 ${userId}`);
 
-      // 使用游戏引擎开始游戏
-      const gameEngine = this.container.resolve<any>('GameEngine');
-      const result = gameEngine.startGame(roomId);
-
-      if (result.success) {
-        console.log(`✅ 游戏开始成功，房间 ${roomId}`);
-
-        // 通知所有玩家游戏开始
-        const room = roomService.getRoom(roomId);
-        if (room) {
-          // 发牌给所有玩家
-          room.players.forEach((player: any) => {
-            this.io.to(player.id).emit('cards_dealt', {
-              playerId: player.id,
-              cards: player.cards || []
-            });
-          });
-
-          // 广播游戏状态更新
-          this.io.to(`room_${roomId}`).emit('game_state_updated', {
-            gameState: {
-              currentPlayer: room.players[0].id,
-              bottomCards: room.cards?.remaining || [],
-              players: room.players.map((p: any) => ({
-                id: p.id,
-                name: p.name,
-                cardCount: p.cardCount
-              }))
-            }
-          });
-
-          // 广播房间更新
-          this.broadcastRoomsUpdate('game_started', roomId);
-        }
-      } else {
-        console.error(`❌ 游戏开始失败: ${result.error}`);
-        socket.emit('error', { message: result.error || '开始游戏失败' });
+      // 检查房间是否存在
+      const room = roomService.getRoom(roomId);
+      if (!room) {
+        console.error(`❌ 房间 ${roomId} 不存在`);
+        socket.emit('error', { message: '房间不存在' });
+        return;
       }
+
+      // 检查玩家数量
+      if (!room.players || room.players.length < 3) {
+        console.error(`❌ 房间 ${roomId} 玩家数量不足`);
+        socket.emit('error', { message: '玩家数量不足，需要3名玩家' });
+        return;
+      }
+
+      // 检查是否所有玩家都准备
+      const allReady = room.players.every((p: any) => p.ready);
+      if (!allReady) {
+        console.error(`❌ 房间 ${roomId} 并非所有玩家都准备好`);
+        socket.emit('error', { message: '请等待所有玩家准备' });
+        return;
+      }
+
+      // 游戏会在所有玩家准备后自动开始（通过GameFlowHandler）
+      console.log(`✅ 房间 ${roomId} 满足开始条件，游戏将自动开始`);
+      
     } catch (error) {
       console.error('处理开始游戏请求失败:', error);
       socket.emit('error', {

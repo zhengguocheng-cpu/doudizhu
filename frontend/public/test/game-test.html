@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗地主游戏功能测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .test-section-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .test-section-header h2 {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-section-header .status {
+            font-size: 24px;
+        }
+
+        .test-section-body {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .test-step {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .test-step.success {
+            border-left-color: #27ae60;
+            background: #e8f8f0;
+        }
+
+        .test-step.error {
+            border-left-color: #e74c3c;
+            background: #fdeaea;
+        }
+
+        .test-step.running {
+            border-left-color: #f39c12;
+            background: #fef5e7;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .step-description {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .log-container {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        .log-entry.success {
+            color: #27ae60;
+        }
+
+        .log-entry.error {
+            color: #e74c3c;
+        }
+
+        .log-entry.warning {
+            color: #f39c12;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .control-panel {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-panel .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-badge.pending {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .status-badge.running {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-badge.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-badge.error {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 斗地主游戏功能测试</h1>
+            <p>自动化测试所有游戏功能，确保系统正常运行</p>
+        </div>
+
+        <div class="content">
+            <!-- 控制面板 -->
+            <div class="control-panel">
+                <button class="btn btn-success" onclick="testManager.runAllTests()">🚀 运行所有测试</button>
+                <button class="btn btn-warning" onclick="testManager.pauseTests()">⏸️ 暂停测试</button>
+                <button class="btn btn-danger" onclick="testManager.stopTests()">⏹️ 停止测试</button>
+                <button class="btn btn-primary" onclick="testManager.clearLogs()">🗑️ 清除日志</button>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+            </div>
+
+            <!-- 测试1: 用户认证 -->
+            <div class="test-section">
+                <div class="test-section-header" onclick="testManager.toggleSection('test1')">
+                    <h2>
+                        <span>1️⃣</span>
+                        <span>用户认证测试</span>
+                    </h2>
+                    <span class="status" id="test1-status">⏳</span>
+                </div>
+                <div class="test-section-body" id="test1-body">
+                    <div class="test-step" id="step1-1">
+                        <div class="step-info">
+                            <div class="step-title">步骤 1.1: 创建测试用户</div>
+                            <div class="step-description">创建3个测试用户 (TestPlayer001, TestPlayer002, TestPlayer003)</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('1.1')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step1-2">
+                        <div class="step-info">
+                            <div class="step-title">步骤 1.2: 验证用户信息</div>
+                            <div class="step-description">验证用户名和头像是否正确保存</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('1.2')">运行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试2: 房间管理 -->
+            <div class="test-section">
+                <div class="test-section-header" onclick="testManager.toggleSection('test2')">
+                    <h2>
+                        <span>2️⃣</span>
+                        <span>房间管理测试</span>
+                    </h2>
+                    <span class="status" id="test2-status">⏳</span>
+                </div>
+                <div class="test-section-body" id="test2-body">
+                    <div class="test-step" id="step2-1">
+                        <div class="step-info">
+                            <div class="step-title">步骤 2.1: 获取房间列表</div>
+                            <div class="step-description">从服务器获取可用房间列表</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('2.1')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step2-2">
+                        <div class="step-info">
+                            <div class="step-title">步骤 2.2: 玩家加入房间</div>
+                            <div class="step-description">3个玩家依次加入同一房间</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('2.2')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step2-3">
+                        <div class="step-info">
+                            <div class="step-title">步骤 2.3: 验证房间状态</div>
+                            <div class="step-description">验证所有玩家都能看到房间内的其他玩家</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('2.3')">运行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试3: 游戏准备 -->
+            <div class="test-section">
+                <div class="test-section-header" onclick="testManager.toggleSection('test3')">
+                    <h2>
+                        <span>3️⃣</span>
+                        <span>游戏准备测试</span>
+                    </h2>
+                    <span class="status" id="test3-status">⏳</span>
+                </div>
+                <div class="test-section-body" id="test3-body">
+                    <div class="test-step" id="step3-1">
+                        <div class="step-info">
+                            <div class="step-title">步骤 3.1: 玩家准备</div>
+                            <div class="step-description">所有玩家点击准备按钮</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('3.1')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step3-2">
+                        <div class="step-info">
+                            <div class="step-title">步骤 3.2: 验证准备状态同步</div>
+                            <div class="step-description">验证所有玩家都能看到其他玩家的准备状态</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('3.2')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step3-3">
+                        <div class="step-info">
+                            <div class="step-title">步骤 3.3: 自动开始游戏</div>
+                            <div class="step-description">验证所有玩家准备后游戏自动开始</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('3.3')">运行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试4: 游戏流程 -->
+            <div class="test-section">
+                <div class="test-section-header" onclick="testManager.toggleSection('test4')">
+                    <h2>
+                        <span>4️⃣</span>
+                        <span>游戏流程测试</span>
+                    </h2>
+                    <span class="status" id="test4-status">⏳</span>
+                </div>
+                <div class="test-section-body" id="test4-body">
+                    <div class="test-step" id="step4-1">
+                        <div class="step-info">
+                            <div class="step-title">步骤 4.1: 发牌</div>
+                            <div class="step-description">验证每个玩家收到17张牌</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('4.1')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step4-2">
+                        <div class="step-info">
+                            <div class="step-title">步骤 4.2: 叫地主</div>
+                            <div class="step-description">验证叫地主流程和底牌分配</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('4.2')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step4-3">
+                        <div class="step-info">
+                            <div class="step-title">步骤 4.3: 出牌回合</div>
+                            <div class="step-description">模拟完整的出牌回合</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('4.3')">运行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试5: 聊天功能 -->
+            <div class="test-section">
+                <div class="test-section-header" onclick="testManager.toggleSection('test5')">
+                    <h2>
+                        <span>5️⃣</span>
+                        <span>聊天功能测试</span>
+                    </h2>
+                    <span class="status" id="test5-status">⏳</span>
+                </div>
+                <div class="test-section-body" id="test5-body">
+                    <div class="test-step" id="step5-1">
+                        <div class="step-info">
+                            <div class="step-title">步骤 5.1: 发送聊天消息</div>
+                            <div class="step-description">测试玩家发送聊天消息</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('5.1')">运行</button>
+                        </div>
+                    </div>
+                    <div class="test-step" id="step5-2">
+                        <div class="step-info">
+                            <div class="step-title">步骤 5.2: 验证消息同步</div>
+                            <div class="step-description">验证所有玩家都能收到聊天消息</div>
+                        </div>
+                        <div class="step-actions">
+                            <button class="btn btn-primary" onclick="testManager.runStep('5.2')">运行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志输出 -->
+            <div class="log-container" id="logContainer">
+                <div class="log-entry info">📋 测试日志将显示在这里...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game-test.js"></script>
+</body>
+</html>

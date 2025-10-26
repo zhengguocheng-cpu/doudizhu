@@ -1,0 +1,56 @@
+{
+  "name": "cocos-doudizhu",
+  "version": "1.0.0",
+  "description": "Cocos Creator 3.x 斗地主游戏前端",
+  "main": "index.js",
+  "scripts": {
+    "build": "cocos build",
+    "build-web": "cocos build -p web",
+    "build-android": "cocos build -p android",
+    "build-ios": "cocos build -p ios",
+    "build-wechat": "cocos build -p wechatgame",
+    "preview": "cocos preview",
+    "clean": "cocos clean",
+    "dev": "cocos preview -p web",
+    "dev-wechat": "cocos preview -p wechatgame",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint assets/scripts --ext .ts",
+    "lint-fix": "eslint assets/scripts --ext .ts --fix"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.7.4",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "cocos-creator",
+    "cocos-creator-3x",
+    "doudizhu",
+    "card-game",
+    "multiplayer",
+    "typescript"
+  ],
+  "author": "Doudizhu Team",
+  "license": "MIT",
+  "engines": {
+    "cocos-creator": ">=3.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/cocos-doudizhu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/cocos-doudizhu/issues"
+  },
+  "homepage": "https://github.com/your-username/cocos-doudizhu#readme",
+  "creator": {
+    "version": "3.8.6"
+  },
+  "uuid": "80cba849-2e4d-4a22-a5ec-bfa0e542246e"
+}

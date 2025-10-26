@@ -2,8 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gameFlowHandler = exports.GameFlowHandler = void 0;
 const roomService_1 = require("../room/roomService");
+const CardPlayHandler_1 = require("../game/CardPlayHandler");
 class GameFlowHandler {
-    constructor() { }
+    constructor() {
+        this.cardPlayHandler = null;
+    }
     static getInstance() {
         if (!GameFlowHandler.instance) {
             GameFlowHandler.instance = new GameFlowHandler();
@@ -12,7 +15,11 @@ class GameFlowHandler {
     }
     initialize(io) {
         this.io = io;
-        console.log('GameFlowHandler initialized');
+        this.cardPlayHandler = new CardPlayHandler_1.CardPlayHandler(io);
+        console.log('GameFlowHandler initialized with CardPlayHandler');
+    }
+    getCardPlayHandler() {
+        return this.cardPlayHandler;
     }
     startGame(roomId) {
         try {
@@ -50,9 +57,148 @@ class GameFlowHandler {
                 }
             });
             console.log(`✅ 游戏开始成功: 房间${roomId}`);
+            setTimeout(() => {
+                this.startBidding(roomId);
+            }, 2000);
         }
         catch (error) {
             console.error('开始游戏失败:', error);
+        }
+    }
+    startBidding(roomId) {
+        try {
+            console.log(`🎲 开始抢地主: 房间${roomId}`);
+            const room = roomService_1.roomService.getRoom(roomId);
+            if (!room) {
+                console.error(`房间${roomId}不存在`);
+                return;
+            }
+            const firstBidderIndex = Math.floor(Math.random() * 3);
+            const firstBidderId = room.players[firstBidderIndex].id;
+            room.biddingState = {
+                currentBidderId: firstBidderId,
+                bids: [],
+                landlordId: null,
+                biddingOrder: [
+                    room.players[firstBidderIndex].id,
+                    room.players[(firstBidderIndex + 1) % 3].id,
+                    room.players[(firstBidderIndex + 2) % 3].id
+                ]
+            };
+            this.io.to(`room_${roomId}`).emit('bidding_start', {
+                roomId: roomId,
+                firstBidderId: firstBidderId,
+                firstBidderName: room.players[firstBidderIndex].name,
+                bottomCards: room.bottomCards,
+                bottomCardCount: room.bottomCards.length
+            });
+            console.log(`🎲 抢地主开始: 第一个玩家=${firstBidderId}`);
+        }
+        catch (error) {
+            console.error('开始抢地主失败:', error);
+        }
+    }
+    handleBidLandlord(roomId, userId, bid) {
+        try {
+            console.log(`🎲 玩家${userId}抢地主: ${bid ? '抢' : '不抢'}`);
+            const room = roomService_1.roomService.getRoom(roomId);
+            if (!room || !room.biddingState) {
+                console.error(`房间${roomId}不存在或未开始抢地主`);
+                return;
+            }
+            if (room.biddingState.currentBidderId !== userId) {
+                console.error(`不是玩家${userId}的回合`);
+                return;
+            }
+            room.biddingState.bids.push({ userId, bid });
+            if (bid) {
+                room.biddingState.landlordId = userId;
+            }
+            const currentPlayer = room.players.find((p) => p.id === userId);
+            const currentIndex = room.biddingState.biddingOrder.indexOf(userId);
+            const nextIndex = (currentIndex + 1) % 3;
+            const nextBidderId = room.biddingState.biddingOrder[nextIndex];
+            this.io.to(`room_${roomId}`).emit('bid_result', {
+                userId: userId,
+                userName: currentPlayer?.name || userId,
+                bid: bid,
+                nextBidderId: room.biddingState.bids.length < 3 ? nextBidderId : null
+            });
+            if (room.biddingState.bids.length === 3) {
+                this.determineLandlord(roomId);
+            }
+            else {
+                room.biddingState.currentBidderId = nextBidderId;
+            }
+        }
+        catch (error) {
+            console.error('处理抢地主失败:', error);
+        }
+    }
+    determineLandlord(roomId) {
+        try {
+            const room = roomService_1.roomService.getRoom(roomId);
+            if (!room || !room.biddingState) {
+                console.error(`房间${roomId}不存在或未开始抢地主`);
+                return;
+            }
+            const landlordId = room.biddingState.landlordId;
+            if (!landlordId) {
+                console.log(`❌ 没有人抢地主，重新发牌`);
+                this.io.to(`room_${roomId}`).emit('no_landlord', {
+                    message: '没有人抢地主，重新发牌'
+                });
+                setTimeout(() => {
+                    this.startGame(roomId);
+                }, 2000);
+                return;
+            }
+            const landlord = room.players.find((p) => p.id === landlordId);
+            if (!landlord) {
+                console.error(`找不到地主玩家${landlordId}`);
+                return;
+            }
+            if (!landlord.cards) {
+                landlord.cards = [];
+            }
+            landlord.cards = landlord.cards.concat(room.bottomCards);
+            this.sortCards(landlord.cards);
+            room.players.forEach((p) => {
+                p.role = p.id === landlordId ? 'landlord' : 'farmer';
+            });
+            room.gameState = {
+                landlordId: landlordId,
+                currentPlayerId: landlordId,
+                lastPlayedCards: null,
+                lastPlayerId: null
+            };
+            console.log(`👑 确定地主: ${landlord.name}`);
+            this.io.to(`room_${roomId}`).emit('landlord_determined', {
+                landlordId: landlordId,
+                landlordName: landlord.name,
+                bottomCards: room.bottomCards,
+                roles: room.players.reduce((acc, p) => {
+                    acc[p.id] = p.role;
+                    return acc;
+                }, {})
+            });
+            const landlordSocketId = this.findSocketIdByUserId(landlordId);
+            if (landlordSocketId) {
+                this.io.to(landlordSocketId).emit('landlord_cards_update', {
+                    cards: landlord.cards,
+                    cardCount: landlord.cards.length
+                });
+            }
+            setTimeout(() => {
+                this.io.to(`room_${roomId}`).emit('turn_to_play', {
+                    playerId: landlordId,
+                    playerName: landlord.name,
+                    isFirst: true
+                });
+            }, 2000);
+        }
+        catch (error) {
+            console.error('确定地主失败:', error);
         }
     }
     dealCards(room) {

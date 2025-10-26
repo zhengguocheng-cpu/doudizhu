@@ -1,0 +1,110 @@
+.lobby-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.lobby-header {
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
+  padding: 40rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    
+    .avatar {
+      font-size: 48rpx;
+      margin-right: 20rpx;
+    }
+    
+    .user-details {
+      .user-name {
+        display: block;
+        font-size: 32rpx;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 8rpx;
+      }
+      
+      .user-status {
+        font-size: 24rpx;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}
+
+.quick-actions {
+  padding: 40rpx;
+  display: flex;
+  gap: 20rpx;
+  
+  .btn {
+    flex: 1;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size: 32rpx;
+  }
+}
+
+.rooms-section {
+  flex: 1;
+  padding: 0 40rpx 40rpx;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20rpx;
+    
+    .section-title {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .room-count {
+      font-size: 24rpx;
+      color: #666;
+    }
+  }
+}
+
+.rooms-list {
+  height: calc(100vh - 400rpx);
+}
+
+.loading-container {
+  text-align: center;
+  padding: 80rpx 0;
+  
+  .loading-text {
+    font-size: 28rpx;
+    color: #666;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 120rpx 0;
+  
+  .empty-icon {
+    font-size: 120rpx;
+    display: block;
+    margin-bottom: 20rpx;
+  }
+  
+  .empty-text {
+    display: block;
+    font-size: 32rpx;
+    color: #666;
+    margin-bottom: 16rpx;
+  }
+  
+  .empty-tip {
+    font-size: 24rpx;
+    color: #999;
+  }
+}

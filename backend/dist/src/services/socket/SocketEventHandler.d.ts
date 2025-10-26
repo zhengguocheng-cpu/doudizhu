@@ -18,6 +18,7 @@ export declare class SocketEventHandler {
     handleJoinGame(socket: AuthenticatedSocket, data: any): Promise<void>;
     handleLeaveGame(socket: AuthenticatedSocket, data: any): Promise<void>;
     handlePlayerReady(socket: AuthenticatedSocket, data: any): Promise<void>;
+    handleBidLandlord(socket: AuthenticatedSocket, data: any): Promise<void>;
     handlePlayCards(socket: AuthenticatedSocket, data: any): Promise<void>;
     handlePassTurn(socket: AuthenticatedSocket, data: any): Promise<void>;
     handleSendMessage(socket: AuthenticatedSocket, data: any): Promise<void>;

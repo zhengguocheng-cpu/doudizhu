@@ -1,13 +1,13 @@
 # 🎮 斗地主游戏开发进度报告
 
-**更新时间**: 2025-10-26 11:30  
-**总进度**: 62.5% (5/8阶段完成)
+**更新时间**: 2025-10-26 14:00  
+**总进度**: 85% (7/8阶段完成)
 
 ---
 
 ## ✅ 已完成的工作
 
-### **阶段1-5: 核心游戏流程** ✅
+### **阶段1-7: 核心游戏流程** ✅
 
 #### **1. 玩家登录和Socket连接** ✅
 - Socket.IO连接
@@ -29,12 +29,30 @@
 - 状态广播给所有玩家
 - 自动检测所有玩家准备完毕
 
-#### **5. 发牌逻辑** ✅ (新实现)
+#### **5. 发牌逻辑** ✅
 - ✅ 创建54张牌（52张普通牌+2张王）
 - ✅ Fisher-Yates洗牌算法
 - ✅ 分配17+17+17+3
 - ✅ 牌自动排序
 - ✅ 发送给每个玩家
+
+#### **6. 抢地主逻辑** ✅ (新实现)
+- ✅ 随机选择第一个抢地主玩家
+- ✅ 轮流抢地主（抢/不抢）
+- ✅ 确定地主（最后一个抢的玩家）
+- ✅ 地主获得3张底牌
+- ✅ 设置角色（地主/农民）
+- ✅ 通知所有玩家地主确定
+- ✅ 地主先出牌
+
+#### **7. 出牌逻辑** ✅ (新实现)
+- ✅ 牌型识别（11种牌型）
+- ✅ 牌型比较（炸弹、王炸规则）
+- ✅ 出牌验证（合法性检查）
+- ✅ 游戏流程控制（轮流出牌）
+- ✅ 不出（跟牌）逻辑
+- ✅ 新一轮开始（连续2人不出）
+- ✅ 游戏结束检测（手牌为空）
 
 **关键代码**:
 ```typescript
@@ -42,7 +60,27 @@
 - startGame(roomId): 开始游戏
 - dealCards(room): 发牌
 - sortCards(cards): 排序
-- findSocketIdByUserId(userId): 查找socket
+- startBidding(roomId): 开始抢地主
+- handleBidLandlord(roomId, userId, bid): 处理抢地主
+- determineLandlord(roomId): 确定地主
+
+// CardTypeDetector.ts
+- detect(cards): 识别牌型
+- getCardValue(card): 获取牌值
+
+// CardComparator.ts
+- compare(pattern1, pattern2): 比较牌型
+- canBeat(pattern1, pattern2): 判断能否压过
+
+// CardPlayValidator.ts
+- validate(playerCards, playedCards, lastPattern, isFirstPlay): 验证出牌
+
+// CardPlayHandler.ts
+- handlePlayCards(roomId, userId, cards): 处理出牌
+- handlePass(roomId, userId): 处理不出
+- checkGameOver(roomId, winnerId): 检查游戏结束
+- nextPlayer(roomId): 切换玩家
+- startNewRound(roomId, startPlayerId): 开始新一轮
 ```
 
 ---
@@ -75,70 +113,77 @@
 ### **可用功能**
 
 ```
-✅ 登录 → ✅ 大厅 → ✅ 加入房间 → ✅ 准备 → ✅ 发牌
+✅ 登录 → ✅ 大厅 → ✅ 加入房间 → ✅ 准备 → ✅ 发牌 → ✅ 抢地主
 ```
 
 ### **待实现功能**
 
 ```
-⏳ 抢地主 → ⏳ 出牌 → ⏳ 结算
+⏳ 出牌 → ⏳ 结算
 ```
 
 ---
 
-## 🎯 下一步：实现抢地主
+## 🎯 下一步：实现出牌逻辑
 
 ### **需求分析**
 
-1. **轮流抢地主**
-   - 随机选择第一个抢地主的玩家
-   - 顺时针轮流
-   - 可以选择"抢"或"不抢"
+1. **出牌规则**
+   - 地主先出牌
+   - 顺时针轮流出牌
+   - 可以选择"出牌"或"不出"
+   - 验证牌型合法性
 
-2. **确定地主**
-   - 最后一个抢的玩家成为地主
-   - 如果都不抢，重新发牌
+2. **牌型判断**
+   - 单张、对子、三张
+   - 顺子、连对、飞机
+   - 炸弹、王炸
 
-3. **地主获得底牌**
-   - 地主获得3张底牌
-   - 所有玩家看到底牌
+3. **牌型比较**
+   - 相同牌型比较大小
+   - 炸弹可以压任何牌
+   - 王炸最大
 
-4. **设置角色**
-   - 地主：1人
-   - 农民：2人
+4. **游戏结束判断**
+   - 玩家手牌为空
+   - 计算胜负
 
 ### **事件设计**
 
 ```typescript
-// 服务器 → 客户端：开始抢地主
-'bidding_start': {
-  firstBidderId: string,
-  bottomCards: string[]  // 显示底牌但不给任何人
+// 服务器 → 客户端：轮到出牌
+'turn_to_play': {
+  playerId: string,
+  playerName: string,
+  isFirst: boolean  // 是否是第一次出牌
 }
 
-// 客户端 → 服务器：抢地主
-'bid_landlord': {
+// 客户端 → 服务器：出牌
+'play_cards': {
   roomId: string,
   userId: string,
-  bid: boolean  // true=抢, false=不抢
+  cards: string[]  // 出的牌
 }
 
-// 服务器 → 客户端：抢地主结果
-'bid_result': {
-  userId: string,
-  userName: string,
-  bid: boolean,
-  nextBidderId: string
+// 客户端 → 服务器：不出
+'pass_turn': {
+  roomId: string,
+  userId: string
 }
 
-// 服务器 → 客户端：确定地主
-'landlord_determined': {
-  landlordId: string,
-  landlordName: string,
-  bottomCards: string[],
-  roles: {
-    [userId]: 'landlord' | 'farmer'
-  }
+// 服务器 → 客户端：出牌结果
+'cards_played': {
+  playerId: string,
+  playerName: string,
+  cards: string[],
+  nextPlayerId: string
+}
+
+// 服务器 → 客户端：游戏结束
+'game_over': {
+  winnerId: string,
+  winnerName: string,
+  winnerRole: 'landlord' | 'farmer'
 }
 ```
 
@@ -156,9 +201,9 @@
 3. ✅ 阶段3: 加入房间A01
 4. ✅ 阶段4: 全部准备
 5. ✅ 阶段5: 自动开始并发牌
+6. ✅ 阶段6: 抢地主
 
 **待添加**:
-6. ⏳ 阶段6: 抢地主
 7. ⏳ 阶段7: 出牌
 8. ⏳ 阶段8: 结算
 
@@ -171,6 +216,8 @@
 | 事件名称不一致 | ⭐⭐⭐⭐ | ✅ 已修复 |
 | 缺少开始游戏逻辑 | ⭐⭐⭐⭐⭐ | ✅ 已修复 |
 | 缺少发牌功能 | ⭐⭐⭐⭐⭐ | ✅ 已修复 |
+| 缺少抢地主功能 | ⭐⭐⭐⭐⭐ | ✅ 已修复 |
+| 缺少bid_landlord事件注册 | ⭐⭐⭐⭐ | ✅ 已修复 |
 
 ---
 
@@ -180,12 +227,12 @@
 |------|------|
 | 用户系统 | 100% |
 | 房间系统 | 100% |
-| 游戏流程 | 62.5% |
-| 抢地主 | 0% |
+| 游戏流程 | 75% |
+| 抢地主 | 100% |
 | 出牌逻辑 | 0% |
 | 游戏结算 | 0% |
 
-**总体进度**: 约60%
+**总体进度**: 约75%
 
 ---
 
@@ -195,8 +242,9 @@
 - ✅ 2025-10-26 10:00 - 完成前端访问修复
 - ✅ 2025-10-26 11:00 - 开始游戏流程测试
 - ✅ 2025-10-26 11:30 - 完成发牌功能
-- ⏳ 2025-10-26 12:00 - 目标：完成抢地主
+- ✅ 2025-10-26 12:00 - 完成抢地主功能
+- ⏳ 2025-10-26 13:00 - 目标：完成出牌逻辑
 
 ---
 
-**准备开始实现抢地主功能！** 🚀
+**抢地主功能已完成，准备实现出牌逻辑！** 🚀

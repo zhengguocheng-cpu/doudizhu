@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>游戏流程测试工具</title>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -112,6 +111,7 @@
             <button onclick="testPhase3()">阶段3: 加入房间A01</button>
             <button onclick="testPhase4()">阶段4: 全部准备</button>
             <button onclick="testPhase5()">阶段5: 开始游戏</button>
+            <button onclick="testPhase6()">阶段6: 抢地主</button>
             <button onclick="resetAll()">重置所有</button>
         </div>
         
@@ -123,6 +123,8 @@
                 <button onclick="connectPlayer(1)">连接</button>
                 <button onclick="joinRoom(1, 'A01')">加入A01</button>
                 <button onclick="ready(1)">准备</button>
+                <button onclick="bidLandlord(1, true)" style="background: #4CAF50;">抢地主</button>
+                <button onclick="bidLandlord(1, false)" style="background: #f44336;">不抢</button>
                 <div class="log" id="log1"></div>
             </div>
             
@@ -133,6 +135,8 @@
                 <button onclick="connectPlayer(2)">连接</button>
                 <button onclick="joinRoom(2, 'A01')">加入A01</button>
                 <button onclick="ready(2)">准备</button>
+                <button onclick="bidLandlord(2, true)" style="background: #4CAF50;">抢地主</button>
+                <button onclick="bidLandlord(2, false)" style="background: #f44336;">不抢</button>
                 <div class="log" id="log2"></div>
             </div>
             
@@ -143,12 +147,56 @@
                 <button onclick="connectPlayer(3)">连接</button>
                 <button onclick="joinRoom(3, 'A01')">加入A01</button>
                 <button onclick="ready(3)">准备</button>
+                <button onclick="bidLandlord(3, true)" style="background: #4CAF50;">抢地主</button>
+                <button onclick="bidLandlord(3, false)" style="background: #f44336;">不抢</button>
                 <div class="log" id="log3"></div>
             </div>
         </div>
     </div>
 
+    <!-- Socket.IO客户端库 - 使用本地文件 -->
+    <script src="/socket.io.min.js" 
+            onerror="handleSocketIOLoadError()"></script>
+    
     <script>
+        // Socket.IO加载错误处理
+        function handleSocketIOLoadError() {
+            console.error('❌ Socket.IO CDN加载失败');
+            document.body.innerHTML = `
+                <div style="text-align: center; padding: 50px; font-family: Arial;">
+                    <h1 style="color: #f44336;">❌ Socket.IO库加载失败</h1>
+                    <p style="font-size: 18px; color: #666;">无法从CDN加载Socket.IO客户端库</p>
+                    <div style="text-align: left; max-width: 600px; margin: 30px auto; background: #f5f5f5; padding: 20px; border-radius: 8px;">
+                        <h3>可能原因：</h3>
+                        <ul>
+                            <li>网络连接问题</li>
+                            <li>CDN服务不可用</li>
+                            <li>防火墙或代理阻止</li>
+                        </ul>
+                        <h3>解决方案：</h3>
+                        <ol>
+                            <li>检查网络连接</li>
+                            <li>刷新页面重试 (Ctrl + F5)</li>
+                            <li>尝试使用VPN</li>
+                            <li>联系管理员检查网络设置</li>
+                        </ol>
+                    </div>
+                    <button onclick="location.reload()" 
+                            style="padding: 15px 30px; font-size: 16px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        🔄 重新加载页面
+                    </button>
+                </div>
+            `;
+        }
+
+        // 检查Socket.IO是否加载成功
+        if (typeof io === 'undefined') {
+            console.error('❌ Socket.IO库未定义');
+            handleSocketIOLoadError();
+        } else {
+            console.log('✅ Socket.IO库加载成功，版本:', io.version);
+        }
+
         const players = {
             1: { socket: null, name: 'player1', avatar: '👑', room: null },
             2: { socket: null, name: 'player2', avatar: '🎯', room: null },
@@ -186,18 +234,39 @@
             }
 
             log(playerId, `开始连接... 用户名: ${player.name}`, 'info');
+            updateStatus(playerId, '连接中...', 'waiting');
             
-            player.socket = io('http://localhost:3000', {
-                auth: {
-                    userId: player.name,
-                    userName: player.name
-                }
-            });
+            try {
+                player.socket = io('http://localhost:3000', {
+                    auth: {
+                        userId: player.name,
+                        userName: player.name
+                    },
+                    reconnection: true,
+                    reconnectionDelay: 1000,
+                    reconnectionAttempts: 5,
+                    timeout: 10000
+                });
 
-            player.socket.on('connect', () => {
-                log(playerId, `✅ Socket连接成功! ID: ${player.socket.id}`, 'success');
-                updateStatus(playerId, '已连接', 'connected');
-            });
+                // 连接超时检测
+                const connectTimeout = setTimeout(() => {
+                    if (!player.socket || !player.socket.connected) {
+                        log(playerId, '❌ 连接超时，请检查服务器是否运行', 'error');
+                        updateStatus(playerId, '连接超时', 'disconnected');
+                    }
+                }, 10000);
+
+                player.socket.on('connect', () => {
+                    clearTimeout(connectTimeout);
+                    log(playerId, `✅ Socket连接成功! ID: ${player.socket.id}`, 'success');
+                    updateStatus(playerId, '已连接', 'connected');
+                });
+
+                player.socket.on('connect_error', (error) => {
+                    clearTimeout(connectTimeout);
+                    log(playerId, `❌ 连接错误: ${error.message}`, 'error');
+                    updateStatus(playerId, '连接失败', 'disconnected');
+                });
 
             player.socket.on('disconnect', (reason) => {
                 log(playerId, `❌ 断开连接: ${reason}`, 'error');
@@ -205,7 +274,9 @@
             });
 
             player.socket.on('error', (error) => {
-                log(playerId, `❌ 错误: ${error}`, 'error');
+                const errorMsg = error?.message || JSON.stringify(error) || '未知错误';
+                log(playerId, `❌ 错误: ${errorMsg}`, 'error');
+                console.error('Socket错误详情:', error);
             });
 
             // 房间相关事件
@@ -234,7 +305,51 @@
             player.socket.on('deal_cards', (data) => {
                 log(playerId, `🎴 收到牌: ${data.cards.length}张`, 'success');
                 log(playerId, `底牌: ${data.bottomCards ? data.bottomCards.length : 0}张`, 'info');
+                // 保存玩家的牌
+                player.cards = data.cards;
             });
+
+            // 抢地主相关事件
+            player.socket.on('bidding_start', (data) => {
+                log(playerId, `🎲 开始抢地主! 第一个玩家: ${data.firstBidderName}`, 'success');
+                log(playerId, `底牌: ${data.bottomCards.join(', ')}`, 'info');
+                player.currentBidderId = data.firstBidderId;
+            });
+
+            player.socket.on('bid_result', (data) => {
+                const bidText = data.bid ? '抢' : '不抢';
+                log(playerId, `🎲 ${data.userName} 选择: ${bidText}`, 'info');
+                if (data.nextBidderId) {
+                    log(playerId, `下一个: ${data.nextBidderId}`, 'info');
+                    player.currentBidderId = data.nextBidderId;
+                }
+            });
+
+            player.socket.on('landlord_determined', (data) => {
+                log(playerId, `👑 地主确定: ${data.landlordName}`, 'success');
+                log(playerId, `底牌: ${data.bottomCards.join(', ')}`, 'info');
+                const role = data.roles[player.name];
+                log(playerId, `你的角色: ${role === 'landlord' ? '地主' : '农民'}`, role === 'landlord' ? 'success' : 'info');
+                player.role = role;
+            });
+
+            player.socket.on('landlord_cards_update', (data) => {
+                log(playerId, `👑 地主获得底牌，现在有 ${data.cardCount} 张牌`, 'success');
+                player.cards = data.cards;
+            });
+
+            player.socket.on('turn_to_play', (data) => {
+                log(playerId, `🎯 轮到 ${data.playerName} 出牌`, 'info');
+            });
+
+            player.socket.on('no_landlord', (data) => {
+                log(playerId, `❌ ${data.message}`, 'error');
+            });
+            
+            } catch (error) {
+                log(playerId, `❌ 初始化连接失败: ${error.message}`, 'error');
+                updateStatus(playerId, '初始化失败', 'disconnected');
+            }
         }
 
         function joinRoom(playerId, roomId) {
@@ -271,6 +386,28 @@
             player.socket.emit('player_ready', {
                 roomId: player.room,
                 userId: player.name
+            });
+        }
+
+        function bidLandlord(playerId, bid) {
+            const player = players[playerId];
+            
+            if (!player.socket || !player.socket.connected) {
+                log(playerId, '❌ 请先连接', 'error');
+                return;
+            }
+
+            if (!player.room) {
+                log(playerId, '❌ 请先加入房间', 'error');
+                return;
+            }
+
+            const bidText = bid ? '抢地主' : '不抢';
+            log(playerId, `发送抢地主决定: ${bidText}`, 'info');
+            player.socket.emit('bid_landlord', {
+                roomId: player.room,
+                userId: player.name,
+                bid: bid
             });
         }
 
@@ -311,6 +448,26 @@
             // 游戏应该在3人准备后自动开始
         }
 
+        async function testPhase6() {
+            console.log('🎯 开始阶段6: 抢地主');
+            // 等待抢地主开始
+            await sleep(3000);
+            
+            // 模拟抢地主：第一个玩家抢，第二个不抢，第三个不抢
+            // 注意：需要根据实际的第一个抢地主玩家来决定
+            // 这里简单模拟：player1抢，其他不抢
+            console.log('🎲 Player1 抢地主');
+            bidLandlord(1, true);
+            await sleep(1000);
+            
+            console.log('🎲 Player2 不抢');
+            bidLandlord(2, false);
+            await sleep(1000);
+            
+            console.log('🎲 Player3 不抢');
+            bidLandlord(3, false);
+        }
+
         function resetAll() {
             for (let i = 1; i <= 3; i++) {
                 if (players[i].socket) {
@@ -334,6 +491,7 @@
             console.log('🎮 游戏流程测试工具已加载');
             console.log('📝 使用顶部按钮进行分阶段测试');
             console.log('📝 或使用单个玩家的按钮进行手动测试');
+            console.log('💡 提示：点击"阶段1: 三人登录"开始测试');
         };
     </script>
 </body>

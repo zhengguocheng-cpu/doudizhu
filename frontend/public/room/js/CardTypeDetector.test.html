@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牌型识别测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #ddd;
+        }
+        .test-case.pass {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background: #fef1f0;
+        }
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-input {
+            color: #666;
+            font-family: monospace;
+        }
+        .test-result {
+            margin-top: 5px;
+            font-family: monospace;
+        }
+        .summary {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .summary.pass {
+            color: #4caf50;
+        }
+        .summary.fail {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 斗地主牌型识别测试</h1>
+    <div id="testResults"></div>
+    <div id="summary"></div>
+
+    <script src="CardTypeDetector.js"></script>
+    <script>
+        // 测试用例
+        const testCases = [
+            // 1. 单牌
+            { cards: ['♠3'], expected: 'SINGLE', desc: '单牌 - 3' },
+            { cards: ['♥A'], expected: 'SINGLE', desc: '单牌 - A' },
+            { cards: ['♦2'], expected: 'SINGLE', desc: '单牌 - 2' },
+            { cards: ['大王'], expected: 'SINGLE', desc: '单牌 - 大王' },
+
+            // 2. 对子
+            { cards: ['♠3', '♥3'], expected: 'PAIR', desc: '对子 - 33' },
+            { cards: ['♠A', '♥A'], expected: 'PAIR', desc: '对子 - AA' },
+            { cards: ['♠2', '♥2'], expected: 'PAIR', desc: '对子 - 22' },
+
+            // 3. 三张
+            { cards: ['♠3', '♥3', '♦3'], expected: 'TRIPLE', desc: '三张 - 333' },
+            { cards: ['♠K', '♥K', '♦K'], expected: 'TRIPLE', desc: '三张 - KKK' },
+
+            // 4. 三带一
+            { cards: ['♠3', '♥3', '♦3', '♣4'], expected: 'TRIPLE_PLUS_ONE', desc: '三带一 - 333+4' },
+            { cards: ['♠K', '♥K', '♦K', '♣A'], expected: 'TRIPLE_PLUS_ONE', desc: '三带一 - KKK+A' },
+
+            // 5. 三带二
+            { cards: ['♠3', '♥3', '♦3', '♣4', '♠4'], expected: 'TRIPLE_PLUS_TWO', desc: '三带二 - 333+44' },
+            { cards: ['♠K', '♥K', '♦K', '♣A', '♠A'], expected: 'TRIPLE_PLUS_TWO', desc: '三带二 - KKK+AA' },
+
+            // 6. 顺子
+            { cards: ['♠3', '♥4', '♦5', '♣6', '♠7'], expected: 'STRAIGHT', desc: '顺子 - 34567' },
+            { cards: ['♠5', '♥6', '♦7', '♣8', '♠9', '♥10'], expected: 'STRAIGHT', desc: '顺子 - 5678910' },
+            { cards: ['♠10', '♥J', '♦Q', '♣K', '♠A'], expected: 'STRAIGHT', desc: '顺子 - 10JQKA' },
+            { cards: ['♠A', '♥2', '♦3', '♣4', '♠5'], expected: null, desc: '无效 - 不能包含2' },
+
+            // 7. 连对
+            { cards: ['♠3', '♥3', '♦4', '♣4', '♠5', '♥5'], expected: 'DOUBLE_STRAIGHT', desc: '连对 - 334455' },
+            { cards: ['♠7', '♥7', '♦8', '♣8', '♠9', '♥9', '♦10', '♣10'], expected: 'DOUBLE_STRAIGHT', desc: '连对 - 778899(10)(10)' },
+
+            // 8. 飞机
+            { cards: ['♠3', '♥3', '♦3', '♣4', '♠4', '♥4'], expected: 'PLANE', desc: '飞机 - 333444' },
+            { cards: ['♠5', '♥5', '♦5', '♣6', '♠6', '♥6', '♦7', '♣7', '♠7'], expected: 'PLANE', desc: '飞机 - 555666777' },
+
+            // 9. 飞机带翅膀
+            { cards: ['♠3', '♥3', '♦3', '♣4', '♠4', '♥4', '♦5', '♣6'], expected: 'PLANE_PLUS_WINGS', desc: '飞机带单 - 333444+56' },
+            { cards: ['♠3', '♥3', '♦3', '♣4', '♠4', '♥4', '♦5', '♣5', '♠6', '♥6'], expected: 'PLANE_PLUS_WINGS', desc: '飞机带对 - 333444+5566' },
+
+            // 10. 炸弹
+            { cards: ['♠3', '♥3', '♦3', '♣3'], expected: 'BOMB', desc: '炸弹 - 3333' },
+            { cards: ['♠A', '♥A', '♦A', '♣A'], expected: 'BOMB', desc: '炸弹 - AAAA' },
+
+            // 11. 王炸
+            { cards: ['大王', '小王'], expected: 'ROCKET', desc: '王炸' },
+            { cards: ['🃏大王', '🃏小王'], expected: 'ROCKET', desc: '王炸（带emoji）' },
+
+            // 12. 四带二
+            { cards: ['♠3', '♥3', '♦3', '♣3', '♠4', '♥5'], expected: 'FOUR_PLUS_TWO', desc: '四带二单 - 3333+45' },
+            { cards: ['♠3', '♥3', '♦3', '♣3', '♠4', '♥4'], expected: 'FOUR_PLUS_TWO', desc: '四带二对 - 3333+44' },
+
+            // 13. 无效牌型
+            { cards: ['♠3', '♥4', '♦5'], expected: null, desc: '无效 - 345（不够5张）' },
+            { cards: ['♠3', '♥3', '♦4', '♣4', '♠5'], expected: null, desc: '无效 - 混合牌型' },
+            { cards: ['♠3', '♥4', '♦6', '♣7', '♠8'], expected: null, desc: '无效 - 不连续' },
+        ];
+
+        // 运行测试
+        function runTests() {
+            const resultsDiv = document.getElementById('testResults');
+            const summaryDiv = document.getElementById('summary');
+            
+            let passCount = 0;
+            let failCount = 0;
+
+            testCases.forEach((testCase, index) => {
+                const result = CardTypeDetector.detect(testCase.cards);
+                const actualType = result ? result.type : null;
+                const pass = actualType === testCase.expected;
+
+                if (pass) passCount++;
+                else failCount++;
+
+                const testDiv = document.createElement('div');
+                testDiv.className = `test-case ${pass ? 'pass' : 'fail'}`;
+                testDiv.innerHTML = `
+                    <div class="test-title">
+                        ${pass ? '✅' : '❌'} 测试 ${index + 1}: ${testCase.desc}
+                    </div>
+                    <div class="test-input">
+                        输入: [${testCase.cards.join(', ')}]
+                    </div>
+                    <div class="test-result">
+                        期望: ${testCase.expected || 'null'} | 
+                        实际: ${actualType || 'null'}
+                        ${result ? ` | 值: ${result.value} | 描述: ${result.description}` : ''}
+                    </div>
+                `;
+
+                resultsDiv.appendChild(testDiv);
+            });
+
+            // 显示总结
+            const total = testCases.length;
+            const passRate = ((passCount / total) * 100).toFixed(1);
+            summaryDiv.className = `summary ${passCount === total ? 'pass' : 'fail'}`;
+            summaryDiv.innerHTML = `
+                测试完成: ${passCount}/${total} 通过 (${passRate}%)
+                ${passCount === total ? '🎉 所有测试通过！' : '⚠️ 部分测试失败'}
+            `;
+        }
+
+        // 页面加载后运行测试
+        window.onload = runTests;
+    </script>
+</body>
+</html>

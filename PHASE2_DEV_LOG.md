@@ -1,0 +1,122 @@
+# 阶段二开发日志
+
+**开始时间**: 2025-10-27 22:13  
+**当前状态**: 🚧 进行中
+
+---
+
+## 📅 2025-10-27
+
+### 22:13 - 开始任务 1.1：地主牌显示优化
+
+#### 当前任务
+优化地主牌显示功能，包括：
+1. 优化地主标识显示（更明显的视觉效果）
+2. 添加底牌飞向地主的动画
+3. 完善地主玩家的视觉标识
+
+#### 现有实现检查
+✅ 后端已实现 `landlord_determined` 事件
+✅ 前端已有基础底牌显示动画
+✅ 前端已有基础地主标识更新
+
+#### 计划改进
+- [ ] 添加地主图标和边框高亮
+- [ ] 优化底牌动画（更流畅）
+- [ ] 添加底牌飞向地主的动画效果
+- [ ] 测试多玩家视角
+
+---
+
+### 实施步骤
+
+#### Step 1: 优化地主标识CSS样式
+**时间**: 22:13 - 22:20
+**状态**: ✅ 完成
+
+**修改文件**: `frontend/public/room/css/room.css`
+
+**实际修改**:
+```css
+/* 地主标识样式 */
+.player-position.landlord {
+    border: 3px solid #FFD700; /* 金色边框 */
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.15));
+}
+
+.player-position.landlord:hover {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.landlord-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    font-size: 28px;
+    z-index: 10;
+    animation: landlord-pulse 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes landlord-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+```
+
+**效果**: 
+- ✅ 金色边框和发光效果
+- ✅ 渐变背景
+- ✅ 脉动动画
+- ✅ 悬停增强效果
+
+---
+
+#### Step 2: 实现地主标识JavaScript逻辑
+**时间**: 22:20 - 22:25
+**状态**: ✅ 完成
+
+**修改文件**: `frontend/public/room/js/room-simple.js`
+
+**新增方法**:
+```javascript
+showLandlordBadge(landlordId, landlordName) {
+    // 1. 移除所有现有的地主标识
+    // 2. 为地主玩家添加.landlord类
+    // 3. 添加👑徽章
+    // 4. 支持当前玩家和其他玩家
+}
+```
+
+**修改方法**:
+- `onLandlordDetermined()`: 添加地主ID保存和标识显示调用
+
+**效果**:
+- ✅ 自动识别地主玩家
+- ✅ 添加视觉标识
+- ✅ 支持多玩家视角
+- ✅ 动态更新
+
+---
+
+### 22:25 - 准备提交代码
+
+**完成功能**:
+1. ✅ 地主标识CSS样式（金色边框、发光、脉动）
+2. ✅ 地主徽章显示（👑图标）
+3. ✅ 自动识别和标记地主玩家
+4. ✅ 支持当前玩家和其他玩家视角
+
+**测试计划**:
+- [ ] 测试当前玩家成为地主
+- [ ] 测试其他玩家成为地主
+- [ ] 测试地主标识视觉效果
+- [ ] 测试多玩家视角
+
+**下一步**:
+- 提交代码
+- 进行功能测试
+- 继续实现底牌飞向地主的动画
+
+---

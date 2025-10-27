@@ -677,6 +677,9 @@ class DoudizhuRoomClient {
     onLandlordDetermined(data) {
         console.log('🎯 [地主确定] 收到数据:', data);
         
+        // 保存地主ID
+        this.landlordId = data.landlordId;
+        
         // 显示地主确定消息
         this.addGameMessage(`👑 ${data.landlordName} 成为地主！`, 'important');
         
@@ -687,6 +690,9 @@ class DoudizhuRoomClient {
             // 显示底牌动画
             this.showBottomCardsAnimation(data.bottomCards);
         }
+        
+        // 添加地主标识
+        this.showLandlordBadge(data.landlordId, data.landlordName);
         
         // 如果我是地主，更新手牌
         if (data.landlordId === this.currentPlayerId) {
@@ -1080,6 +1086,72 @@ class DoudizhuRoomClient {
         await this.sleep(1500);
         centerArea.style.display = 'none';
         console.log('🎴 [底牌动画] 底牌动画完成');
+    }
+
+    /**
+     * 显示地主标识
+     */
+    showLandlordBadge(landlordId, landlordName) {
+        console.log('👑 [地主标识] 显示地主标识:', landlordId, landlordName);
+        
+        // 移除所有现有的地主标识
+        document.querySelectorAll('.landlord-badge').forEach(badge => badge.remove());
+        document.querySelectorAll('.player-position').forEach(pos => pos.classList.remove('landlord'));
+        
+        // 为地主玩家添加标识
+        if (landlordId === this.currentPlayerId) {
+            // 当前玩家是地主
+            const currentPlayerPos = document.getElementById('currentPlayerPosition');
+            if (currentPlayerPos) {
+                currentPlayerPos.classList.add('landlord');
+                
+                // 添加地主徽章
+                const badge = document.createElement('div');
+                badge.className = 'landlord-badge';
+                badge.textContent = '👑';
+                badge.title = '地主';
+                currentPlayerPos.appendChild(badge);
+            }
+            
+            // 更新名字显示
+            const nameDisplay = document.getElementById('currentPlayerNameDisplay');
+            if (nameDisplay) {
+                nameDisplay.textContent = '我 👑';
+            }
+        } else {
+            // 其他玩家是地主
+            // 查找地主玩家的位置
+            const players = this.roomPlayers || [];
+            const landlordPlayer = players.find(p => p.id === landlordId || p.name === landlordName);
+            
+            if (landlordPlayer) {
+                // 根据玩家位置添加标识
+                const playerElements = [
+                    { id: 'topLeftPlayer', name: 'topLeftPlayerName' },
+                    { id: 'topRightPlayer', name: 'topRightPlayerName' }
+                ];
+                
+                for (const elem of playerElements) {
+                    const nameElem = document.getElementById(elem.name);
+                    if (nameElem && nameElem.textContent === landlordName) {
+                        const playerPos = document.getElementById(elem.id);
+                        if (playerPos) {
+                            playerPos.classList.add('landlord');
+                            
+                            // 添加地主徽章
+                            const badge = document.createElement('div');
+                            badge.className = 'landlord-badge';
+                            badge.textContent = '👑';
+                            badge.title = '地主';
+                            playerPos.appendChild(badge);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        console.log('✅ [地主标识] 地主标识显示完成');
     }
 
     /**

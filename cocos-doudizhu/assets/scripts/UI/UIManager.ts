@@ -315,3 +315,4 @@ export class UIManager extends Component {
         this.hideAllPanels();
     }
 }
+

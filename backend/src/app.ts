@@ -192,7 +192,8 @@ export class Application {
     });
 
     // 添加抢地主事件
-    socket.on('bid_landlord', (data: any) => {
+    socket.on('bid', (data: any) => {
+      console.log('🎲 [Socket] 收到bid事件:', data);
       this.eventHandler.handleBidLandlord(socket, data);
     });
 

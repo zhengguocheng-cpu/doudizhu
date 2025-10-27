@@ -405,3 +405,4 @@ export class CardManager extends Component {
         return value1 - value2;
     }
 }
+

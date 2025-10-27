@@ -251,25 +251,22 @@ export class GameFlowHandler {
 
       console.log(`👑 确定地主: ${landlord.name}`);
 
-      // 通知所有玩家地主确定
+      // 通知所有玩家地主确定（包含地主的新手牌）
+      console.log(`📢 向房间 room_${roomId} 广播地主确定事件`);
+      
       this.io.to(`room_${roomId}`).emit('landlord_determined', {
         landlordId: landlordId,
         landlordName: landlord.name,
         bottomCards: room.bottomCards,
+        landlordCards: landlord.cards, // 地主的完整手牌（包含底牌）
+        landlordCardCount: landlord.cards.length,
         roles: room.players.reduce((acc: any, p: any) => {
           acc[p.id] = p.role;
           return acc;
         }, {})
       });
-
-      // 单独通知地主他的新牌
-      const landlordSocketId = this.findSocketIdByUserId(landlordId);
-      if (landlordSocketId) {
-        this.io.to(landlordSocketId).emit('landlord_cards_update', {
-          cards: landlord.cards,
-          cardCount: landlord.cards.length
-        });
-      }
+      
+      console.log(`✅ 地主确定事件已广播: ${landlord.name} 成为地主，手牌${landlord.cards.length}张`);
 
       // 通知地主先出牌
       setTimeout(() => {

@@ -548,10 +548,13 @@ class DoudizhuRoomClient {
         console.log('抢地主开始:', data);
         this.addGameMessage(`🎲 开始抢地主！第一个玩家：${data.firstBidderName}`, 'game');
         
-        // 如果是当前玩家的回合，显示抢地主按钮
-        if (data.firstBidderName === this.currentPlayer) {
-            this.showBiddingActions();
-        }
+        // 延迟3秒后显示抢地主按钮（等待发牌动画完成）
+        setTimeout(() => {
+            // 如果是当前玩家的回合，显示抢地主按钮
+            if (data.firstBidderName === this.currentPlayer) {
+                this.showBiddingActions();
+            }
+        }, 3000); // 3秒延迟
     }
 
     /**
@@ -647,17 +650,60 @@ class DoudizhuRoomClient {
     onBidResult(data) {
         const bidText = data.bid ? '抢' : '不抢';
         this.addGameMessage(`${data.userName} 选择：${bidText}`, 'game');
+        
+        // 隐藏当前玩家的抢地主按钮
+        this.hideBiddingActions();
+        
+        // 如果有下一个玩家，延迟后显示抢地主按钮
+        if (data.nextBidderId) {
+            setTimeout(() => {
+                if (data.nextBidderId === this.currentPlayerId) {
+                    this.addGameMessage(`轮到你抢地主了！`, 'info');
+                    this.showBiddingActions();
+                } else {
+                    // 显示等待提示
+                    const nextPlayer = this.roomPlayers.find(p => p.id === data.nextBidderId);
+                    if (nextPlayer) {
+                        this.addGameMessage(`等待 ${nextPlayer.name} 抢地主...`, 'info');
+                    }
+                }
+            }, 1000); // 1秒延迟
+        }
     }
 
     /**
      * 地主确定
      */
     onLandlordDetermined(data) {
-        console.log('地主确定:', data);
+        console.log('🎯 [地主确定] 收到数据:', data);
+        
+        // 显示地主确定消息
         this.addGameMessage(`👑 ${data.landlordName} 成为地主！`, 'important');
-        if (data.bottomCards) {
+        
+        // 显示底牌
+        if (data.bottomCards && data.bottomCards.length > 0) {
             this.addGameMessage(`底牌：${data.bottomCards.join(' ')}`, 'game');
+            
+            // 显示底牌动画
+            this.showBottomCardsAnimation(data.bottomCards);
         }
+        
+        // 如果我是地主，更新手牌
+        if (data.landlordId === this.currentPlayerId) {
+            console.log('✅ 我是地主，更新手牌');
+            if (data.landlordCards && data.landlordCards.length > 0) {
+                this.playerHand = data.landlordCards;
+                this.addGameMessage(`🎴 您获得底牌，现在有 ${data.landlordCards.length} 张牌`, 'success');
+                
+                // 延迟渲染，等待底牌动画完成
+                setTimeout(() => {
+                    this.renderPlayerHand();
+                }, 2000);
+            }
+        }
+        
+        // 更新玩家角色标记
+        this.updatePlayerRoles(data.roles);
     }
 
     /**
@@ -999,6 +1045,70 @@ class DoudizhuRoomClient {
     }
 
     /**
+     * 显示底牌动画
+     */
+    async showBottomCardsAnimation(bottomCards) {
+        console.log('🎴 [底牌动画] 开始显示底牌:', bottomCards);
+        
+        const centerArea = document.getElementById('centerDealingArea');
+        const cardsContainer = document.getElementById('dealingCardsContainer');
+        const message = document.getElementById('dealingMessage');
+        
+        if (!centerArea || !cardsContainer) {
+            console.error('❌ [底牌动画] 找不到动画元素');
+            return;
+        }
+
+        // 显示区域
+        centerArea.style.display = 'block';
+        message.textContent = '底牌';
+        
+        // 清空容器
+        cardsContainer.innerHTML = '';
+        
+        // 显示3张底牌
+        for (let i = 0; i < bottomCards.length; i++) {
+            await this.sleep(200);
+            const card = document.createElement('div');
+            card.className = 'dealing-card';
+            card.textContent = bottomCards[i];
+            cardsContainer.appendChild(card);
+            console.log(`🎴 [底牌动画] 显示第${i+1}张底牌: ${bottomCards[i]}`);
+        }
+        
+        // 停留1.5秒后隐藏
+        await this.sleep(1500);
+        centerArea.style.display = 'none';
+        console.log('🎴 [底牌动画] 底牌动画完成');
+    }
+
+    /**
+     * 更新玩家角色标记
+     */
+    updatePlayerRoles(roles) {
+        console.log('👑 [角色标记] 更新玩家角色:', roles);
+        
+        if (!roles) return;
+        
+        // 更新所有玩家的角色标记
+        Object.keys(roles).forEach(playerId => {
+            const role = roles[playerId];
+            const isLandlord = role === 'landlord';
+            
+            // 更新当前玩家
+            if (playerId === this.currentPlayerId) {
+                const nameDisplay = document.getElementById('currentPlayerNameDisplay');
+                if (nameDisplay) {
+                    nameDisplay.textContent = isLandlord ? '我 👑' : '我';
+                }
+            } else {
+                // 更新其他玩家（需要根据玩家位置更新）
+                // TODO: 实现其他玩家的角色标记更新
+            }
+        });
+    }
+
+    /**
      * 单张牌动画
      */
     async animateCard(card, index) {
@@ -1111,7 +1221,7 @@ class DoudizhuRoomClient {
     }
 
     /**
-     * 渲染手牌
+     * 渲染手牌（竖直排列，数字在上花色在下）
      */
     renderPlayerHand() {
         const container = document.getElementById('playerHand');
@@ -1124,23 +1234,162 @@ class DoudizhuRoomClient {
             return;
         }
 
-        this.playerHand.forEach((card, index) => {
+        // 排序手牌：从大到小
+        const sortedHand = this.sortCards([...this.playerHand]);
+        const cardCount = sortedHand.length;
+        
+        sortedHand.forEach((card, index) => {
             const cardElement = document.createElement('div');
             cardElement.className = 'card';
-            cardElement.textContent = card;
+            
+            // 分离数字和花色
+            const {value, suit, isJoker} = this.parseCard(card);
+            
+            // 根据花色或JOKER类型添加颜色类
+            if (isJoker) {
+                // 大王红色，小王黑色
+                cardElement.classList.add(isJoker === 'big' ? 'red' : 'black');
+            } else {
+                const colorClass = this.getCardColor(card);
+                if (colorClass) {
+                    cardElement.classList.add(colorClass);
+                }
+            }
+            
+            // 创建卡牌内容：数字在上，花色在下
+            const valueSpan = document.createElement('div');
+            valueSpan.className = 'card-value';
+            if (isJoker) {
+                valueSpan.classList.add('joker-text'); // 添加JOKER特殊类
+            }
+            valueSpan.textContent = value;
+            
+            const suitSpan = document.createElement('div');
+            suitSpan.className = 'card-suit';
+            suitSpan.textContent = suit;
+            
+            cardElement.appendChild(valueSpan);
+            cardElement.appendChild(suitSpan);
+            
             cardElement.dataset.index = index;
+            cardElement.dataset.card = card;
 
             cardElement.addEventListener('click', () => this.toggleCardSelection(cardElement));
 
             container.appendChild(cardElement);
         });
+        
+        console.log(`✅ 渲染手牌完成: ${cardCount}张牌，竖直排列`);
+    }
+    
+    /**
+     * 解析卡牌，分离数字和花色
+     */
+    parseCard(card) {
+        // 处理大小王 - 改为JOKER显示
+        if (card === '大王' || card === '🃏大王' || card.includes('大王')) {
+            return { value: 'JOKER', suit: '', isJoker: 'big' };
+        }
+        if (card === '小王' || card === '🃏小王' || card.includes('小王')) {
+            return { value: 'JOKER', suit: '', isJoker: 'small' };
+        }
+        
+        // 处理JOKER格式
+        if (card.includes('JOKER')) {
+            return { value: 'JOKER', suit: '', isJoker: 'big' };
+        }
+        
+        // 分离花色和数字
+        const suits = ['♠', '♥', '♦', '♣'];
+        let suit = '';
+        let value = card;
+        
+        for (const s of suits) {
+            if (card.includes(s)) {
+                suit = s;
+                value = card.replace(s, '');
+                break;
+            }
+        }
+        
+        return { value, suit };
+    }
+
+    /**
+     * 排序卡牌（从大到小）
+     */
+    sortCards(cards) {
+        const rankOrder = {
+            '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+            'J': 11, 'Q': 12, 'K': 13, 'A': 14, '2': 15,
+            '🃏小王': 16, '小王': 16,
+            '🃏大王': 17, '大王': 17
+        };
+        
+        const suitOrder = { '♦': 1, '♣': 2, '♥': 3, '♠': 4 };
+        
+        return cards.sort((a, b) => {
+            // 获取牌面值
+            let rankA, rankB;
+            
+            // 处理大小王
+            if (a.includes('王')) {
+                rankA = rankOrder[a] || (a.includes('大') ? 17 : 16);
+            } else {
+                const {value: valueA} = this.parseCard(a);
+                rankA = rankOrder[valueA] || 0;
+            }
+            
+            if (b.includes('王')) {
+                rankB = rankOrder[b] || (b.includes('大') ? 17 : 16);
+            } else {
+                const {value: valueB} = this.parseCard(b);
+                rankB = rankOrder[valueB] || 0;
+            }
+            
+            // 先按牌面值排序（从大到小）
+            if (rankA !== rankB) {
+                return rankB - rankA;
+            }
+            
+            // 牌面值相同，按花色排序
+            const {suit: suitA} = this.parseCard(a);
+            const {suit: suitB} = this.parseCard(b);
+            return (suitOrder[suitB] || 0) - (suitOrder[suitA] || 0);
+        });
+    }
+
+    /**
+     * 获取卡牌颜色类
+     */
+    getCardColor(card) {
+        // 红桃♥和方块♦是红色
+        if (card.includes('♥') || card.includes('♦')) {
+            return 'red';
+        }
+        // 黑桃♠和梅花♣是黑色
+        if (card.includes('♠') || card.includes('♣')) {
+            return 'black';
+        }
+        // 大小王
+        if (card.includes('王')) {
+            return card.includes('大') ? 'red' : 'black';
+        }
+        return 'black'; // 默认黑色
     }
 
     /**
      * 切换卡牌选择
      */
     toggleCardSelection(cardElement) {
-        cardElement.classList.toggle('selected');
+        const isSelected = cardElement.classList.toggle('selected');
+        
+        // 选中时向上移动
+        if (isSelected) {
+            cardElement.style.transform = 'translateY(-20px)';
+        } else {
+            cardElement.style.transform = 'translateY(0)';
+        }
     }
 
     /**

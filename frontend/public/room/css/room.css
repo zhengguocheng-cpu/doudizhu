@@ -341,28 +341,25 @@
 
 /* 玩家手牌区域 */
 .player-hand-section {
-    grid-area: 3 / 2 / 4 / 4; /* 占据第三行第二和第三列 */
+    grid-area: 3 / 1 / 4 / 4; /* 占据第三行所有列（1-3列） */
     display: flex;
-    justify-content: center;
-    align-items: flex-start; /* 改为顶部对齐，避免底部裁剪 */
+    justify-content: center; /* 居中对齐 */
+    align-items: flex-end; /* 底部对齐 */
     height: 100%;
-    overflow: visible; /* 改为visible，不裁剪牌的顶部 */
-    padding-bottom: 10px; /* 留出一些底部空间，避免紧贴边缘 */
-    padding-top: 10px; /* 减少顶部内边距 */
-    position: relative; /* 相对定位 */
-    z-index: 50; /* 确保在游戏桌面之上 */
+    overflow: visible;
+    padding: 0 10px 20px 10px; /* 底部留20px距离 */
+    position: relative;
+    z-index: 50;
 }
 
 .player-hand {
-    display: flex; /* 改用flex布局 */
-    flex-wrap: nowrap; /* 不换行 */
-    gap: 5px; /* 卡牌间距 */
-    justify-content: center; /* 水平居中排列卡牌 */
-    align-items: flex-start; /* 顶部对齐 */
-    height: 100%;
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start; /* 左对齐 */
+    align-items: center; /* 垂直居中 */
+    height: auto;
+    position: relative;
+    overflow: visible;
 }
 
 /* 卡牌样式 */
@@ -376,31 +373,74 @@
 }
 
 .card {
-    width: 70px;
-    height: 100px;
-    background-color: #f8f9fa;
-    border: 3px solid #dee2e6;
-    border-radius: 15px;
-    display: grid;
-    align-items: center;        /* 垂直居中 */
-    justify-content: center;    /* 水平居中 */
-    font-size: 20px;
-    font-weight: bold;
+    width: 110px;
+    height: 150px;
+    background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
+    border: 3px solid #333;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 左对齐 */
+    justify-content: flex-start; /* 顶部对齐 */
+    padding: 10px 0 0 10px; /* 左上内边距 */
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
     position: relative;
-    z-index: 1;
+    margin-left: -60px; /* 增大重叠以适应更大的卡牌 */
+    color: #000;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    overflow: hidden; /* 防止JOKER超出 */
+}
+
+.card:first-child {
+    margin-left: 0;
+}
+
+/* 卡牌内容布局 - 数字和花色竖着排列在左上角 */
+.card-value {
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'Arial Black', 'Microsoft YaHei', sans-serif;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.card-suit {
+    font-size: 26px;
+    line-height: 1;
+}
+
+/* JOKER特殊样式 - 竖着显示在左上角 */
+.card-value.joker-text {
+    font-size: 20px;
+    font-weight: 900;
+    writing-mode: vertical-rl; /* 竖着显示 */
+    letter-spacing: 0px;
+    text-orientation: upright; /* 字母保持直立 */
+    max-height: 130px; /* 增加最大高度，确保R不被截断 */
+}
+
+/* 红色花色的牌 */
+.card.red {
+    color: #d32f2f; /* 红色 */
+}
+
+/* 黑色花色的牌 */
+.card.black {
+    color: #000; /* 黑色 */
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transform: translateY(-15px) scale(1.05); /* 悬停时向上移动并放大 */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    z-index: 100; /* 确保悬停的牌在最上层 */
 }
 
 .card.selected {
     border-color: #e74c3c;
     background-color: #ffebee;
+    z-index: 50 !important;
 }
 
 /* 右侧聊天侧边栏 */

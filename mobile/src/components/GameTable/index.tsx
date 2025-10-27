@@ -115,3 +115,4 @@ class GameTable extends Component<GameTableProps> {
 }
 
 export default GameTable
+

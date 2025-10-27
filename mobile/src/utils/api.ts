@@ -196,3 +196,4 @@ export const chatApi = {
   getMessageHistory: (roomId: string, params?: { limit?: number; offset?: number }) => 
     apiManager.get(`/api/chat/${roomId}/history`, params)
 }
+

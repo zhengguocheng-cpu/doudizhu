@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出牌验证测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #ddd;
+        }
+        .test-case.pass {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background: #fef1f0;
+        }
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-input {
+            color: #666;
+            font-family: monospace;
+            margin: 5px 0;
+        }
+        .test-result {
+            margin-top: 5px;
+            font-family: monospace;
+        }
+        .summary {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .summary.pass {
+            color: #4caf50;
+        }
+        .summary.fail {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 斗地主出牌验证测试</h1>
+    <div id="testResults"></div>
+    <div id="summary"></div>
+
+    <script src="CardTypeDetector.js"></script>
+    <script src="CardValidator.js"></script>
+    <script>
+        // 测试用例
+        const testCases = [
+            // 1. 首次出牌测试
+            {
+                desc: '首次出牌 - 单牌',
+                cards: ['♠3'],
+                lastPlay: null,
+                isFirstPlay: true,
+                expectedValid: true
+            },
+            {
+                desc: '首次出牌 - 对子',
+                cards: ['♠3', '♥3'],
+                lastPlay: null,
+                isFirstPlay: true,
+                expectedValid: true
+            },
+            {
+                desc: '首次出牌 - 炸弹',
+                cards: ['♠3', '♥3', '♦3', '♣3'],
+                lastPlay: null,
+                isFirstPlay: true,
+                expectedValid: true
+            },
+
+            // 2. 跟单牌测试
+            {
+                desc: '跟单牌 - 成功（4压3）',
+                cards: ['♠4'],
+                lastPlay: { type: 'SINGLE', value: 3, cards: ['♠3'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '跟单牌 - 失败（3压4）',
+                cards: ['♠3'],
+                lastPlay: { type: 'SINGLE', value: 4, cards: ['♠4'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+
+            // 3. 跟对子测试
+            {
+                desc: '跟对子 - 成功（44压33）',
+                cards: ['♠4', '♥4'],
+                lastPlay: { type: 'PAIR', value: 3, cards: ['♠3', '♥3'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '跟对子 - 失败（33压44）',
+                cards: ['♠3', '♥3'],
+                lastPlay: { type: 'PAIR', value: 4, cards: ['♠4', '♥4'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+            {
+                desc: '跟对子 - 失败（单牌压对子）',
+                cards: ['♠5'],
+                lastPlay: { type: 'PAIR', value: 3, cards: ['♠3', '♥3'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+
+            // 4. 跟三张测试
+            {
+                desc: '跟三张 - 成功（444压333）',
+                cards: ['♠4', '♥4', '♦4'],
+                lastPlay: { type: 'TRIPLE', value: 3, cards: ['♠3', '♥3', '♦3'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+
+            // 5. 炸弹测试
+            {
+                desc: '炸弹压单牌',
+                cards: ['♠3', '♥3', '♦3', '♣3'],
+                lastPlay: { type: 'SINGLE', value: 14, cards: ['♠A'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '炸弹压对子',
+                cards: ['♠3', '♥3', '♦3', '♣3'],
+                lastPlay: { type: 'PAIR', value: 14, cards: ['♠A', '♥A'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '炸弹压炸弹 - 成功（4444压3333）',
+                cards: ['♠4', '♥4', '♦4', '♣4'],
+                lastPlay: { type: 'BOMB', value: 3, cards: ['♠3', '♥3', '♦3', '♣3'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '炸弹压炸弹 - 失败（3333压4444）',
+                cards: ['♠3', '♥3', '♦3', '♣3'],
+                lastPlay: { type: 'BOMB', value: 4, cards: ['♠4', '♥4', '♦4', '♣4'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+
+            // 6. 王炸测试
+            {
+                desc: '王炸压单牌',
+                cards: ['大王', '小王'],
+                lastPlay: { type: 'SINGLE', value: 15, cards: ['♠2'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '王炸压炸弹',
+                cards: ['大王', '小王'],
+                lastPlay: { type: 'BOMB', value: 15, cards: ['♠2', '♥2', '♦2', '♣2'] },
+                isFirstPlay: false,
+                expectedValid: true
+            },
+            {
+                desc: '炸弹压不过王炸',
+                cards: ['♠2', '♥2', '♦2', '♣2'],
+                lastPlay: { type: 'ROCKET', value: 100, cards: ['大王', '小王'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+
+            // 7. 无效牌型测试
+            {
+                desc: '无效牌型 - 不连续',
+                cards: ['♠3', '♥4', '♦6'],
+                lastPlay: null,
+                isFirstPlay: true,
+                expectedValid: false
+            },
+
+            // 8. 牌型不匹配测试
+            {
+                desc: '牌型不匹配 - 对子压单牌',
+                cards: ['♠5', '♥5'],
+                lastPlay: { type: 'SINGLE', value: 3, cards: ['♠3'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+            {
+                desc: '牌型不匹配 - 单牌压三张',
+                cards: ['♠A'],
+                lastPlay: { type: 'TRIPLE', value: 3, cards: ['♠3', '♥3', '♦3'] },
+                isFirstPlay: false,
+                expectedValid: false
+            },
+
+            // 9. 空牌测试
+            {
+                desc: '空牌 - 没有选择牌',
+                cards: [],
+                lastPlay: null,
+                isFirstPlay: true,
+                expectedValid: false
+            },
+
+            // 10. 上一轮所有人pass后
+            {
+                desc: '上一轮pass后 - 可以出任意牌',
+                cards: ['♠3'],
+                lastPlay: null,
+                isFirstPlay: false,
+                expectedValid: true
+            }
+        ];
+
+        // 运行测试
+        function runTests() {
+            const resultsDiv = document.getElementById('testResults');
+            const summaryDiv = document.getElementById('summary');
+            
+            let passCount = 0;
+            let failCount = 0;
+
+            testCases.forEach((testCase, index) => {
+                const result = CardValidator.validate(
+                    testCase.cards,
+                    testCase.lastPlay,
+                    testCase.isFirstPlay
+                );
+                
+                const pass = result.valid === testCase.expectedValid;
+
+                if (pass) passCount++;
+                else failCount++;
+
+                const testDiv = document.createElement('div');
+                testDiv.className = `test-case ${pass ? 'pass' : 'fail'}`;
+                testDiv.innerHTML = `
+                    <div class="test-title">
+                        ${pass ? '✅' : '❌'} 测试 ${index + 1}: ${testCase.desc}
+                    </div>
+                    <div class="test-input">
+                        出牌: [${testCase.cards.join(', ')}]
+                    </div>
+                    ${testCase.lastPlay ? `
+                    <div class="test-input">
+                        上家: ${testCase.lastPlay.type} (值: ${testCase.lastPlay.value})
+                    </div>
+                    ` : ''}
+                    <div class="test-input">
+                        首次出牌: ${testCase.isFirstPlay ? '是' : '否'}
+                    </div>
+                    <div class="test-result">
+                        期望: ${testCase.expectedValid ? '有效' : '无效'} | 
+                        实际: ${result.valid ? '有效' : '无效'}
+                        ${result.reason ? ` | 原因: ${result.reason}` : ''}
+                        ${result.cardType ? ` | 牌型: ${result.cardType.description}` : ''}
+                    </div>
+                `;
+
+                resultsDiv.appendChild(testDiv);
+            });
+
+            // 显示总结
+            const total = testCases.length;
+            const passRate = ((passCount / total) * 100).toFixed(1);
+            summaryDiv.className = `summary ${passCount === total ? 'pass' : 'fail'}`;
+            summaryDiv.innerHTML = `
+                测试完成: ${passCount}/${total} 通过 (${passRate}%)
+                ${passCount === total ? '🎉 所有测试通过！' : '⚠️ 部分测试失败'}
+            `;
+        }
+
+        // 页面加载后运行测试
+        window.onload = runTests;
+    </script>
+</body>
+</html>

@@ -217,4 +217,57 @@ showLandlordBadge(landlordId, landlordName) {
 
 **测试用例**: 40+个测试用例，覆盖所有牌型
 
+**测试结果**: ✅ 所有测试通过
+
+---
+
+### 22:38 - 开始任务 1.3：出牌验证逻辑
+
+#### 目标
+实现出牌验证功能，确保出牌符合斗地主规则：
+1. 验证是否轮到当前玩家
+2. 验证牌型是否有效
+3. 验证是否能压过上家的牌
+4. 首次出牌规则（地主先出）
+5. 跟牌规则验证
+
+#### 计划实现
+创建CardValidator类，包含：
+- `validate(cards, lastPlay, isFirstPlay)` - 验证出牌
+- `canBeat(cardType1, cardType2)` - 判断是否能压过
+- `isValidPlay(cards)` - 验证牌型有效性
+
+#### 实现完成
+**时间**: 22:38 - 22:45
+**状态**: ✅ 完成
+
+**创建文件**:
+1. `CardValidator.js` - 出牌验证器类（350+行）
+2. `CardValidator.test.html` - 测试页面（25+测试用例）
+
+**核心功能**:
+- ✅ 验证牌型有效性
+- ✅ 验证是否能压过上家
+- ✅ 首次出牌规则
+- ✅ 炸弹和王炸特殊规则
+- ✅ 牌型匹配验证
+- ✅ 手牌验证
+
+**核心方法**:
+- `validate(cards, lastPlay, isFirstPlay, playerHand)` - 主验证方法
+- `canBeat(cardType1, cardType2)` - 比较牌型大小
+- `hasCards(cards, playerHand)` - 验证是否拥有牌
+- `findValidPlays(playerHand, lastPlay)` - 查找可出的牌
+- `findBiggerSingles/Pairs/Triples()` - 查找更大的牌
+- `findBombs/Rocket()` - 查找炸弹和王炸
+
+**验证规则**:
+1. 首次出牌：任意有效牌型
+2. 跟牌：必须相同牌型且更大
+3. 炸弹：可以压任何非炸弹/王炸的牌
+4. 王炸：可以压任何牌
+5. 牌型不匹配：无法出牌
+
+**测试用例**: 25+个测试用例，覆盖所有验证场景
+
 ---

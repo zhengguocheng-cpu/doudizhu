@@ -100,7 +100,7 @@ showLandlordBadge(landlordId, landlordName) {
 
 ---
 
-### 22:25 - 准备提交代码
+### 22:25 - 代码提交完成
 
 **完成功能**:
 1. ✅ 地主标识CSS样式（金色边框、发光、脉动）
@@ -108,15 +108,66 @@ showLandlordBadge(landlordId, landlordName) {
 3. ✅ 自动识别和标记地主玩家
 4. ✅ 支持当前玩家和其他玩家视角
 
-**测试计划**:
-- [ ] 测试当前玩家成为地主
-- [ ] 测试其他玩家成为地主
-- [ ] 测试地主标识视觉效果
-- [ ] 测试多玩家视角
+**Git提交**:
+- Commit: `6905c31`
+- 消息: "feat(phase2): 实现地主标识显示功能"
+- 文件: 4个文件修改，843行新增
 
-**下一步**:
-- 提交代码
-- 进行功能测试
-- 继续实现底牌飞向地主的动画
+---
+
+### 22:16 - 功能测试
+
+**测试环境**:
+- ✅ 后端服务器运行中（端口3000）
+- ✅ 创建测试文档（LANDLORD_BADGE_TEST.md）
+
+**测试结果**:
+- ✅ 测试当前玩家成为地主
+- ✅ 测试其他玩家成为地主
+- ✅ 测试地主标识视觉效果
+- ✅ 测试多玩家视角
+
+**测试反馈**:
+用户提出改进意见：3张底牌除了在消息框中显示文字外，在桌面最顶端的正中间也并排显示三张牌。各个玩家桌面都应该看见，等第一个出牌的玩家出牌时就隐藏掉。
+
+---
+
+### 22:23 - 实现底牌桌面显示
+
+#### Step 3: 添加底牌桌面显示区域
+**时间**: 22:23 - 22:30
+**状态**: ✅ 完成
+
+**修改文件**:
+1. `frontend/public/room/room.html` - 添加底牌显示区域
+2. `frontend/public/room/css/room.css` - 添加底牌样式
+3. `frontend/public/room/js/room-simple.js` - 实现显示/隐藏逻辑
+
+**HTML修改**:
+```html
+<!-- 底牌显示区域 - 桌面顶端中间 -->
+<div class="bottom-cards-display" id="bottomCardsDisplay" style="display: none;">
+    <div class="bottom-cards-container" id="bottomCardsContainer">
+        <!-- 3张底牌将在这里显示 -->
+    </div>
+</div>
+```
+
+**CSS样式**:
+- 位置：桌面顶端中间（absolute + transform）
+- 容器：半透明黑色背景，金色边框
+- 卡牌：70x100px，白色渐变背景
+- 效果：悬停上浮，阴影效果
+
+**JavaScript方法**:
+- `displayBottomCardsOnTable(bottomCards)` - 显示底牌
+- `hideBottomCardsOnTable()` - 隐藏底牌
+- `onCardsPlayed(data)` - 第一次出牌时自动隐藏
+
+**实现逻辑**:
+1. 地主确定后，中央动画播放完毕（2秒后）
+2. 在桌面顶端显示3张底牌
+3. 所有玩家都能看到
+4. 第一个玩家出牌时自动隐藏
 
 ---

@@ -677,8 +677,9 @@ class DoudizhuRoomClient {
     onLandlordDetermined(data) {
         console.log('🎯 [地主确定] 收到数据:', data);
         
-        // 保存地主ID
+        // 保存地主ID和底牌
         this.landlordId = data.landlordId;
+        this.bottomCards = data.bottomCards;
         
         // 显示地主确定消息
         this.addGameMessage(`👑 ${data.landlordName} 成为地主！`, 'important');
@@ -687,8 +688,13 @@ class DoudizhuRoomClient {
         if (data.bottomCards && data.bottomCards.length > 0) {
             this.addGameMessage(`底牌：${data.bottomCards.join(' ')}`, 'game');
             
-            // 显示底牌动画
+            // 显示底牌动画（中央）
             this.showBottomCardsAnimation(data.bottomCards);
+            
+            // 在桌面顶端显示底牌（持续显示）
+            setTimeout(() => {
+                this.displayBottomCardsOnTable(data.bottomCards);
+            }, 2000); // 等待中央动画完成
         }
         
         // 添加地主标识
@@ -761,6 +767,15 @@ class DoudizhuRoomClient {
      * 出牌
      */
     onCardsPlayed(data) {
+        console.log('🎴 [出牌] 收到出牌事件:', data);
+        
+        // 第一次出牌时隐藏底牌
+        if (this.bottomCards && this.bottomCards.length > 0) {
+            console.log('🎴 [出牌] 第一次出牌，隐藏底牌');
+            this.hideBottomCardsOnTable();
+            this.bottomCards = null; // 清空底牌标记
+        }
+        
         if (data.playerId !== this.currentPlayerId) {
             this.addMessage(`${data.playerName} 出了 ${data.cards.length} 张牌`);
         }
@@ -1086,6 +1101,80 @@ class DoudizhuRoomClient {
         await this.sleep(1500);
         centerArea.style.display = 'none';
         console.log('🎴 [底牌动画] 底牌动画完成');
+    }
+
+    /**
+     * 在桌面顶端显示底牌
+     */
+    displayBottomCardsOnTable(bottomCards) {
+        console.log('🎴 [底牌显示] 在桌面顶端显示底牌:', bottomCards);
+        
+        const bottomCardsDisplay = document.getElementById('bottomCardsDisplay');
+        const bottomCardsContainer = document.getElementById('bottomCardsContainer');
+        
+        if (!bottomCardsDisplay || !bottomCardsContainer) {
+            console.error('❌ [底牌显示] 找不到底牌显示元素');
+            return;
+        }
+        
+        // 清空容器
+        bottomCardsContainer.innerHTML = '';
+        
+        // 创建3张底牌
+        bottomCards.forEach(card => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'bottom-card';
+            
+            // 解析卡牌
+            const { value, suit, isJoker } = this.parseCard(card);
+            
+            // 根据花色或JOKER类型添加颜色类
+            if (isJoker) {
+                cardElement.classList.add(isJoker === 'big' ? 'red' : 'black');
+            } else if (suit === '♥' || suit === '♦') {
+                cardElement.classList.add('red');
+            } else {
+                cardElement.classList.add('black');
+            }
+            
+            // 创建数字元素
+            const valueSpan = document.createElement('div');
+            valueSpan.className = 'card-value';
+            if (isJoker) {
+                valueSpan.classList.add('joker-text');
+            }
+            valueSpan.textContent = value;
+            
+            // 创建花色元素
+            const suitSpan = document.createElement('div');
+            suitSpan.className = 'card-suit';
+            suitSpan.textContent = suit;
+            
+            // 添加到卡牌
+            cardElement.appendChild(valueSpan);
+            if (!isJoker) {
+                cardElement.appendChild(suitSpan);
+            }
+            
+            bottomCardsContainer.appendChild(cardElement);
+        });
+        
+        // 显示底牌区域
+        bottomCardsDisplay.style.display = 'flex';
+        
+        console.log('✅ [底牌显示] 底牌显示完成');
+    }
+
+    /**
+     * 隐藏桌面顶端的底牌
+     */
+    hideBottomCardsOnTable() {
+        console.log('🎴 [底牌显示] 隐藏底牌');
+        
+        const bottomCardsDisplay = document.getElementById('bottomCardsDisplay');
+        if (bottomCardsDisplay) {
+            bottomCardsDisplay.style.display = 'none';
+        }
     }
 
     /**

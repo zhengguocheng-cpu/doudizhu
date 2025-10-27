@@ -243,6 +243,75 @@
 }
 
 
+/* 底牌显示区域 - 桌面顶端中间 */
+.bottom-cards-display {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.bottom-cards-container {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+}
+
+.bottom-card {
+    width: 70px;
+    height: 100px;
+    background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px 0 0 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    color: #000;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+}
+
+.bottom-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-card .card-value {
+    font-size: 20px;
+    font-weight: 900;
+    font-family: 'Arial Black', 'Microsoft YaHei', sans-serif;
+    line-height: 1;
+    margin-bottom: 3px;
+}
+
+.bottom-card .card-suit {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.bottom-card .card-value.joker-text {
+    font-size: 14px;
+    font-weight: 900;
+    writing-mode: vertical-rl;
+    letter-spacing: 0px;
+    text-orientation: upright;
+    max-height: 85px;
+}
+
 /* 顶部左侧玩家 */
 .top-left-player {
     top: 20px;

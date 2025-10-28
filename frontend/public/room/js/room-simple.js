@@ -122,8 +122,14 @@ class DoudizhuRoomClient {
         });
 
         // 房间事件
-        this.socket.on('join_game_success', (data) => this.onJoinGameSuccess(data));
-        this.socket.on('join_game_failed', (data) => this.onJoinGameFailed(data));
+        this.socket.on('join_game_success', (data) => {
+            console.log('🎉 [Socket事件] 收到 join_game_success，Socket已加入房间');
+            this.onJoinGameSuccess(data);
+        });
+        this.socket.on('join_game_failed', (data) => {
+            console.error('❌ [Socket事件] 收到 join_game_failed');
+            this.onJoinGameFailed(data);
+        });
         this.socket.on('room_joined', (data) => this.onRoomJoined(data));
         this.socket.on('room_left', (data) => this.onRoomLeft(data));
         this.socket.on('player_joined', (data) => {
@@ -147,7 +153,10 @@ class DoudizhuRoomClient {
         this.socket.on('game_state_updated', (data) => this.onGameStateUpdated(data));
         this.socket.on('turn_to_play', (data) => this.onTurnToPlay(data));
         this.socket.on('turn_changed', (data) => this.onTurnChanged(data));
-        this.socket.on('cards_played', (data) => this.onCardsPlayed(data));
+        this.socket.on('cards_played', (data) => {
+            console.log('🎴 [Socket事件] 收到 cards_played 事件:', data);
+            this.onCardsPlayed(data);
+        });
         this.socket.on('player_passed', (data) => this.onPlayerPassed(data));
         this.socket.on('game_over', (data) => this.onGameOver(data));
         this.socket.on('game_ended', (data) => this.onGameEnded(data));

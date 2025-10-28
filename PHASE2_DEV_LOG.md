@@ -658,3 +658,50 @@ npm run dev
 - `RESTART_BACKEND.md` - 后端重启指南
 
 ---
+
+### 21:12 - 问题确认：Socket房间广播问题
+
+#### 🐛 用户反馈
+- 玩家2的console中没有收到`cards_played`事件
+- 每个页面都是一个新的Socket连接
+- 怀疑是Socket.IO房间加入的问题
+
+#### 🔍 问题分析
+
+**Socket连接流程：**
+1. 每个玩家打开房间页面时创建新的Socket连接
+2. 连接成功后调用`joinRoom()`发送`join_game`事件
+3. 后端应该调用`socket.join('room_${roomId}')`
+4. 后端广播时使用`io.to('room_${roomId}').emit('cards_played', ...)`
+
+**可能的问题：**
+1. 后端没有正确将Socket加入房间
+2. 广播的房间名称不匹配
+3. Socket连接成功但加入房间失败
+
+#### 📝 添加调试日志
+
+**前端添加日志：**
+```javascript
+// join_game_success事件
+console.log('🎉 [Socket事件] 收到 join_game_success，Socket已加入房间');
+
+// cards_played事件
+console.log('🎴 [Socket事件] 收到 cards_played 事件:', data);
+```
+
+#### 🧪 调试步骤
+
+**1. 检查玩家2的控制台：**
+- 应该看到：`🎉 [Socket事件] 收到 join_game_success`
+- 如果没有，说明加入房间失败
+
+**2. 检查后端日志：**
+- 应该看到：`✅ Socket xxx 已加入房间 room_A01`
+- 每个玩家都应该有这条日志
+
+**3. 检查出牌广播：**
+- 玩家1出牌时，后端应该广播给`room_A01`
+- 玩家2和玩家3应该收到`cards_played`事件
+
+---

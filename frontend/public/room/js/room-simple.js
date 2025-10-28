@@ -158,6 +158,7 @@ class DoudizhuRoomClient {
             this.onCardsPlayed(data);
         });
         this.socket.on('player_passed', (data) => this.onPlayerPassed(data));
+        this.socket.on('new_round_started', (data) => this.onNewRoundStarted(data));
         this.socket.on('game_over', (data) => this.onGameOver(data));
         this.socket.on('game_ended', (data) => this.onGameEnded(data));
 
@@ -830,6 +831,23 @@ class DoudizhuRoomClient {
             this.lastPlayedCards = null;
             this.addGameMessage('所有人都不出，可以出任意牌型', 'info');
         }
+    }
+
+    /**
+     * 新一轮开始
+     */
+    onNewRoundStarted(data) {
+        console.log('🔄 [新一轮] 收到新一轮开始事件:', data);
+        
+        // 清空上家出牌信息
+        this.lastPlayedCards = null;
+        this.isFirstPlay = false;
+        
+        // 隐藏上家出牌区域
+        this.hidePlayedCards();
+        
+        // 显示消息
+        this.addGameMessage(`🔄 新一轮开始，${data.startPlayerName} 可以出任意牌型`, 'info');
     }
 
     /**

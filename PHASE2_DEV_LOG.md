@@ -964,3 +964,54 @@ onNewRoundStarted(data) {
 - ✅ 显示友好的提示消息
 
 ---
+
+### 22:00 - UI优化：新一轮不显示"不出"按钮
+
+#### 💡 用户反馈
+新一轮出牌时，不应该有"不出"按钮：
+- 如果玩家不出，就不会有新一轮了
+- 新一轮开始时玩家必须出牌
+
+#### ✅ 解决方案
+
+**1. 修改showGameActions方法**
+```javascript
+showGameActions(canPass = true) {
+    const passBtn = document.getElementById('passBtn');
+    
+    // 根据是否可以不出来显示/隐藏"不出"按钮
+    if (passBtn) {
+        if (canPass) {
+            passBtn.style.display = 'inline-block';
+        } else {
+            passBtn.style.display = 'none';
+        }
+    }
+}
+```
+
+**2. 修改onTurnToPlay方法**
+```javascript
+onTurnToPlay(data) {
+    if (data.playerId === this.currentPlayerId) {
+        // 判断是否可以不出
+        // 如果是首次出牌或新一轮开始，不能不出
+        const canPass = !data.isFirstPlay && this.lastPlayedCards !== null;
+        
+        this.showGameActions(canPass);
+    }
+}
+```
+
+#### 📝 修改内容
+- `room-simple.js`：
+  * `showGameActions()`添加`canPass`参数
+  * `onTurnToPlay()`根据情况决定是否显示"不出"按钮
+
+#### 🎯 效果
+- ✅ 地主第一次出牌：没有"不出"按钮
+- ✅ 新一轮开始：没有"不出"按钮
+- ✅ 跟牌时：有"不出"按钮
+- ✅ 用户体验更符合游戏规则
+
+---

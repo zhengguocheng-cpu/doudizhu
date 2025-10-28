@@ -748,7 +748,13 @@ class DoudizhuRoomClient {
         console.log('轮到出牌:', data);
         if (data.playerId === this.currentPlayerId) {
             this.isMyTurn = true;
-            this.showGameActions();
+            
+            // 判断是否可以不出
+            // 如果是首次出牌或新一轮开始，不能不出
+            const canPass = !data.isFirstPlay && this.lastPlayedCards !== null;
+            console.log('🎴 [出牌] 是否可以不出:', canPass, '首次出牌:', data.isFirstPlay, '上家出牌:', this.lastPlayedCards);
+            
+            this.showGameActions(canPass);
             this.addGameMessage('🎯 轮到你出牌了！', 'important');
         } else {
             this.isMyTurn = false;
@@ -1485,13 +1491,24 @@ class DoudizhuRoomClient {
 
     /**
      * 显示游戏操作按钮
+     * @param {boolean} canPass - 是否可以不出（新一轮开始时不能不出）
      */
-    showGameActions() {
+    showGameActions(canPass = true) {
         const gameActions = document.getElementById('gameActions');
         const overlay = document.getElementById('gameControlsOverlay');
+        const passBtn = document.getElementById('passBtn');
 
         if (overlay) overlay.style.display = 'flex';
         if (gameActions) gameActions.style.display = 'flex';
+        
+        // 根据是否可以不出来显示/隐藏"不出"按钮
+        if (passBtn) {
+            if (canPass) {
+                passBtn.style.display = 'inline-block';
+            } else {
+                passBtn.style.display = 'none';
+            }
+        }
     }
 
     /**

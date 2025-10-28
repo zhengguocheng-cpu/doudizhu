@@ -843,7 +843,7 @@ class DoudizhuRoomClient {
      * 新一轮开始
      */
     onNewRoundStarted(data) {
-        console.log('🔄 [新一轮] 收到新一轮开始事件:', data);
+        console.log('🔄 [新一轮] 收到new_round_started事件:', data);
         
         // 清空上家出牌信息
         this.lastPlayedCards = null;
@@ -854,6 +854,17 @@ class DoudizhuRoomClient {
         
         // 显示消息
         this.addGameMessage(`🔄 新一轮开始，${data.startPlayerName} 可以出任意牌型`, 'info');
+        
+        // 检查是否轮到自己出牌
+        if (data.startPlayerId === this.currentPlayerId) {
+            console.log('🎴 [新一轮] 轮到我出牌');
+            this.isMyTurn = true;
+            this.showGameActions(false); // 新一轮不能不出
+        } else {
+            console.log('🎴 [新一轮] 等待其他玩家出牌');
+            this.isMyTurn = false;
+            this.hideGameActions();
+        }
     }
 
     /**
@@ -1926,7 +1937,9 @@ class DoudizhuRoomClient {
         );
 
         if (!hintCards || hintCards.length === 0) {
-            this.addGameMessage('💡 没有可出的牌，建议不出', 'info');
+            this.addGameMessage('💡 没有可出的牌，自动不出', 'info');
+            // 自动不出
+            this.passTurn();
             return;
         }
 

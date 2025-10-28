@@ -705,3 +705,53 @@ console.log('🎴 [Socket事件] 收到 cards_played 事件:', data);
 - 玩家2和玩家3应该收到`cards_played`事件
 
 ---
+
+### 21:26 - Bug修复：地主第一次出牌失败
+
+#### 🐛 问题描述
+用户查看后端日志发现：
+- 玩家1（地主）出牌失败
+- 错误提示："系统错误：缺少上家牌型"
+- 这是抢完地主后的第一次出牌，应该可以自由出牌
+
+#### 🔍 根本原因
+在`GameFlowHandler.ts`中确定地主时，`gameState`初始化不完整：
+```typescript
+// ❌ 缺少关键字段
+room.gameState = {
+    landlordId: landlordId,
+    currentPlayerId: landlordId,
+    lastPlayedCards: null,
+    lastPlayerId: null
+    // 缺少 lastPattern, passCount, isNewRound
+};
+```
+
+导致：
+- `isNewRound`未定义（undefined）
+- `lastPattern`未定义（undefined）
+- 验证器判断为非首次出牌，但又没有上家牌型，报错
+
+#### ✅ 解决方案
+完善`gameState`初始化：
+```typescript
+room.gameState = {
+    landlordId: landlordId,
+    currentPlayerId: landlordId,
+    lastPlayedCards: null,
+    lastPlayerId: null,
+    lastPattern: null,   // ✅ 上家牌型
+    passCount: 0,        // ✅ pass计数
+    isNewRound: true     // ✅ 地主第一次出牌，可以出任意牌型
+};
+```
+
+#### 📝 修改内容
+- `GameFlowHandler.ts`：完善gameState初始化
+
+#### 🎯 效果
+- ✅ 地主第一次出牌可以出任意合法牌型
+- ✅ 所有人pass后新一轮开始，也可以自由出牌
+- ✅ 正常跟牌时需要压过上家
+
+---

@@ -246,7 +246,10 @@ export class GameFlowHandler {
         landlordId: landlordId,
         currentPlayerId: landlordId, // 地主先出牌
         lastPlayedCards: null,
-        lastPlayerId: null
+        lastPlayerId: null,
+        lastPattern: null,  // 上家牌型
+        passCount: 0,       // pass计数
+        isNewRound: true    // 地主第一次出牌，可以出任意牌型
       };
 
       console.log(`👑 确定地主: ${landlord.name}`);

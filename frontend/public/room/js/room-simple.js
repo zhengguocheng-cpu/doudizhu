@@ -745,14 +745,20 @@ class DoudizhuRoomClient {
      * 轮到出牌
      */
     onTurnToPlay(data) {
-        console.log('轮到出牌:', data);
+        console.log('🎴 [轮到出牌] 收到turn_to_play事件:', data);
+        console.log('🎴 [轮到出牌] 当前玩家ID:', this.currentPlayerId);
+        console.log('🎴 [轮到出牌] 事件中的玩家ID:', data.playerId);
+        console.log('🎴 [轮到出牌] 当前lastPlayedCards:', this.lastPlayedCards);
+        
         if (data.playerId === this.currentPlayerId) {
             this.isMyTurn = true;
             
             // 判断是否可以不出
             // 如果是首次出牌或新一轮开始，不能不出
             const canPass = !data.isFirstPlay && this.lastPlayedCards !== null;
-            console.log('🎴 [出牌] 是否可以不出:', canPass, '首次出牌:', data.isFirstPlay, '上家出牌:', this.lastPlayedCards);
+            console.log('🎴 [轮到出牌] 是否可以不出:', canPass);
+            console.log('🎴 [轮到出牌] 首次出牌:', data.isFirstPlay);
+            console.log('🎴 [轮到出牌] 上家出牌:', this.lastPlayedCards);
             
             this.showGameActions(canPass);
             this.addGameMessage('🎯 轮到你出牌了！', 'important');
@@ -796,11 +802,14 @@ class DoudizhuRoomClient {
      * 出牌
      */
     onCardsPlayed(data) {
-        console.log('🎴 [出牌] 收到出牌事件:', data);
+        console.log('🎴 [出牌事件] 收到cards_played事件:', data);
+        console.log('🎴 [出牌事件] 出牌玩家:', data.playerName, '(', data.playerId, ')');
+        console.log('🎴 [出牌事件] 出的牌:', data.cards);
+        console.log('🎴 [出牌事件] 牌型:', data.cardType);
         
         // 第一次出牌时隐藏底牌
         if (this.bottomCards && this.bottomCards.length > 0) {
-            console.log('🎴 [出牌] 第一次出牌，隐藏底牌');
+            console.log('🎴 [出牌事件] 第一次出牌，隐藏底牌');
             this.hideBottomCardsOnTable();
             this.bottomCards = null; // 清空底牌标记
         }
@@ -808,7 +817,9 @@ class DoudizhuRoomClient {
         // 更新上家出牌信息
         if (data.cardType) {
             this.lastPlayedCards = data.cardType;
-            console.log('🎴 [出牌] 更新上家出牌:', data.cardType);
+            console.log('🎴 [出牌事件] 更新lastPlayedCards:', this.lastPlayedCards);
+        } else {
+            console.warn('⚠️ [出牌事件] cardType为空！');
         }
         
         // 显示出牌消息

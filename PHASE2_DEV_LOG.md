@@ -835,3 +835,77 @@ return pattern;
 - ✅ 前后端数据结构统一
 
 ---
+
+### 21:41 - Bug修复：出牌后手牌未删除 + 牌型不匹配
+
+#### 🐛 问题描述
+用户测试时发现两个问题：
+1. 玩家出过的牌，手牌区还有同样的牌，没有删除
+2. 第二轮出牌时，提示"牌型不匹配"
+
+#### 🔍 根本原因
+
+**问题1：手牌未删除**
+前端出牌后只清除了选中状态，但没有：
+- 从`playerHand`数组中删除
+- 从DOM中删除卡牌元素
+
+**问题2：牌型不匹配**
+前后端牌型命名不一致：
+- 前端：`TRIPLE_PLUS_TWO`（大写+下划线）
+- 后端：`triple_with_pair`（小写+下划线）
+- 比较时`TRIPLE_PLUS_TWO !== triple_with_pair`导致验证失败
+
+#### ✅ 解决方案
+
+**1. 出牌后删除手牌**
+```javascript
+// 从手牌数组中移除
+cards.forEach(card => {
+    const index = this.playerHand.indexOf(card);
+    if (index > -1) {
+        this.playerHand.splice(index, 1);
+    }
+});
+
+// 从DOM中移除
+selectedCards.forEach(card => card.remove());
+```
+
+**2. 添加牌型映射表**
+```javascript
+static TYPE_MAPPING = {
+    'SINGLE': 'single',
+    'PAIR': 'pair',
+    'TRIPLE': 'triple',
+    'TRIPLE_PLUS_ONE': 'triple_with_single',
+    'TRIPLE_PLUS_TWO': 'triple_with_pair',
+    // ... 其他映射
+};
+
+static normalizeType(type) {
+    if (type === type.toLowerCase()) return type;
+    return this.TYPE_MAPPING[type] || type.toLowerCase();
+}
+```
+
+**3. 标准化牌型比较**
+```javascript
+const type1 = this.normalizeType(cardType1.type);
+const type2 = this.normalizeType(cardType2.type);
+if (type1 !== type2) {
+    return { valid: false, reason: '牌型不匹配' };
+}
+```
+
+#### 📝 修改内容
+- `room-simple.js`：出牌后删除手牌
+- `CardValidator.js`：添加牌型映射和标准化方法
+
+#### 🎯 效果
+- ✅ 出牌后手牌正确减少
+- ✅ DOM中的卡牌被移除
+- ✅ 三带二可以正确压过三带二
+- ✅ 所有牌型比较正常工作
+
+---

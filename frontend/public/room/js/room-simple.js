@@ -1728,8 +1728,17 @@ class DoudizhuRoomClient {
             cardType: validation.cardType
         });
 
-        // 清除选中状态
-        selectedCards.forEach(card => card.classList.remove('selected'));
+        // 从手牌数组中移除出的牌
+        cards.forEach(card => {
+            const index = this.playerHand.indexOf(card);
+            if (index > -1) {
+                this.playerHand.splice(index, 1);
+            }
+        });
+        console.log('🎴 [出牌] 剩余手牌:', this.playerHand.length, '张');
+        
+        // 从DOM中移除出的牌
+        selectedCards.forEach(card => card.remove());
         
         // 保存本次出牌信息
         this.lastPlayedCards = validation.cardType;

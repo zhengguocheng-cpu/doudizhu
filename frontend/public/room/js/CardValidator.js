@@ -4,6 +4,37 @@
  */
 class CardValidator {
     /**
+     * 牌型映射表（前端 -> 后端）
+     * 用于统一前后端牌型名称差异
+     */
+    static TYPE_MAPPING = {
+        'SINGLE': 'single',
+        'PAIR': 'pair',
+        'TRIPLE': 'triple',
+        'TRIPLE_PLUS_ONE': 'triple_with_single',
+        'TRIPLE_PLUS_TWO': 'triple_with_pair',
+        'STRAIGHT': 'straight',
+        'DOUBLE_STRAIGHT': 'consecutive_pairs',
+        'PLANE': 'airplane',
+        'PLANE_PLUS_WINGS': 'airplane_with_wings',
+        'FOUR_PLUS_TWO': 'four_with_two',
+        'BOMB': 'bomb',
+        'ROCKET': 'rocket'
+    };
+
+    /**
+     * 标准化牌型名称（统一为小写后端格式）
+     */
+    static normalizeType(type) {
+        if (!type) return null;
+        // 如果已经是小写格式，直接返回
+        if (type === type.toLowerCase()) {
+            return type;
+        }
+        // 否则从映射表转换
+        return this.TYPE_MAPPING[type] || type.toLowerCase();
+    }
+    /**
      * 验证出牌是否合法
      * @param {Array<string>} cards - 要出的牌
      * @param {Object|null} lastPlay - 上家出的牌型信息
@@ -109,8 +140,11 @@ class CardValidator {
             return { valid: false, reason: '只有炸弹或王炸可以压炸弹/王炸' };
         }
 
-        // 4. 必须是相同牌型
-        if (cardType1.type !== cardType2.type) {
+        // 4. 必须是相同牌型（标准化后比较）
+        const type1 = this.normalizeType(cardType1.type);
+        const type2 = this.normalizeType(cardType2.type);
+        if (type1 !== type2) {
+            console.log('🎴 [验证] 牌型不匹配:', type1, 'vs', type2);
             return { valid: false, reason: '牌型不匹配' };
         }
 

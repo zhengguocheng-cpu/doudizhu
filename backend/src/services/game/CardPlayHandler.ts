@@ -86,7 +86,7 @@ export class CardPlayHandler {
         playerId: userId,
         playerName: player.name,
         cards: cards,
-        pattern: validation.pattern,
+        cardType: validation.pattern,  // 前端期望cardType字段
         remainingCards: player.cardCount
       });
 

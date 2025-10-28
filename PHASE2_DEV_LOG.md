@@ -528,3 +528,49 @@ if (this.bottomCards && this.bottomCards.length > 0) {
 - `room.css`：移除选中卡牌的z-index设置
 
 ---
+
+### 20:48 - Bug修复：后端广播字段名不一致
+
+#### 🐛 问题描述
+用户测试时发现：
+- 玩家1出牌后，玩家2和玩家3的界面没有更新
+- 底牌没有隐藏
+- 桌面中间没有显示出牌信息
+
+#### 🔍 问题分析
+后端广播`cards_played`事件时：
+```typescript
+// 后端发送
+emit('cards_played', {
+    pattern: validation.pattern  // ❌ 字段名是pattern
+});
+```
+
+前端接收时：
+```javascript
+// 前端期望
+onCardsPlayed(data) {
+    if (data.cardType) {  // ❌ 期望cardType字段
+        this.lastPlayedCards = data.cardType;
+    }
+}
+```
+
+字段名不一致导致：
+- `data.cardType`为undefined
+- 无法更新上家出牌信息
+- 无法显示牌型描述
+- 其他玩家界面不更新
+
+#### ✅ 解决方案
+修改后端字段名：
+```typescript
+emit('cards_played', {
+    cardType: validation.pattern  // ✅ 改为cardType
+});
+```
+
+#### 📝 修改内容
+- `CardPlayHandler.ts`：将`pattern`字段改为`cardType`
+
+---

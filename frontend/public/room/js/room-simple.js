@@ -15,6 +15,12 @@ class DoudizhuRoomClient {
         this.alreadyJoined = false; // 标记是否已经在大厅加入
         this.eventsAlreadyBound = false; // 标记事件是否已经绑定
         this.biddingTimerInterval = null; // 抢地主倒计时定时器
+        
+        // 出牌相关状态
+        this.lastPlayedCards = null; // 上家出的牌型信息
+        this.isFirstPlay = false; // 是否首次出牌（地主先出）
+        this.landlordId = null; // 地主ID
+        this.bottomCards = null; // 底牌
 
         // 从URL获取用户信息
         this.initializeFromUrl();
@@ -142,6 +148,7 @@ class DoudizhuRoomClient {
         this.socket.on('turn_to_play', (data) => this.onTurnToPlay(data));
         this.socket.on('turn_changed', (data) => this.onTurnChanged(data));
         this.socket.on('cards_played', (data) => this.onCardsPlayed(data));
+        this.socket.on('player_passed', (data) => this.onPlayerPassed(data));
         this.socket.on('game_over', (data) => this.onGameOver(data));
         this.socket.on('game_ended', (data) => this.onGameEnded(data));
 
@@ -681,6 +688,12 @@ class DoudizhuRoomClient {
         this.landlordId = data.landlordId;
         this.bottomCards = data.bottomCards;
         
+        // 设置首次出牌标志（地主先出）
+        if (data.landlordId === this.currentPlayerId) {
+            this.isFirstPlay = true;
+            this.lastPlayedCards = null;
+        }
+        
         // 显示地主确定消息
         this.addGameMessage(`👑 ${data.landlordName} 成为地主！`, 'important');
         
@@ -776,8 +789,36 @@ class DoudizhuRoomClient {
             this.bottomCards = null; // 清空底牌标记
         }
         
+        // 更新上家出牌信息
+        if (data.cardType) {
+            this.lastPlayedCards = data.cardType;
+            console.log('🎴 [出牌] 更新上家出牌:', data.cardType);
+        }
+        
+        // 显示出牌消息
         if (data.playerId !== this.currentPlayerId) {
-            this.addMessage(`${data.playerName} 出了 ${data.cards.length} 张牌`);
+            const cardTypeDesc = data.cardType ? data.cardType.description : '';
+            this.addGameMessage(`${data.playerName} 出了 ${cardTypeDesc}：${data.cards.join(' ')}`, 'game');
+        }
+        
+        // TODO: 显示上家出的牌在桌面上
+    }
+
+    /**
+     * 玩家不出
+     */
+    onPlayerPassed(data) {
+        console.log('🎴 [不出] 收到不出事件:', data);
+        
+        // 显示不出消息
+        if (data.playerId !== this.currentPlayerId) {
+            this.addGameMessage(`${data.playerName} 不出`, 'game');
+        }
+        
+        // 如果所有人都pass了，清空上家出牌信息
+        if (data.allPassed) {
+            this.lastPlayedCards = null;
+            this.addGameMessage('所有人都不出，可以出任意牌型', 'info');
         }
     }
 
@@ -1562,20 +1603,45 @@ class DoudizhuRoomClient {
 
         const selectedCards = container.querySelectorAll('.card.selected');
         if (selectedCards.length === 0) {
-            this.addMessage('请选择要出的牌');
+            this.addGameMessage('❌ 请选择要出的牌', 'error');
             return;
         }
 
         const cards = Array.from(selectedCards).map(card => card.textContent);
 
+        // 验证出牌是否合法
+        const validation = CardValidator.validate(
+            cards,
+            this.lastPlayedCards,  // 上家出的牌
+            this.isFirstPlay,      // 是否首次出牌
+            this.playerHand        // 玩家手牌
+        );
+
+        if (!validation.valid) {
+            this.addGameMessage(`❌ ${validation.reason}`, 'error');
+            return;
+        }
+
+        // 显示牌型信息
+        console.log('🎴 [出牌] 牌型:', validation.cardType);
+        this.addGameMessage(`✅ 出牌：${validation.cardType.description}`, 'success');
+
+        // 发送出牌请求
         this.socket.emit('play_cards', {
             roomId: this.currentRoom.id,
             userId: this.currentPlayerId,
-            cards: cards
+            cards: cards,
+            cardType: validation.cardType
         });
 
+        // 清除选中状态
         selectedCards.forEach(card => card.classList.remove('selected'));
-        this.addMessage(`出了 ${cards.join(', ')}`);
+        
+        // 保存本次出牌信息
+        this.lastPlayedCards = validation.cardType;
+        this.isFirstPlay = false;
+        
+        // 隐藏操作按钮
         this.hideGameActions();
     }
 

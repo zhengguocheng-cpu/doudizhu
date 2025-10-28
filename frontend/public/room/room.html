@@ -130,6 +130,46 @@
             </aside>
         </div>
 
+        <!-- 游戏结算弹窗 -->
+        <div id="gameSettlementModal" class="settlement-modal" style="display: none;">
+            <div class="settlement-overlay"></div>
+            <div class="settlement-content">
+                <div class="settlement-header">
+                    <h2 id="settlementTitle">游戏结束</h2>
+                </div>
+                <div class="settlement-body">
+                    <div class="winner-info">
+                        <div class="winner-avatar" id="winnerAvatar">👑</div>
+                        <div class="winner-name" id="winnerName">玩家1</div>
+                        <div class="winner-role" id="winnerRole">地主</div>
+                    </div>
+                    <div class="score-details">
+                        <div class="score-item">
+                            <span class="score-label">基础分：</span>
+                            <span class="score-value" id="baseScore">1</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">倍数：</span>
+                            <span class="score-value" id="multiplier">×1</span>
+                        </div>
+                        <div class="score-item total-score">
+                            <span class="score-label">总得分：</span>
+                            <span class="score-value" id="totalScore">+1</span>
+                        </div>
+                    </div>
+                    <div class="players-score">
+                        <div class="player-score-item" id="player1Score"></div>
+                        <div class="player-score-item" id="player2Score"></div>
+                        <div class="player-score-item" id="player3Score"></div>
+                    </div>
+                </div>
+                <div class="settlement-footer">
+                    <button id="playAgainBtn" class="btn btn-primary btn-lg">再来一局</button>
+                    <button id="backToLobbyBtn" class="btn btn-secondary btn-lg">返回大厅</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 调试控制面板 -->
         <div id="debugPanel" style="position: fixed; bottom: 20px; left: 200px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 1000; display: none;">
             <div><strong>调试面板</strong></div>

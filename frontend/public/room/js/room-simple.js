@@ -874,7 +874,7 @@ class DoudizhuRoomClient {
      * 游戏结束（新事件）
      */
     onGameOver(data) {
-        console.log('游戏结束:', data);
+        console.log('🎊 [游戏结束] 收到game_over事件:', data);
         this.gameStarted = false;
         this.isMyTurn = false;
         this.hideGameActions();
@@ -883,7 +883,118 @@ class DoudizhuRoomClient {
         const role = data.winnerRole === 'landlord' ? '地主' : '农民';
         this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
 
+        // 显示结算界面
+        this.showSettlementModal(data);
+    }
+
+    /**
+     * 显示游戏结算界面
+     */
+    showSettlementModal(data) {
+        const modal = document.getElementById('gameSettlementModal');
+        if (!modal) return;
+
+        // 设置标题
+        const title = document.getElementById('settlementTitle');
+        if (title) {
+            title.textContent = data.landlordWin ? '地主获胜！' : '农民获胜！';
+        }
+
+        // 设置获胜者信息
+        const winnerAvatar = document.getElementById('winnerAvatar');
+        const winnerName = document.getElementById('winnerName');
+        const winnerRole = document.getElementById('winnerRole');
+
+        if (winnerAvatar) winnerAvatar.textContent = '👑';
+        if (winnerName) winnerName.textContent = data.winnerName || '未知玩家';
+        if (winnerRole) {
+            const roleText = data.winnerRole === 'landlord' ? '地主' : '农民';
+            winnerRole.textContent = roleText;
+        }
+
+        // 计算得分（简单版本）
+        const baseScore = 1;
+        const multiplier = 1; // TODO: 后续添加倍数计算
+        const totalScore = baseScore * multiplier;
+
+        // 设置得分信息
+        const baseScoreEl = document.getElementById('baseScore');
+        const multiplierEl = document.getElementById('multiplier');
+        const totalScoreEl = document.getElementById('totalScore');
+
+        if (baseScoreEl) baseScoreEl.textContent = baseScore;
+        if (multiplierEl) multiplierEl.textContent = `×${multiplier}`;
+        if (totalScoreEl) {
+            const sign = data.winnerId === this.currentPlayerId ? '+' : '-';
+            totalScoreEl.textContent = `${sign}${totalScore}`;
+        }
+
+        // 绑定按钮事件
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const backToLobbyBtn = document.getElementById('backToLobbyBtn');
+
+        if (playAgainBtn) {
+            playAgainBtn.onclick = () => this.playAgain();
+        }
+
+        if (backToLobbyBtn) {
+            backToLobbyBtn.onclick = () => this.backToLobby();
+        }
+
+        // 显示弹窗
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * 再来一局
+     */
+    playAgain() {
+        console.log('🔄 再来一局');
+        const modal = document.getElementById('gameSettlementModal');
+        if (modal) modal.style.display = 'none';
+
+        // 重置游戏状态
+        this.resetGameState();
+        
+        // 显示房间操作按钮
         this.showRoomActions();
+        
+        this.addGameMessage('准备开始新一局游戏', 'info');
+    }
+
+    /**
+     * 重置游戏状态
+     */
+    resetGameState() {
+        this.gameStarted = false;
+        this.isMyTurn = false;
+        this.playerHand = [];
+        this.selectedCards = [];
+        this.lastPlayedCards = null;
+        this.isFirstPlay = false;
+        this.landlordId = null;
+        this.bottomCards = null;
+
+        // 清空手牌显示
+        const playerHandEl = document.getElementById('playerHand');
+        if (playerHandEl) {
+            playerHandEl.innerHTML = '';
+        }
+
+        // 隐藏底牌
+        this.hideBottomCardsOnTable();
+
+        // 隐藏上家出牌
+        this.hidePlayedCards();
+
+        // 清除玩家角色标记
+        this.roomPlayers.forEach(player => {
+            const playerEl = document.getElementById(`player-${player.id}`);
+            if (playerEl) {
+                const badge = playerEl.querySelector('.landlord-badge');
+                if (badge) badge.remove();
+            }
+        });
     }
 
     /**

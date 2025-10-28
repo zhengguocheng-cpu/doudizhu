@@ -1701,6 +1701,16 @@ class DoudizhuRoomClient {
         console.log('🎴 [出牌] 牌型:', validation.cardType);
         this.addGameMessage(`✅ 出牌：${validation.cardType.description}`, 'success');
 
+        // 第一次出牌时隐藏底牌
+        if (this.bottomCards && this.bottomCards.length > 0) {
+            console.log('🎴 [出牌] 第一次出牌，隐藏底牌');
+            this.hideBottomCardsOnTable();
+            this.bottomCards = null;
+        }
+
+        // 立即显示自己出的牌在桌面上
+        this.displayPlayedCards(cards, this.currentPlayer, validation.cardType);
+
         // 发送出牌请求
         this.socket.emit('play_cards', {
             roomId: this.currentRoom.id,

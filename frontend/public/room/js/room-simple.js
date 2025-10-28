@@ -801,7 +801,8 @@ class DoudizhuRoomClient {
             this.addGameMessage(`${data.playerName} 出了 ${cardTypeDesc}：${data.cards.join(' ')}`, 'game');
         }
         
-        // TODO: 显示上家出的牌在桌面上
+        // 显示上家出的牌在桌面上
+        this.displayPlayedCards(data.cards, data.playerName, data.cardType);
     }
 
     /**
@@ -1215,6 +1216,83 @@ class DoudizhuRoomClient {
         const bottomCardsDisplay = document.getElementById('bottomCardsDisplay');
         if (bottomCardsDisplay) {
             bottomCardsDisplay.style.display = 'none';
+        }
+    }
+
+    /**
+     * 显示上家出的牌在桌面中央
+     */
+    displayPlayedCards(cards, playerName, cardType) {
+        console.log('🎴 [上家出牌] 显示上家出的牌:', cards, playerName, cardType);
+        
+        const playedCardsArea = document.getElementById('playedCardsArea');
+        const playedCardsLabel = document.getElementById('playedCardsLabel');
+        const playedCardsContainer = document.getElementById('playedCardsContainer');
+        
+        if (!playedCardsArea || !playedCardsContainer) {
+            console.error('❌ [上家出牌] 找不到显示元素');
+            return;
+        }
+        
+        // 清空容器
+        playedCardsContainer.innerHTML = '';
+        
+        // 更新标签
+        const cardTypeDesc = cardType ? cardType.description : '';
+        playedCardsLabel.textContent = `${playerName} 出牌：${cardTypeDesc}`;
+        
+        // 创建卡牌元素
+        cards.forEach(card => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'played-card';
+            
+            // 解析卡牌
+            const { value, suit, isJoker } = this.parseCard(card);
+            
+            // 根据花色或JOKER类型添加颜色类
+            if (isJoker) {
+                cardElement.classList.add(isJoker === 'big' ? 'red' : 'black');
+            } else if (suit === '♥' || suit === '♦') {
+                cardElement.classList.add('red');
+            } else {
+                cardElement.classList.add('black');
+            }
+            
+            // 创建数字元素
+            const valueSpan = document.createElement('div');
+            valueSpan.className = 'card-value';
+            if (isJoker) {
+                valueSpan.classList.add('joker-text');
+            }
+            valueSpan.textContent = value;
+            
+            // 创建花色元素
+            const suitSpan = document.createElement('div');
+            suitSpan.className = 'card-suit';
+            suitSpan.textContent = suit;
+            
+            // 添加到卡牌
+            cardElement.appendChild(valueSpan);
+            if (!isJoker) {
+                cardElement.appendChild(suitSpan);
+            }
+            
+            playedCardsContainer.appendChild(cardElement);
+        });
+        
+        // 显示区域
+        playedCardsArea.style.display = 'flex';
+        
+        console.log('✅ [上家出牌] 显示完成');
+    }
+
+    /**
+     * 隐藏上家出牌区域
+     */
+    hidePlayedCards() {
+        const playedCardsArea = document.getElementById('playedCardsArea');
+        if (playedCardsArea) {
+            playedCardsArea.style.display = 'none';
         }
     }
 

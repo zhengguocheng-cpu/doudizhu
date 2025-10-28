@@ -327,3 +327,43 @@ showLandlordBadge(landlordId, landlordName) {
 5. 显示验证结果和牌型信息
 
 ---
+
+#### 实现完成 - Step 2
+**时间**: 08:00 - 08:05
+**状态**: ✅ 完成
+
+**修改文件**:
+1. `room.html` - 添加上家出牌显示区域
+2. `room.css` - 添加上家出牌样式
+3. `room-simple.js` - 实现显示逻辑
+
+**新增HTML结构**:
+```html
+<div class="played-cards-area" id="playedCardsArea">
+    <div class="played-cards-label">上家出牌</div>
+    <div class="played-cards-container">
+        <!-- 上家出的牌 -->
+    </div>
+</div>
+```
+
+**CSS样式**:
+- 位置：桌面中央（absolute + transform）
+- 标签：金色文字，半透明黑色背景
+- 容器：金色边框，半透明黑色背景
+- 卡牌：60x85px，白色渐变背景
+
+**JavaScript方法**:
+- `displayPlayedCards(cards, playerName, cardType)` - 显示上家出牌
+  * 解析卡牌（花色、数值、JOKER）
+  * 创建卡牌元素
+  * 显示玩家名和牌型
+- `hidePlayedCards()` - 隐藏上家出牌区域
+
+**显示逻辑**:
+1. 玩家出牌时调用displayPlayedCards()
+2. 显示玩家名 + 牌型描述
+3. 显示所有出的牌
+4. 下一轮出牌时自动更新
+
+---

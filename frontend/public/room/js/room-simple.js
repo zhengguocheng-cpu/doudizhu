@@ -1662,14 +1662,8 @@ class DoudizhuRoomClient {
      * 切换卡牌选择
      */
     toggleCardSelection(cardElement) {
-        const isSelected = cardElement.classList.toggle('selected');
-        
-        // 选中时向上移动
-        if (isSelected) {
-            cardElement.style.transform = 'translateY(-20px)';
-        } else {
-            cardElement.style.transform = 'translateY(0)';
-        }
+        cardElement.classList.toggle('selected');
+        // CSS已经处理了transform和z-index，不需要在这里设置
     }
 
     /**

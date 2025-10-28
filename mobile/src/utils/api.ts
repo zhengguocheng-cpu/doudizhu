@@ -197,3 +197,4 @@ export const chatApi = {
     apiManager.get(`/api/chat/${roomId}/history`, params)
 }
 
+

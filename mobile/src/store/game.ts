@@ -218,3 +218,4 @@ class GameStore {
 // 创建游戏状态管理实例
 export const gameStore = new GameStore()
 
+

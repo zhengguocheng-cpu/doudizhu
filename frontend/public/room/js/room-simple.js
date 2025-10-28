@@ -242,7 +242,7 @@ class DoudizhuRoomClient {
         const hintBtn = document.getElementById('hintBtn');
         if (hintBtn) {
             hintBtn.addEventListener('click', () => {
-                this.addMessage('提示功能开发中...');
+                this.showHint();
             });
         }
 
@@ -1905,6 +1905,54 @@ class DoudizhuRoomClient {
 
         this.addMessage('选择不出牌');
         this.hideGameActions();
+    }
+
+    /**
+     * 显示出牌提示
+     */
+    showHint() {
+        console.log('💡 [提示] 请求出牌提示');
+
+        if (!this.playerHand || this.playerHand.length === 0) {
+            this.addGameMessage('❌ 没有手牌', 'error');
+            return;
+        }
+
+        // 获取提示
+        const hintCards = CardHintHelper.getHint(
+            this.playerHand,
+            this.lastPlayedCards,
+            this.isFirstPlay
+        );
+
+        if (!hintCards || hintCards.length === 0) {
+            this.addGameMessage('💡 没有可出的牌，建议不出', 'info');
+            return;
+        }
+
+        console.log('💡 [提示] 推荐出牌:', hintCards);
+
+        // 清除之前的选中
+        const allCards = document.querySelectorAll('.card');
+        allCards.forEach(card => card.classList.remove('selected'));
+
+        // 高亮推荐的牌
+        hintCards.forEach(hintCard => {
+            const cardElement = Array.from(allCards).find(el => 
+                el.dataset.card === hintCard
+            );
+            if (cardElement) {
+                cardElement.classList.add('selected');
+            }
+        });
+
+        // 显示提示消息
+        const cardType = CardTypeDetector.detect(hintCards);
+        const message = cardType && cardType.description 
+            ? `💡 建议出：${cardType.description}` 
+            : '💡 建议出这些牌';
+        
+        this.addGameMessage(message, 'info');
     }
 
     /**

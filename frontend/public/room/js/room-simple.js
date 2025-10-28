@@ -1685,7 +1685,10 @@ class DoudizhuRoomClient {
             return;
         }
 
-        const cards = Array.from(selectedCards).map(card => card.textContent);
+        // 从dataset中获取原始卡牌字符串
+        const cards = Array.from(selectedCards).map(card => card.dataset.card);
+        console.log('🎴 [出牌] 选中的牌:', cards);
+        console.log('🎴 [出牌] 玩家手牌:', this.playerHand);
 
         // 验证出牌是否合法
         const validation = CardValidator.validate(

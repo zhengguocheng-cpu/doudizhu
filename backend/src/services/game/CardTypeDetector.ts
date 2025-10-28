@@ -24,7 +24,27 @@ export interface CardPattern {
   value: number;      // 主牌值（用于比较大小）
   cards: string[];    // 牌面
   length?: number;    // 顺子/连对/飞机的长度
+  description?: string; // 牌型描述（用于前端显示）
 }
+
+/**
+ * 牌型描述映射
+ */
+const CARD_TYPE_DESCRIPTIONS: { [key in CardType]: string } = {
+  [CardType.SINGLE]: '单牌',
+  [CardType.PAIR]: '对子',
+  [CardType.TRIPLE]: '三张',
+  [CardType.TRIPLE_WITH_SINGLE]: '三带一',
+  [CardType.TRIPLE_WITH_PAIR]: '三带二',
+  [CardType.STRAIGHT]: '顺子',
+  [CardType.CONSECUTIVE_PAIRS]: '连对',
+  [CardType.AIRPLANE]: '飞机',
+  [CardType.AIRPLANE_WITH_WINGS]: '飞机带翅膀',
+  [CardType.FOUR_WITH_TWO]: '四带二',
+  [CardType.BOMB]: '炸弹',
+  [CardType.ROCKET]: '王炸',
+  [CardType.INVALID]: '无效牌型'
+};
 
 /**
  * 牌面值映射
@@ -57,7 +77,7 @@ export class CardTypeDetector {
     }
 
     // 按优先级检测牌型
-    return (
+    const pattern = (
       this.isRocket(cards) ||
       this.isBomb(cards) ||
       this.isStraight(cards) ||
@@ -72,6 +92,13 @@ export class CardTypeDetector {
       this.isSingle(cards) ||
       { type: CardType.INVALID, value: 0, cards }
     );
+    
+    // 添加描述
+    if (pattern && !pattern.description) {
+      pattern.description = CARD_TYPE_DESCRIPTIONS[pattern.type];
+    }
+    
+    return pattern;
   }
 
   /**

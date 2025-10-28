@@ -755,3 +755,83 @@ room.gameState = {
 - ✅ 正常跟牌时需要压过上家
 
 ---
+
+### 21:33 - Bug修复：牌型描述显示undefined
+
+#### 🐛 问题描述
+用户测试时发现：
+- 玩家1出三个10带2个3，桌面显示"玩家1 出牌：undefined"
+- 玩家3出三个K带2个4，提示"牌型不匹配"（应该可以压过）
+
+#### 🔍 根本原因
+后端`CardPattern`接口缺少`description`字段：
+```typescript
+// ❌ 缺少description
+export interface CardPattern {
+  type: CardType;
+  value: number;
+  cards: string[];
+  length?: number;
+}
+```
+
+导致：
+- 前端收到的`cardType`没有`description`属性
+- 显示时`cardType.description`为undefined
+
+#### ✅ 解决方案
+
+**1. 添加description字段**
+```typescript
+export interface CardPattern {
+  type: CardType;
+  value: number;
+  cards: string[];
+  length?: number;
+  description?: string; // ✅ 新增
+}
+```
+
+**2. 创建牌型描述映射**
+```typescript
+const CARD_TYPE_DESCRIPTIONS: { [key in CardType]: string } = {
+  [CardType.SINGLE]: '单牌',
+  [CardType.PAIR]: '对子',
+  [CardType.TRIPLE]: '三张',
+  [CardType.TRIPLE_WITH_SINGLE]: '三带一',
+  [CardType.TRIPLE_WITH_PAIR]: '三带二',
+  [CardType.STRAIGHT]: '顺子',
+  [CardType.CONSECUTIVE_PAIRS]: '连对',
+  [CardType.AIRPLANE]: '飞机',
+  [CardType.AIRPLANE_WITH_WINGS]: '飞机带翅膀',
+  [CardType.FOUR_WITH_TWO]: '四带二',
+  [CardType.BOMB]: '炸弹',
+  [CardType.ROCKET]: '王炸',
+  [CardType.INVALID]: '无效牌型'
+};
+```
+
+**3. 在detect方法中添加描述**
+```typescript
+const pattern = this.isRocket(cards) || ... || { type: CardType.INVALID, value: 0, cards };
+
+// 添加描述
+if (pattern && !pattern.description) {
+  pattern.description = CARD_TYPE_DESCRIPTIONS[pattern.type];
+}
+
+return pattern;
+```
+
+#### 📝 修改内容
+- `CardTypeDetector.ts`：
+  * 添加description字段到CardPattern接口
+  * 创建CARD_TYPE_DESCRIPTIONS映射表
+  * 在detect方法中自动添加描述
+
+#### 🎯 效果
+- ✅ 桌面显示"玩家1 出牌：三带二"
+- ✅ 所有牌型都有正确的中文描述
+- ✅ 前后端数据结构统一
+
+---

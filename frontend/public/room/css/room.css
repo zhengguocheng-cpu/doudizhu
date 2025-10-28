@@ -534,7 +534,7 @@
 .card:hover {
     transform: translateY(-15px) scale(1.05); /* 悬停时向上移动并放大 */
     box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-    z-index: 100; /* 确保悬停的牌在最上层 */
+    /* 不改变z-index，保持原来的遮挡关系 */
 }
 
 .card.selected {

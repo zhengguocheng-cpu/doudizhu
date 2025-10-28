@@ -574,3 +574,40 @@ emit('cards_played', {
 - `CardPlayHandler.ts`：将`pattern`字段改为`cardType`
 
 ---
+
+### 20:51 - UI优化：移除hover时的z-index
+
+#### 📝 用户反馈
+用户测试后反馈：
+- ✅ 选中牌后的遮挡关系正确
+- ❌ 鼠标悬停时，卡牌还是遮挡了后面的牌
+
+#### 🔍 问题分析
+CSS中hover状态设置了`z-index: 100`：
+```css
+.card:hover {
+    z-index: 100; /* ❌ 改变了遮挡关系 */
+}
+```
+
+这导致悬停的卡牌会遮挡后面的卡牌。
+
+#### ✅ 解决方案
+移除hover时的z-index设置：
+```css
+.card:hover {
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    /* ✅ 不改变z-index，保持原来的遮挡关系 */
+}
+```
+
+#### 📝 修改内容
+- `room.css`：移除`.card:hover`的z-index设置
+
+#### 🎯 最终效果
+- ✅ 悬停时：向上移动15px，放大1.05倍，增强阴影
+- ✅ 选中时：向上移动20px，红色边框，浅红背景
+- ✅ 所有状态都保持原有的遮挡关系（后面的牌遮挡前面的牌）
+
+---

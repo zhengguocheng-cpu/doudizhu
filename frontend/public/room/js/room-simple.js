@@ -953,8 +953,13 @@ class DoudizhuRoomClient {
         const role = data.winnerRole === 'landlord' ? '地主' : '农民';
         this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
 
-        // 显示结算界面
-        this.showSettlementModal(data);
+        // 保存结算数据到localStorage
+        localStorage.setItem('lastGameSettlement', JSON.stringify(data));
+
+        // 跳转到独立的结算页面
+        setTimeout(() => {
+            window.location.href = '/settlement/index.html';
+        }, 1500); // 延迟1.5秒让玩家看到消息
     }
 
     /**

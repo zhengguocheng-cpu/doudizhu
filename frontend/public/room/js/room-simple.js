@@ -2147,11 +2147,19 @@ class DoudizhuRoomClient {
             
             if (this.turnTimeLeft <= 0) {
                 this.stopTurnTimer();
-                // 倒计时结束，自动不出
+                // 倒计时结束，自动处理
                 if (this.isMyTurn) {
-                    console.log('⏰ [倒计时] 时间到，自动不出');
-                    this.addGameMessage('⏰ 时间到，自动不出', 'warning');
-                    this.passTurn();
+                    // 如果是首次出牌或新一轮（不能不出），自动按提示出牌
+                    if (this.isFirstPlay || !this.lastPlayedCards) {
+                        console.log('⏰ [倒计时] 时间到，自动按提示出牌');
+                        this.addGameMessage('⏰ 时间到，自动出牌', 'warning');
+                        this.autoPlayByHint();
+                    } else {
+                        // 否则自动不出
+                        console.log('⏰ [倒计时] 时间到，自动不出');
+                        this.addGameMessage('⏰ 时间到，自动不出', 'warning');
+                        this.passTurn();
+                    }
                 }
             }
         }, 1000);
@@ -2190,6 +2198,57 @@ class DoudizhuRoomClient {
         }
     }
 
+    /**
+     * 自动按提示出牌
+     */
+    autoPlayByHint() {
+        console.log('🤖 [自动出牌] 开始自动出牌');
+        
+        if (!this.playerHand || this.playerHand.length === 0) {
+            console.warn('⚠️ [自动出牌] 没有手牌');
+            this.passTurn();
+            return;
+        }
+        
+        // 获取提示
+        const hintCards = CardHintHelper.getHint(
+            this.playerHand,
+            this.lastPlayedCards,
+            this.isFirstPlay
+        );
+        
+        if (!hintCards || hintCards.length === 0) {
+            console.log('🤖 [自动出牌] 没有可出的牌，自动不出');
+            this.passTurn();
+            return;
+        }
+        
+        console.log('🤖 [自动出牌] 推荐出牌:', hintCards);
+        
+        // 自动选中推荐的牌
+        const container = document.getElementById('playerHand');
+        if (!container) return;
+        
+        // 清除之前的选中
+        const allCards = container.querySelectorAll('.card');
+        allCards.forEach(card => card.classList.remove('selected'));
+        
+        // 选中推荐的牌
+        hintCards.forEach(hintCard => {
+            const cardElement = Array.from(allCards).find(el => 
+                el.dataset.card === hintCard
+            );
+            if (cardElement) {
+                cardElement.classList.add('selected');
+            }
+        });
+        
+        // 延迟500ms后自动出牌，让玩家看到选中的牌
+        setTimeout(() => {
+            this.playCards();
+        }, 500);
+    }
+    
     /**
      * 初始化音效系统
      */

@@ -105,8 +105,8 @@ export class CardTypeDetector {
    * 获取牌的数值
    */
   public static getCardValue(card: string): number {
-    // 移除花色符号，只保留数字/字母
-    const rank = card.replace(/[♠♥♣♦]/g, '');
+    // 移除花色符号和🃏符号，只保留数字/字母
+    const rank = card.replace(/[♠♥♣♦🃏]/g, '');
     return CARD_VALUES[rank] || 0;
   }
 
@@ -114,7 +114,8 @@ export class CardTypeDetector {
    * 获取牌的点数（不含花色）
    */
   private static getCardRank(card: string): string {
-    return card.replace(/[♠♥♣♦]/g, '');
+    // 移除花色符号和🃏符号
+    return card.replace(/[♠♥♣♦🃏]/g, '');
   }
 
   /**

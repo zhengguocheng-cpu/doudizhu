@@ -1,0 +1,129 @@
+{
+  "version": "1.0.0",
+  "players": {},
+  "scoreChanges": [],
+  "achievements": [
+    {
+      "id": "first_win",
+      "name": "首胜",
+      "description": "赢得第一场游戏",
+      "icon": "🎉",
+      "type": "milestone",
+      "condition": {
+        "type": "games_won",
+        "value": 1
+      },
+      "rewardScore": 10
+    },
+    {
+      "id": "win_10",
+      "name": "小有成就",
+      "description": "赢得10场游戏",
+      "icon": "🏅",
+      "type": "milestone",
+      "condition": {
+        "type": "games_won",
+        "value": 10
+      },
+      "rewardScore": 50
+    },
+    {
+      "id": "win_50",
+      "name": "游戏高手",
+      "description": "赢得50场游戏",
+      "icon": "🏆",
+      "type": "milestone",
+      "condition": {
+        "type": "games_won",
+        "value": 50
+      },
+      "rewardScore": 200
+    },
+    {
+      "id": "win_100",
+      "name": "斗地主大师",
+      "description": "赢得100场游戏",
+      "icon": "👑",
+      "type": "master",
+      "condition": {
+        "type": "games_won",
+        "value": 100
+      },
+      "rewardScore": 500
+    },
+    {
+      "id": "streak_3",
+      "name": "三连胜",
+      "description": "连续赢得3场游戏",
+      "icon": "🔥",
+      "type": "streak",
+      "condition": {
+        "type": "win_streak",
+        "value": 3
+      },
+      "rewardScore": 30
+    },
+    {
+      "id": "streak_5",
+      "name": "五连胜",
+      "description": "连续赢得5场游戏",
+      "icon": "⚡",
+      "type": "streak",
+      "condition": {
+        "type": "win_streak",
+        "value": 5
+      },
+      "rewardScore": 100
+    },
+    {
+      "id": "streak_10",
+      "name": "十连胜",
+      "description": "连续赢得10场游戏",
+      "icon": "💫",
+      "type": "streak",
+      "condition": {
+        "type": "win_streak",
+        "value": 10
+      },
+      "rewardScore": 300
+    },
+    {
+      "id": "score_1000",
+      "name": "千分玩家",
+      "description": "总积分达到1000",
+      "icon": "💰",
+      "type": "milestone",
+      "condition": {
+        "type": "total_score",
+        "value": 1000
+      },
+      "rewardScore": 100
+    },
+    {
+      "id": "score_5000",
+      "name": "五千分大佬",
+      "description": "总积分达到5000",
+      "icon": "💎",
+      "type": "milestone",
+      "condition": {
+        "type": "total_score",
+        "value": 5000
+      },
+      "rewardScore": 500
+    },
+    {
+      "id": "games_100",
+      "name": "百场老将",
+      "description": "参与100场游戏",
+      "icon": "🎮",
+      "type": "milestone",
+      "condition": {
+        "type": "games_played",
+        "value": 100
+      },
+      "rewardScore": 200
+    }
+  ],
+  "playerAchievements": {},
+  "lastUpdated": "2025-10-29T23:05:25.267Z"
+}

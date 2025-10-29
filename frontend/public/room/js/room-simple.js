@@ -686,9 +686,14 @@ class DoudizhuRoomClient {
         console.log('选择抢地主:', bid);
         
         // 播放抢地主音效
-        if (bid && window.SoundManager) {
-            window.SoundManager.playBid();
-            console.log('🔊 播放抢地主音效');
+        if (bid) {
+            console.log('🔊 [音效] 准备播放抢地主音效');
+            if (window.SoundManager) {
+                console.log('🔊 [音效] SoundManager存在，调用playBid()');
+                window.SoundManager.playBid();
+            } else {
+                console.warn('⚠️ [音效] SoundManager不存在');
+            }
         }
         
         // 发送选择到服务器

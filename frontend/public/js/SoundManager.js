@@ -78,17 +78,28 @@ class SoundManager {
             return;
         }
         
+        // 播放音效时降低背景音乐音量
+        this.duckBackgroundMusic();
+        
         try {
             sound.volume = this.volume;
             sound.currentTime = 0; // 重置播放位置
+            
+            // 音效播放完成后恢复背景音乐音量
+            sound.onended = () => {
+                this.restoreBackgroundMusic();
+            };
+            
             sound.play().catch(err => {
                 // 如果音效文件加载失败，使用临时音效生成器
                 console.warn(`⚠️ 音效播放失败，使用临时音效: ${soundName}`, err);
                 this.playTempSound(soundName);
+                this.restoreBackgroundMusic();
             });
         } catch (err) {
             console.warn(`⚠️ 音效播放异常，使用临时音效: ${soundName}`, err);
             this.playTempSound(soundName);
+            this.restoreBackgroundMusic();
         }
     }
     
@@ -135,6 +146,26 @@ class SoundManager {
             this.currentBgMusic.pause();
             this.currentBgMusic.currentTime = 0;
             this.currentBgMusic = null;
+        }
+    }
+    
+    /**
+     * 降低背景音乐音量（音效播放时）
+     */
+    duckBackgroundMusic() {
+        if (this.currentBgMusic && this.musicEnabled) {
+            // 降低到原音量的20%
+            this.currentBgMusic.volume = this.musicVolume * 0.2;
+        }
+    }
+    
+    /**
+     * 恢复背景音乐音量
+     */
+    restoreBackgroundMusic() {
+        if (this.currentBgMusic && this.musicEnabled) {
+            // 恢复到原音量
+            this.currentBgMusic.volume = this.musicVolume;
         }
     }
     
@@ -306,6 +337,9 @@ class SoundManager {
      * 播放抢地主音效
      */
     playBid() {
+        console.log('🔊 [SoundManager] playBid() 被调用');
+        console.log('🔊 [SoundManager] enabled:', this.enabled);
+        console.log('🔊 [SoundManager] bid音效对象:', this.sounds.bid);
         this.play('bid');
     }
     

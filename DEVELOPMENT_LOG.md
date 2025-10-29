@@ -126,9 +126,71 @@ fix: hide start game button instead of disabling it
 ```
 
 **下一步**：
-- [ ] 完善计分系统（倍数计算）
+- [x] 完善计分系统（倍数计算）
+- [x] 修复春天判断Bug
+- [ ] 运行自动化测试
 - [ ] 添加音量控制UI
 - [ ] 性能优化
+
+---
+
+### 2025-10-29 22:00 - 计分系统完成和Bug修复
+
+**目标**：完善计分系统并修复春天判断Bug
+
+**完成内容**：
+1. ✅ 实现完整计分系统
+   - ScoreCalculator类（288行）
+   - 炸弹倍数（×2^n）
+   - 王炸倍数（×4^n）
+   - 春天/反春倍数（×2）
+   - 个人得分计算
+
+2. ✅ 修复春天判断Bug
+   - 改用游戏历史而非手牌数
+   - 检查玩家是否实际出过牌
+   - 修复倍数计算错误
+
+3. ✅ 创建自动化测试
+   - Jest测试框架配置
+   - 8个测试场景
+   - 600+行测试代码
+
+4. ✅ 前端显示优化
+   - 解析得分数据
+   - 显示倍数说明
+   - 颜色编码得分
+
+5. ✅ 游戏历史记录
+   - 记录每次出牌
+   - 记录牌型信息
+   - 用于计分统计
+
+**技术细节**：
+- 使用幂运算计算倍数叠加
+- 游戏历史判断春天/反春
+- TypeScript类型安全
+- Jest自动化测试框架
+
+**文件清单**：
+- `backend/src/services/game/ScoreCalculator.ts` (新增)
+- `backend/src/test/ScoreCalculator.test.ts` (新增)
+- `backend/jest.config.js` (新增)
+- `SCORING_SYSTEM_GUIDE.md` (新增, 415行)
+- `SCORING_SYSTEM_SUMMARY.md` (新增, 500+行)
+
+**Git提交**：
+```
+feat: implement comprehensive scoring system
+fix: correct spring and anti-spring detection logic
+docs: add comprehensive scoring system test guide
+docs: add scoring system implementation summary
+```
+
+**下一步**：
+- [ ] 安装Jest依赖并运行测试
+- [ ] 添加积分记录功能
+- [ ] 优化结算界面动画
 
 ---
 

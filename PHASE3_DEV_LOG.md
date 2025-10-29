@@ -261,6 +261,81 @@ showHint() {
 
 ---
 
+### 08:19 - Bug修复：结算界面按钮 + 再来一局功能
+
+#### 🐛 问题描述
+用户测试发现两个问题：
+1. 结算界面的按钮文字看不清（深色文字在深色背景上）
+2. 所有玩家点击"再来一局"后，没有开始新游戏
+
+#### 🔍 根本原因
+
+**问题1：按钮文字颜色**
+- CSS中没有设置按钮的文字颜色
+- 默认文字颜色是深色，在深色按钮背景上看不清
+
+**问题2：再来一局逻辑**
+- 前端只重置了本地状态，没有通知后端
+- 后端游戏结束后将房间状态设置为`'finished'`
+- `validatePlayerReady`检查房间状态必须是`'waiting'`
+- 导致无法准备开始新游戏
+
+#### ✅ 解决方案
+
+**1. 修复按钮样式**
+```css
+.settlement-footer .btn {
+    color: white;        /* 添加白色文字 */
+    cursor: pointer;     /* 添加鼠标指针 */
+}
+```
+
+**2. 前端自动发送准备事件**
+```javascript
+playAgain() {
+    // 关闭弹窗
+    modal.style.display = 'none';
+    
+    // 重置游戏状态
+    this.resetGameState();
+    
+    // 自动发送准备事件
+    this.socket.emit('player_ready', {
+        roomId: this.currentRoom.id,
+        userId: this.currentPlayerId
+    });
+}
+```
+
+**3. 后端重置房间状态**
+```typescript
+// 游戏结束后重置房间状态
+room.status = 'waiting';  // 改为waiting而不是finished
+room.gameState = null;
+
+// 重置所有玩家状态
+room.players.forEach((p: any) => {
+    p.ready = false;
+    p.role = null;
+    p.cards = [];
+    p.cardCount = 0;
+});
+```
+
+#### 📝 修改内容
+- `room.css`：添加按钮文字颜色和鼠标样式
+- `room-simple.js`：`playAgain()`自动发送准备事件
+- `CardPlayHandler.ts`：游戏结束后重置房间状态为waiting
+
+#### 🎯 效果
+- ✅ 按钮文字清晰可见（白色文字）
+- ✅ 鼠标悬停时显示手型指针
+- ✅ 点击"再来一局"自动准备
+- ✅ 所有玩家都点击后自动开始新游戏
+- ✅ 支持无限次再来一局
+
+---
+
 ## 💡 技术亮点
 
 1. **美观的结算界面**

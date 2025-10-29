@@ -16,6 +16,7 @@ class UIManager {
             connectionStatus: document.getElementById('connectionStatus'),
             currentPlayerNameSpan: document.getElementById('currentPlayerName'),
             playerAvatarSpan: document.getElementById('playerAvatar'),
+            profileBtn: document.getElementById('profileBtn'),
             logoutBtn: document.getElementById('logoutBtn'),
             roomList: document.getElementById('roomList'),
             refreshRoomsBtn: document.getElementById('refreshRoomsBtn'),
@@ -29,6 +30,9 @@ class UIManager {
      * 绑定所有UI事件
      */
     bindEvents(eventHandlers) {
+        if (this.elements.profileBtn) {
+            this.elements.profileBtn.addEventListener('click', eventHandlers.onProfile);
+        }
         if (this.elements.logoutBtn) {
             this.elements.logoutBtn.addEventListener('click', eventHandlers.onLogout);
         }

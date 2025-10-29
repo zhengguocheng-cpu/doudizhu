@@ -155,6 +155,7 @@ class LobbyController {
      */
     bindEvents() {
         this.uiManager.bindEvents({
+            onProfile: () => this.handleProfile(),
             onLogout: () => this.handleLogout(),
             onRefreshRooms: () => this.handleRefreshRooms(),
             onQuickJoin: () => this.handleQuickJoin(),
@@ -162,6 +163,14 @@ class LobbyController {
         });
 
         this.uiManager.setRoomJoinHandler((roomId) => this.handleJoinRoom(roomId));
+    }
+
+    /**
+     * 处理进入个人中心
+     */
+    handleProfile() {
+        console.log('👤 进入个人中心');
+        window.location.href = '/profile';
     }
 
     /**

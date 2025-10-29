@@ -3,6 +3,9 @@
  * 负责分析手牌，给出智能出牌建议
  */
 class CardHintHelper {
+    // 提示索引，用于循环提示
+    static hintIndex = 0;
+
     /**
      * 获取出牌提示
      * @param {Array<string>} playerHand - 玩家手牌
@@ -15,32 +18,306 @@ class CardHintHelper {
             return null;
         }
 
-        // 首次出牌或新一轮，优先出小牌
+        // 首次出牌或新一轮，获取所有可能的牌型
         if (isFirstPlay || !lastPlay) {
-            return this.getSmallestPlayableCards(playerHand);
+            const allHints = this.getAllPlayableCards(playerHand);
+            if (allHints.length === 0) {
+                return null;
+            }
+            
+            // 循环提示
+            const hint = allHints[this.hintIndex % allHints.length];
+            this.hintIndex++;
+            return hint;
         }
 
-        // 需要压过上家的牌
-        return this.getBeatingCards(playerHand, lastPlay);
+        // 需要压过上家的牌，获取所有可能的牌型
+        const allHints = this.getAllBeatingCards(playerHand, lastPlay);
+        if (allHints.length === 0) {
+            return null;
+        }
+        
+        // 循环提示
+        const hint = allHints[this.hintIndex % allHints.length];
+        this.hintIndex++;
+        return hint;
     }
 
     /**
-     * 获取最小的可出牌组合（首次出牌时使用）
-     * @param {Array<string>} playerHand - 玩家手牌
-     * @returns {Array<string>} 推荐的牌
+     * 重置提示索引
      */
-    static getSmallestPlayableCards(playerHand) {
-        // 按牌值排序
-        const sortedHand = this.sortCards(playerHand);
+    static resetHintIndex() {
+        this.hintIndex = 0;
+    }
 
-        // 优先级：单牌 > 对子 > 三张 > 顺子 > 其他
+    /**
+     * 获取所有可出的牌组合（首次出牌时使用）
+     * @param {Array<string>} playerHand - 玩家手牌
+     * @returns {Array<Array<string>>} 所有可能的牌型，按优先级排序
+     */
+    static getAllPlayableCards(playerHand) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
         
-        // 1. 尝试找最小的单牌
-        if (sortedHand.length > 0) {
-            return [sortedHand[0]];
+        // 1. 查找所有炸弹（优先级最高，尽快出掉）
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length === 4) {
+                hints.push([...cards]);
+            }
         }
+        
+        // 2. 查找王炸
+        const rocket = this.findRocket(playerHand);
+        if (rocket) {
+            hints.push(rocket);
+        }
+        
+        // 3. 查找所有三带二（尽可能多出牌）
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                const triple = cards.slice(0, 3);
+                const remainingCards = playerHand.filter(c => !triple.includes(c));
+                const remainingGroups = this.groupCardsByRank(remainingCards);
+                
+                for (const [pairRank, pairCards] of remainingGroups.entries()) {
+                    if (pairCards.length >= 2) {
+                        hints.push([...triple, ...pairCards.slice(0, 2)]);
+                        break; // 只取第一个三带二
+                    }
+                }
+            }
+        }
+        
+        // 4. 查找所有三带一
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                const triple = cards.slice(0, 3);
+                const remainingCards = playerHand.filter(c => !triple.includes(c));
+                if (remainingCards.length > 0) {
+                    const sortedRemaining = this.sortCards(remainingCards);
+                    hints.push([...triple, sortedRemaining[0]]);
+                }
+            }
+        }
+        
+        // 5. 查找所有三张
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                hints.push(cards.slice(0, 3));
+            }
+        }
+        
+        // 6. 查找所有对子
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 2) {
+                hints.push(cards.slice(0, 2));
+            }
+        }
+        
+        // 7. 所有单牌（从小到大）
+        const sortedHand = this.sortCards(playerHand);
+        for (const card of sortedHand) {
+            hints.push([card]);
+        }
+        
+        return hints;
+    }
 
-        return null;
+    /**
+     * 获取所有能压过上家的牌组合
+     * @param {Array<string>} playerHand - 玩家手牌
+     * @param {Object} lastPlay - 上家出的牌型
+     * @returns {Array<Array<string>>} 所有可能的牌型
+     */
+    static getAllBeatingCards(playerHand, lastPlay) {
+        const hints = [];
+        const lastType = CardValidator.normalizeType(lastPlay.type);
+        const lastValue = lastPlay.value;
+        
+        // 按牌型查找所有能压过的牌
+        switch (lastType) {
+            case 'single':
+                hints.push(...this.findAllBiggerSingles(playerHand, lastValue));
+                break;
+            
+            case 'pair':
+                hints.push(...this.findAllBiggerPairs(playerHand, lastValue));
+                break;
+            
+            case 'triple':
+                hints.push(...this.findAllBiggerTriples(playerHand, lastValue));
+                break;
+            
+            case 'triple_with_single':
+                hints.push(...this.findAllBiggerTripleWithSingles(playerHand, lastValue));
+                break;
+            
+            case 'triple_with_pair':
+                hints.push(...this.findAllBiggerTripleWithPairs(playerHand, lastValue));
+                break;
+            
+            case 'bomb':
+                hints.push(...this.findAllBiggerBombs(playerHand, lastValue));
+                break;
+        }
+        
+        // 任何牌型都可以用炸弹或王炸压
+        if (lastType !== 'bomb' && lastType !== 'rocket') {
+            const bombs = this.findAllBombs(playerHand);
+            hints.push(...bombs);
+        }
+        
+        const rocket = this.findRocket(playerHand);
+        if (rocket && lastType !== 'rocket') {
+            hints.push(rocket);
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的单牌
+     */
+    static findAllBiggerSingles(playerHand, minValue) {
+        const hints = [];
+        const sortedHand = this.sortCards(playerHand);
+        
+        for (const card of sortedHand) {
+            const value = CardTypeDetector.getCardValue(card);
+            if (value > minValue) {
+                hints.push([card]);
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的对子
+     */
+    static findAllBiggerPairs(playerHand, minValue) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 2) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    hints.push(cards.slice(0, 2));
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的三张
+     */
+    static findAllBiggerTriples(playerHand, minValue) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    hints.push(cards.slice(0, 3));
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的三带一
+     */
+    static findAllBiggerTripleWithSingles(playerHand, minValue) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    const triple = cards.slice(0, 3);
+                    const remainingCards = playerHand.filter(c => !triple.includes(c));
+                    
+                    if (remainingCards.length > 0) {
+                        const sortedRemaining = this.sortCards(remainingCards);
+                        // 可以带不同的单牌
+                        for (const single of sortedRemaining) {
+                            hints.push([...triple, single]);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的三带二
+     */
+    static findAllBiggerTripleWithPairs(playerHand, minValue) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length >= 3) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    const triple = cards.slice(0, 3);
+                    const remainingCards = playerHand.filter(c => !triple.includes(c));
+                    const remainingGroups = this.groupCardsByRank(remainingCards);
+                    
+                    for (const [pairRank, pairCards] of remainingGroups.entries()) {
+                        if (pairCards.length >= 2) {
+                            hints.push([...triple, ...pairCards.slice(0, 2)]);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的炸弹
+     */
+    static findAllBiggerBombs(playerHand, minValue) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length === 4) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    hints.push(cards);
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有炸弹
+     */
+    static findAllBombs(playerHand) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        
+        for (const [rank, cards] of cardGroups.entries()) {
+            if (cards.length === 4) {
+                hints.push(cards);
+            }
+        }
+        
+        return hints;
     }
 
     /**

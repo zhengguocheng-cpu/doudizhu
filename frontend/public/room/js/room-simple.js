@@ -794,6 +794,9 @@ class DoudizhuRoomClient {
         if (data.playerId === this.currentPlayerId) {
             this.isMyTurn = true;
             
+            // 重置提示索引
+            CardHintHelper.resetHintIndex();
+            
             // 判断是否可以不出
             // 如果是首次出牌或新一轮开始，不能不出
             const canPass = !data.isFirstPlay && this.lastPlayedCards !== null;
@@ -1039,8 +1042,13 @@ class DoudizhuRoomClient {
         }
 
         // 绑定按钮事件
+        const viewProfileBtn = document.getElementById('viewProfileBtn');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const backToLobbyBtn = document.getElementById('backToLobbyBtn');
+
+        if (viewProfileBtn) {
+            viewProfileBtn.onclick = () => this.viewProfile();
+        }
 
         if (playAgainBtn) {
             playAgainBtn.onclick = () => this.playAgain();
@@ -2414,6 +2422,14 @@ class DoudizhuRoomClient {
             default:
                 this.playSound('play');
         }
+    }
+
+    /**
+     * 查看个人中心
+     */
+    viewProfile() {
+        console.log('👤 [查看战绩] 跳转到个人中心');
+        window.location.href = '/profile';
     }
 
     /**

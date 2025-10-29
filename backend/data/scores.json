@@ -1,7 +1,196 @@
 {
   "version": "1.0.0",
-  "players": {},
-  "scoreChanges": [],
+  "players": {
+    "wwww": {
+      "userId": "wwww",
+      "username": "wwww",
+      "totalScore": 1114,
+      "gamesPlayed": 1,
+      "gamesWon": 1,
+      "gamesLost": 0,
+      "winRate": 100,
+      "maxStreak": 1,
+      "currentStreak": 1,
+      "maxScore": 1114,
+      "minScore": 1000,
+      "landlordGames": 1,
+      "landlordWins": 1,
+      "farmerGames": 0,
+      "farmerWins": 0,
+      "gameHistory": [
+        {
+          "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+          "timestamp": "2025-10-29T23:15:55.422Z",
+          "roomId": "A01",
+          "role": "landlord",
+          "isWinner": true,
+          "scoreChange": 4,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 2
+          },
+          "opponents": [
+            "dd",
+            "a1"
+          ],
+          "tags": [
+            "春天"
+          ]
+        }
+      ],
+      "createdAt": "2025-10-29T23:15:55.422Z",
+      "updatedAt": "2025-10-29T23:15:55.452Z",
+      "lastPlayedAt": "2025-10-29T23:15:55.422Z"
+    },
+    "dd": {
+      "userId": "dd",
+      "username": "dd",
+      "totalScore": 998,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0,
+      "maxStreak": 0,
+      "currentStreak": 0,
+      "maxScore": 1000,
+      "minScore": 998,
+      "landlordGames": 0,
+      "landlordWins": 0,
+      "farmerGames": 1,
+      "farmerWins": 0,
+      "gameHistory": [
+        {
+          "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+          "timestamp": "2025-10-29T23:15:55.422Z",
+          "roomId": "A01",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -2,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 2
+          },
+          "opponents": [
+            "wwww",
+            "a1"
+          ],
+          "tags": [
+            "春天"
+          ]
+        }
+      ],
+      "createdAt": "2025-10-29T23:15:55.468Z",
+      "updatedAt": "2025-10-29T23:15:55.476Z",
+      "lastPlayedAt": "2025-10-29T23:15:55.422Z"
+    },
+    "a1": {
+      "userId": "a1",
+      "username": "a1",
+      "totalScore": 998,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0,
+      "maxStreak": 0,
+      "currentStreak": 0,
+      "maxScore": 1000,
+      "minScore": 998,
+      "landlordGames": 0,
+      "landlordWins": 0,
+      "farmerGames": 1,
+      "farmerWins": 0,
+      "gameHistory": [
+        {
+          "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+          "timestamp": "2025-10-29T23:15:55.422Z",
+          "roomId": "A01",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -2,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 2
+          },
+          "opponents": [
+            "wwww",
+            "dd"
+          ],
+          "tags": [
+            "春天"
+          ]
+        }
+      ],
+      "createdAt": "2025-10-29T23:15:55.484Z",
+      "updatedAt": "2025-10-29T23:15:55.513Z",
+      "lastPlayedAt": "2025-10-29T23:15:55.422Z"
+    }
+  },
+  "scoreChanges": [
+    {
+      "id": "1bfd8589-2f44-4a08-a62b-5e873c2f2fe0",
+      "userId": "a1",
+      "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+      "scoreBefore": 1000,
+      "scoreAfter": 998,
+      "scoreChange": -2,
+      "reason": "game_lose",
+      "timestamp": "2025-10-29T23:15:55.422Z"
+    },
+    {
+      "id": "ea30d275-0214-4a0a-a4c4-022ca63cebbe",
+      "userId": "dd",
+      "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+      "scoreBefore": 1000,
+      "scoreAfter": 998,
+      "scoreChange": -2,
+      "reason": "game_lose",
+      "timestamp": "2025-10-29T23:15:55.422Z"
+    },
+    {
+      "id": "9c16d698-9f14-4451-aebf-68d04e8d0d51",
+      "userId": "wwww",
+      "gameId": "",
+      "scoreBefore": 1014,
+      "scoreAfter": 1114,
+      "scoreChange": 100,
+      "reason": "system_reward",
+      "timestamp": "2025-10-29T23:15:55.454Z",
+      "note": "解锁成就: 千分玩家"
+    },
+    {
+      "id": "76760ac5-63dc-4936-b0e4-2f9525058f8c",
+      "userId": "wwww",
+      "gameId": "",
+      "scoreBefore": 1004,
+      "scoreAfter": 1014,
+      "scoreChange": 10,
+      "reason": "system_reward",
+      "timestamp": "2025-10-29T23:15:55.444Z",
+      "note": "解锁成就: 首胜"
+    },
+    {
+      "id": "e80a8f67-d6d5-4b7b-b552-becb304660fa",
+      "userId": "wwww",
+      "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
+      "scoreBefore": 1000,
+      "scoreAfter": 1004,
+      "scoreChange": 4,
+      "reason": "game_win",
+      "timestamp": "2025-10-29T23:15:55.422Z"
+    }
+  ],
   "achievements": [
     {
       "id": "first_win",
@@ -124,6 +313,23 @@
       "rewardScore": 200
     }
   ],
-  "playerAchievements": {},
-  "lastUpdated": "2025-10-29T23:05:25.267Z"
+  "playerAchievements": {
+    "wwww": [
+      {
+        "userId": "wwww",
+        "achievementId": "first_win",
+        "unlockedAt": "2025-10-29T23:15:55.436Z",
+        "progress": 100,
+        "isUnlocked": true
+      },
+      {
+        "userId": "wwww",
+        "achievementId": "score_1000",
+        "unlockedAt": "2025-10-29T23:15:55.448Z",
+        "progress": 100,
+        "isUnlocked": true
+      }
+    ]
+  },
+  "lastUpdated": "2025-10-29T23:15:55.515Z"
 }

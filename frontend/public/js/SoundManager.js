@@ -33,8 +33,8 @@ class SoundManager {
         
         // 背景音乐
         this.bgMusic = {
-            lobby: this.createAudio('/sounds/bg-lobby.mp3', true),
-            game: this.createAudio('/sounds/bg-game.mp3', true)
+            lobby: this.createAudio('/sounds/background.wav', true),
+            game: this.createAudio('/sounds/background.wav', true)
         };
         
         // 音量设置

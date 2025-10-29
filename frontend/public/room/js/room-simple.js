@@ -208,6 +208,9 @@ class DoudizhuRoomClient {
                 // 初始化音效系统
                 this.initSound();
                 
+                // 播放背景音乐
+                this.playBgMusic();
+                
                 // 播放点击音效
                 this.playSound('click');
                 
@@ -2263,6 +2266,26 @@ class DoudizhuRoomClient {
     }
     
     /**
+     * 播放背景音乐
+     */
+    playBgMusic() {
+        if (window.SoundManager) {
+            window.SoundManager.playBgMusic('game');
+            console.log('🎵 背景音乐已开始播放');
+        }
+    }
+    
+    /**
+     * 停止背景音乐
+     */
+    stopBgMusic() {
+        if (window.SoundManager) {
+            window.SoundManager.stopBgMusic();
+            console.log('🎵 背景音乐已停止');
+        }
+    }
+    
+    /**
      * 播放音效
      */
     playSound(soundName) {
@@ -2311,6 +2334,9 @@ class DoudizhuRoomClient {
         
         // 停止倒计时
         this.stopTurnTimer();
+        
+        // 停止背景音乐
+        this.stopBgMusic();
         
         // 通知后端离开房间
         if (this.socket && this.currentRoom) {

@@ -39,14 +39,15 @@ class TestHelper {
   /**
    * 创建出牌历史
    */
-  static createPlayHistory(bombs: number = 0, rockets: number = 0): any[] {
+  static createPlayHistory(bombs: number = 0, rockets: number = 0, playerId: string = 'player1'): any[] {
     const history: any[] = [];
+    const playerName = playerId === 'player1' ? '玩家A' : (playerId === 'player2' ? '玩家B' : '玩家C');
 
     // 添加炸弹
     for (let i = 0; i < bombs; i++) {
       history.push({
-        playerId: 'player1',
-        playerName: '玩家A',
+        playerId,
+        playerName,
         cards: ['7♠', '7♥', '7♣', '7♦'],
         cardType: { type: 'BOMB' },
         timestamp: new Date()
@@ -56,8 +57,8 @@ class TestHelper {
     // 添加王炸
     for (let i = 0; i < rockets; i++) {
       history.push({
-        playerId: 'player1',
-        playerName: '玩家A',
+        playerId,
+        playerName,
         cards: ['🃏', '🂿'],
         cardType: { type: 'ROCKET' },
         timestamp: new Date()
@@ -76,6 +77,32 @@ class TestHelper {
       player.cardCount = count;
     }
   }
+
+  /**
+   * 设置获胜者（将获胜者手牌设为0）
+   */
+  static setWinner(players: any[], winnerId: string): void {
+    const winner = players.find(p => p.id === winnerId);
+    if (winner) {
+      winner.cardCount = 0;
+    }
+  }
+
+  /**
+   * 添加玩家出牌历史（用于非春天测试）
+   */
+  static addPlayerPlay(history: any[], playerId: string, playerName: string): any[] {
+    return [
+      ...history,
+      {
+        playerId,
+        playerName,
+        cards: ['♠3'],
+        cardType: { type: 'SINGLE' },
+        timestamp: new Date()
+      }
+    ];
+  }
 }
 
 // 测试套件
@@ -85,10 +112,12 @@ describe('ScoreCalculator - 计分系统测试', () => {
   describe('场景1：基础得分', () => {
     test('地主获胜 - 基础得分', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 0);
+      let history = TestHelper.createPlayHistory(0, 0);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
       // 设置获胜者手牌为0
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -114,10 +143,12 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('农民获胜 - 基础得分', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 0);
+      let history = TestHelper.createPlayHistory(0, 0);
+      // 添加地主出牌，避免反春
+      history = TestHelper.addPlayerPlay(history, 'player1', '玩家A');
       
       // 农民获胜
-      TestHelper.setPlayerCardCount(players, 'player2', 0);
+      TestHelper.setWinner(players, 'player2');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player2', history);
       
@@ -136,9 +167,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
   describe('场景2：单个炸弹', () => {
     test('1个炸弹 - 倍数×2', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(1, 0);
+      let history = TestHelper.createPlayHistory(1, 0);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -155,9 +188,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
   describe('场景3：多个炸弹', () => {
     test('2个炸弹 - 倍数×4', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(2, 0);
+      let history = TestHelper.createPlayHistory(2, 0);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -171,9 +206,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('3个炸弹 - 倍数×8', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(3, 0);
+      let history = TestHelper.createPlayHistory(3, 0);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -190,9 +227,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
   describe('场景4：王炸', () => {
     test('1个王炸 - 倍数×4', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 1);
+      let history = TestHelper.createPlayHistory(0, 1);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -206,9 +245,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('2个王炸 - 倍数×16', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 2);
+      let history = TestHelper.createPlayHistory(0, 2);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -225,9 +266,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
   describe('场景5：炸弹+王炸组合', () => {
     test('1炸弹+1王炸 - 倍数×8', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(1, 1);
+      let history = TestHelper.createPlayHistory(1, 1);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -243,9 +286,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('2炸弹+1王炸 - 倍数×16', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(2, 1);
+      let history = TestHelper.createPlayHistory(2, 1);
+      // 添加农民出牌，避免春天
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -281,11 +326,12 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('非春天 - 农民出过牌', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 0);
+      let history = TestHelper.createPlayHistory(0, 0);
       
-      TestHelper.setPlayerCardCount(players, 'player1', 0);
-      TestHelper.setPlayerCardCount(players, 'player2', 10);  // 农民出过牌
-      TestHelper.setPlayerCardCount(players, 'player3', 17);
+      // 添加农民出牌记录
+      history = TestHelper.addPlayerPlay(history, 'player2', '玩家B');
+      
+      TestHelper.setWinner(players, 'player1');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
@@ -319,11 +365,12 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('非反春 - 地主出过牌', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(0, 0);
+      let history = TestHelper.createPlayHistory(0, 0);
       
-      TestHelper.setPlayerCardCount(players, 'player2', 0);
-      TestHelper.setPlayerCardCount(players, 'player1', 15);  // 地主出过牌
-      TestHelper.setPlayerCardCount(players, 'player3', 17);
+      // 添加地主出牌记录
+      history = TestHelper.addPlayerPlay(history, 'player1', '玩家A');
+      
+      TestHelper.setWinner(players, 'player2');
       
       const score = ScoreCalculator.calculateGameScore(players, 'player2', history);
       
@@ -362,13 +409,12 @@ describe('ScoreCalculator - 计分系统测试', () => {
 
     test('3炸弹+2王炸+反春 - 倍数×256', () => {
       const players = TestHelper.createPlayers('player1');
-      const history = TestHelper.createPlayHistory(3, 2);
+      // 农民player2出的炸弹和王炸
+      const history = TestHelper.createPlayHistory(3, 2, 'player2');
       
       // 农民获胜
-      TestHelper.setPlayerCardCount(players, 'player2', 0);
-      // 地主未出牌（反春）
-      TestHelper.setPlayerCardCount(players, 'player1', 20);
-      TestHelper.setPlayerCardCount(players, 'player3', 17);
+      TestHelper.setWinner(players, 'player2');
+      // 地主未出牌（反春）- 历史中没有地主player1的出牌记录
       
       const score = ScoreCalculator.calculateGameScore(players, 'player2', history);
       
@@ -411,8 +457,8 @@ describe('ScoreCalculator - 计分系统测试', () => {
       };
       
       const desc = ScoreCalculator.formatMultiplierDescription(multipliers);
-      expect(desc).toContain('炸弹×2');
-      expect(desc).toContain('总倍数: ×4');
+      expect(desc.some(d => d.includes('炸弹×2'))).toBe(true);
+      expect(desc.some(d => d.includes('总倍数: ×4'))).toBe(true);
     });
 
     test('格式化组合倍数', () => {
@@ -426,10 +472,10 @@ describe('ScoreCalculator - 计分系统测试', () => {
       };
       
       const desc = ScoreCalculator.formatMultiplierDescription(multipliers);
-      expect(desc).toContain('炸弹×1');
-      expect(desc).toContain('王炸×1');
-      expect(desc).toContain('春天');
-      expect(desc).toContain('总倍数: ×16');
+      expect(desc.some(d => d.includes('炸弹×1'))).toBe(true);
+      expect(desc.some(d => d.includes('王炸×1'))).toBe(true);
+      expect(desc.some(d => d.includes('春天'))).toBe(true);
+      expect(desc.some(d => d.includes('总倍数: ×16'))).toBe(true);
     });
   });
 });

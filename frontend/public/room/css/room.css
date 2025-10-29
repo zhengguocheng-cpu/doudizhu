@@ -433,9 +433,20 @@
 
 /* 禁用状态的按钮 */
 .room-actions .btn.disabled,
-.room-actions .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.room-actions .btn:disabled,
+.room-actions .btn-success.disabled,
+.room-actions .btn-success:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    background: #95a5a6 !important;
+    transform: none !important;
+    pointer-events: none;
+}
+
+.room-actions .btn.disabled:hover,
+.room-actions .btn:disabled:hover,
+.room-actions .btn-success.disabled:hover,
+.room-actions .btn-success:disabled:hover {
     background: #95a5a6 !important;
     transform: none !important;
 }

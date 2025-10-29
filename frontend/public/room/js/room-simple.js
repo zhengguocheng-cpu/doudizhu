@@ -232,10 +232,19 @@ class DoudizhuRoomClient {
                 this.updatePlayerList();
                 
                 // 禁用开始游戏按钮
+                console.log('🔧 [按钮状态] 准备禁用开始游戏按钮');
                 startGameBtn.disabled = true;
                 startGameBtn.textContent = '已准备';
                 startGameBtn.classList.add('disabled');
-                console.log('✅ 开始游戏按钮已禁用');
+                // 强制更新样式
+                startGameBtn.style.opacity = '0.6';
+                startGameBtn.style.cursor = 'not-allowed';
+                startGameBtn.style.background = '#95a5a6';
+                console.log('✅ [按钮状态] 开始游戏按钮已禁用', {
+                    disabled: startGameBtn.disabled,
+                    text: startGameBtn.textContent,
+                    classes: startGameBtn.className
+                });
             });
         }
 
@@ -1024,9 +1033,14 @@ class DoudizhuRoomClient {
         // 重置开始游戏按钮状态
         const startGameBtn = document.getElementById('startGameBtn');
         if (startGameBtn) {
+            console.log('🔧 [再来一局] 禁用开始游戏按钮');
             startGameBtn.disabled = true;
             startGameBtn.textContent = '已准备';
             startGameBtn.classList.add('disabled');
+            // 强制更新样式
+            startGameBtn.style.opacity = '0.6';
+            startGameBtn.style.cursor = 'not-allowed';
+            startGameBtn.style.background = '#95a5a6';
         }
         
         this.addGameMessage('🔄 准备开始新一局...', 'info');

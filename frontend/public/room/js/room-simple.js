@@ -676,6 +676,12 @@ class DoudizhuRoomClient {
     handleBid(bid) {
         console.log('选择抢地主:', bid);
         
+        // 播放抢地主音效
+        if (bid && window.SoundManager) {
+            window.SoundManager.playBid();
+            console.log('🔊 播放抢地主音效');
+        }
+        
         // 发送选择到服务器
         this.socket.emit('bid', {
             roomId: this.currentRoom.id,

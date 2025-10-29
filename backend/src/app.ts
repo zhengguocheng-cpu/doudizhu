@@ -5,6 +5,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { config } from './config';
 import indexRoutes from './routes';
 import gameRoutes from './routes/gameRoutes';
+import scoreRoutes from './routes/scoreRoutes';
 import { createUserManager, UserManager } from './services/user/userManager';
 import { PlayerSession } from './services/player/playerSession';
 import { StateRecoveryService } from './services/state/stateRecovery';
@@ -100,12 +101,18 @@ export class Application {
           'POST /api/games/rooms': '创建房间',
           'GET /api/games/rooms/:roomId': '获取房间详情',
           'POST /api/games/rooms/:roomId/join': '加入房间',
-          'POST /api/games/rooms/:roomId/ready': '玩家准备'
+          'POST /api/games/rooms/:roomId/ready': '玩家准备',
+          'GET /api/score/:userId': '获取玩家积分',
+          'GET /api/score/:userId/stats': '获取玩家统计',
+          'GET /api/score/leaderboard/:type': '获取排行榜'
         }
       });
     });
 
-    // 2. 游戏API路由 - 前缀匹配 /api/games/*
+    // 2. 积分API路由 - 前缀匹配 /api/score/*
+    this.app.use('/api/score', scoreRoutes);
+
+    // 3. 游戏API路由 - 前缀匹配 /api/games/*
     this.app.use('/api/games', gameRoutes);
 
     // 3. 页面路由 - 直接挂载，不使用前缀

@@ -1,0 +1,390 @@
+/* 个人中心样式 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 导航栏 */
+.navbar {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px 30px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h1 {
+  font-size: 24px;
+  color: #667eea;
+}
+
+.nav-link {
+  color: #667eea;
+  text-decoration: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* 个人信息卡片 */
+.profile-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-right: 20px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.profile-info h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.user-id {
+  color: #999;
+  font-size: 14px;
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 15px;
+  transition: transform 0.3s;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 36px;
+  margin-right: 15px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 排名区域 */
+.rank-section {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.rank-section h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.rank-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.rank-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 15px;
+}
+
+.rank-label {
+  font-size: 16px;
+  color: #666;
+}
+
+.rank-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff6b6b;
+}
+
+/* 成就区域 */
+.achievements-section {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.achievements-section h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.achievement-item {
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.achievement-item.unlocked {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.achievement-item.locked {
+  background: #f5f5f5;
+  opacity: 0.6;
+}
+
+.achievement-item:hover {
+  transform: scale(1.05);
+}
+
+.achievement-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.achievement-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.achievement-desc {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 战绩区域 */
+.history-section {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.history-section h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.history-item:hover {
+  background: #f5f5f5;
+}
+
+.history-item.win {
+  border-left: 4px solid #4caf50;
+}
+
+.history-item.lose {
+  border-left: 4px solid #f44336;
+}
+
+.history-info {
+  flex: 1;
+}
+
+.history-time {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.history-role {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.history-tags {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.history-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  color: #666;
+}
+
+.history-score {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.history-score.positive {
+  color: #4caf50;
+}
+
+.history-score.negative {
+  color: #f44336;
+}
+
+/* 排行榜链接 */
+.leaderboard-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.btn-leaderboard {
+  display: inline-block;
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-leaderboard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* 加载状态 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 16px;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.empty-state-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.empty-state-text {
+  font-size: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rank-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .avatar {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+}

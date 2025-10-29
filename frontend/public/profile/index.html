@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 斗地主</title>
+  <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <h1>🎮 斗地主</h1>
+      </div>
+      <div class="nav-right">
+        <a href="/" class="nav-link">返回大厅</a>
+      </div>
+    </nav>
+
+    <!-- 个人信息卡片 -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar" id="playerAvatar">👤</div>
+        <div class="profile-info">
+          <h2 id="playerName">加载中...</h2>
+          <p class="user-id" id="userId"></p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-label">当前积分</div>
+            <div class="stat-value" id="totalScore">--</div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-label">总场次</div>
+            <div class="stat-value" id="gamesPlayed">--</div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-content">
+            <div class="stat-label">胜率</div>
+            <div class="stat-value" id="winRate">--</div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-content">
+            <div class="stat-label">连胜</div>
+            <div class="stat-value" id="currentStreak">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 排名信息 -->
+    <div class="rank-section">
+      <h3>🏅 我的排名</h3>
+      <div class="rank-grid">
+        <div class="rank-item">
+          <span class="rank-label">积分排名</span>
+          <span class="rank-value" id="scoreRank">--</span>
+        </div>
+        <div class="rank-item">
+          <span class="rank-label">胜率排名</span>
+          <span class="rank-value" id="winRateRank">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 成就展示 -->
+    <div class="achievements-section">
+      <h3>🏆 我的成就</h3>
+      <div class="achievements-grid" id="achievementsGrid">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+
+    <!-- 最近战绩 -->
+    <div class="history-section">
+      <h3>📜 最近战绩</h3>
+      <div class="history-list" id="historyList">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+
+    <!-- 排行榜链接 -->
+    <div class="leaderboard-link">
+      <a href="/leaderboard" class="btn-leaderboard">
+        🏆 查看排行榜
+      </a>
+    </div>
+  </div>
+
+  <script src="js/profile.js"></script>
+</body>
+</html>

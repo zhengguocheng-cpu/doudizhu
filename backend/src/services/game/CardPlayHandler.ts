@@ -8,6 +8,9 @@ import { CardTypeDetector, CardPattern } from './CardTypeDetector';
 import { CardPlayValidator } from './CardPlayValidator';
 import { roomService } from '../room/roomService';
 import { ScoreCalculator } from './ScoreCalculator';
+import { scoreService } from '../score/ScoreService';
+import { GameRecord } from '../../models/ScoreRecord';
+import { v4 as uuidv4 } from 'uuid';
 
 export class CardPlayHandler {
   constructor(private io: Server) {}
@@ -209,13 +212,64 @@ export class CardPlayHandler {
 
     console.log('💰 游戏得分:', gameScore);
 
-    // 广播游戏结束（包含得分信息）
+    // 记录每个玩家的积分变化
+    const gameId = uuidv4();
+    const gameTimestamp = new Date();
+    const achievements: { [userId: string]: string[] } = {};
+
+    for (const playerScore of gameScore.playerScores) {
+      const player = room.players.find((p: any) => p.id === playerScore.playerId);
+      if (!player) continue;
+
+      // 创建游戏记录
+      const gameRecord: GameRecord = {
+        gameId,
+        timestamp: gameTimestamp,
+        roomId,
+        role: playerScore.role,
+        isWinner: playerScore.playerId === winner.id,
+        scoreChange: playerScore.finalScore,
+        multipliers: playerScore.multipliers,
+        opponents: room.players
+          .filter((p: any) => p.id !== playerScore.playerId)
+          .map((p: any) => p.id),
+        tags: []
+      };
+
+      // 添加特殊标记
+      if (gameScore.isSpring) gameRecord.tags?.push('春天');
+      if (gameScore.isAntiSpring) gameRecord.tags?.push('反春');
+      if (gameScore.bombCount > 0) gameRecord.tags?.push(`炸弹×${gameScore.bombCount}`);
+      if (gameScore.rocketCount > 0) gameRecord.tags?.push(`王炸×${gameScore.rocketCount}`);
+
+      // 记录积分
+      try {
+        const result = scoreService.recordGameResult(
+          playerScore.playerId,
+          player.name,
+          gameRecord
+        );
+
+        achievements[playerScore.playerId] = result.achievements;
+
+        console.log(`📊 ${player.name} 积分: ${result.scoreChange > 0 ? '+' : ''}${result.scoreChange} → ${result.newScore}`);
+        
+        if (result.achievements.length > 0) {
+          console.log(`🏆 ${player.name} 解锁成就:`, result.achievements);
+        }
+      } catch (error) {
+        console.error(`记录玩家 ${player.name} 积分失败:`, error);
+      }
+    }
+
+    // 广播游戏结束（包含得分信息和成就）
     this.io.to(`room_${roomId}`).emit('game_over', {
       winnerId: winner.id,
       winnerName: winner.name,
       winnerRole: winner.role,
       landlordWin: landlordWin,
-      score: gameScore  // 添加得分信息
+      score: gameScore,  // 添加得分信息
+      achievements  // 添加成就信息
     });
 
     // 重置房间状态为waiting，允许再来一局

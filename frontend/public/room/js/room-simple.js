@@ -2185,8 +2185,8 @@ class DoudizhuRoomClient {
         
         // 通知后端离开房间
         if (this.socket && this.currentRoom) {
-            console.log('🚪 [返回大厅] 发送leave_room事件');
-            this.socket.emit('leave_room', {
+            console.log('🚪 [返回大厅] 发送leave_game事件');
+            this.socket.emit('leave_game', {
                 roomId: this.currentRoom.id,
                 userId: this.currentPlayerId
             });

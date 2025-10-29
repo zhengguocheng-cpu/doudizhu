@@ -15,12 +15,12 @@ class SoundManager {
             pass: this.createAudio('/sounds/pass.mp3'),
             
             // 特殊牌型音效
-            bomb: this.createAudio('/sounds/zhadan.wav'),  // 使用真实炸弹音效
+            bomb: this.createAudio('/sounds/zhadan.mp3'),  // 使用真实炸弹音效
             rocket: this.createAudio('/sounds/rocket.mp3'),
             plane: this.createAudio('/sounds/plane.mp3'),
             
             // 游戏事件音效
-            bid: this.createAudio('/sounds/jiaodizhu.wav'),  // 使用真实抢地主音效
+            bid: this.createAudio('/sounds/jiaodizhu.mp3'),  // 使用真实抢地主音效
             landlord: this.createAudio('/sounds/landlord.mp3'),
             win: this.createAudio('/sounds/win.mp3'),
             lose: this.createAudio('/sounds/lose.mp3'),

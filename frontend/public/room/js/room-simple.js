@@ -2178,7 +2178,27 @@ class DoudizhuRoomClient {
      * 返回大厅
      */
     backToLobby() {
-        window.location.href = '/lobby/index.html';
+        console.log('🚪 [返回大厅] 准备离开房间');
+        
+        // 停止倒计时
+        this.stopTurnTimer();
+        
+        // 通知后端离开房间
+        if (this.socket && this.currentRoom) {
+            console.log('🚪 [返回大厅] 发送leave_room事件');
+            this.socket.emit('leave_room', {
+                roomId: this.currentRoom.id,
+                userId: this.currentPlayerId
+            });
+            
+            // 等待一小段时间让事件发送完成，然后跳转
+            setTimeout(() => {
+                window.location.href = '/lobby/index.html';
+            }, 100);
+        } else {
+            // 如果没有socket或房间信息，直接跳转
+            window.location.href = '/lobby/index.html';
+        }
     }
 }
 

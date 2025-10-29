@@ -29,6 +29,9 @@ class DoudizhuRoomClient {
         this.isFirstPlay = false; // 是否首次出牌（地主先出）
         this.landlordId = null; // 地主ID
         this.bottomCards = null; // 底牌
+        
+        // 初始化音效（需要用户交互后才能播放）
+        this.soundInitialized = false;
 
         // 从URL获取用户信息
         this.initializeFromUrl();
@@ -202,23 +205,28 @@ class DoudizhuRoomClient {
         const startGameBtn = document.getElementById('startGameBtn');
         if (startGameBtn) {
             startGameBtn.addEventListener('click', () => {
+                // 初始化音效系统
+                this.initSound();
+                
+                // 播放点击音效
+                this.playSound('click');
+                
                 // 点击开始游戏实际上是准备
                 this.socket.emit('player_ready', {
                     roomId: this.currentRoom.id,
                     userId: this.currentPlayerId
                 });
-                this.addGameMessage('✅ 你已准备，等待其他玩家...', 'system');
                 
-                // 立即更新本地状态
-                const currentPlayer = this.roomPlayers.find(p => p.id === this.currentPlayerId || p.name === this.currentPlayer);
+                console.log('🎮 发送player_ready事件');
+                
+                // 立即更新本地玩家的准备状态
+                const currentPlayer = this.roomPlayers.find(p => p.id === this.currentPlayerId);
                 if (currentPlayer) {
                     currentPlayer.ready = true;
-                    this.updateRoomPlayers();
                 }
                 
-                // 隐藏开始游戏按钮
-                startGameBtn.style.display = 'none';
-                this.log('🎮 开始游戏按钮已隐藏');
+                // 更新玩家列表显示
+                this.updatePlayerList();
             });
         }
 
@@ -234,6 +242,7 @@ class DoudizhuRoomClient {
         const playCardsBtn = document.getElementById('playCardsBtn');
         if (playCardsBtn) {
             playCardsBtn.addEventListener('click', () => {
+                this.initSound();
                 this.playCards();
             });
         }
@@ -242,6 +251,8 @@ class DoudizhuRoomClient {
         const passBtn = document.getElementById('passBtn');
         if (passBtn) {
             passBtn.addEventListener('click', () => {
+                this.initSound();
+                this.playSound('pass');
                 this.passTurn();
             });
         }
@@ -250,6 +261,8 @@ class DoudizhuRoomClient {
         const hintBtn = document.getElementById('hintBtn');
         if (hintBtn) {
             hintBtn.addEventListener('click', () => {
+                this.initSound();
+                this.playSound('hint');
                 this.showHint();
             });
         }
@@ -1905,6 +1918,9 @@ class DoudizhuRoomClient {
         // 显示牌型信息
         console.log('🎴 [出牌] 牌型:', validation.cardType);
         this.addGameMessage(`✅ 出牌：${validation.cardType.description}`, 'success');
+        
+        // 播放出牌音效（根据牌型）
+        this.playCardTypeSound(validation.cardType);
 
         // 第一次出牌时隐藏底牌
         if (this.bottomCards && this.bottomCards.length > 0) {
@@ -2171,6 +2187,60 @@ class DoudizhuRoomClient {
             } else {
                 timerEl.classList.remove('warning');
             }
+        }
+    }
+
+    /**
+     * 初始化音效系统
+     */
+    initSound() {
+        if (this.soundInitialized) return;
+        
+        if (window.TempSoundGenerator) {
+            window.TempSoundGenerator.init();
+            this.soundInitialized = true;
+            console.log('🔊 音效系统已初始化');
+        }
+    }
+    
+    /**
+     * 播放音效
+     */
+    playSound(soundName) {
+        if (!this.soundInitialized) return;
+        
+        if (window.TempSoundGenerator && typeof window.TempSoundGenerator[soundName] === 'function') {
+            window.TempSoundGenerator[soundName]();
+        }
+    }
+    
+    /**
+     * 根据牌型播放音效
+     */
+    playCardTypeSound(cardType) {
+        if (!cardType) {
+            this.playSound('play');
+            return;
+        }
+        
+        const type = cardType.type || cardType.TYPE;
+        switch (type) {
+            case 'bomb':
+            case 'BOMB':
+                this.playSound('bomb');
+                break;
+            case 'rocket':
+            case 'ROCKET':
+                this.playSound('rocket');
+                break;
+            case 'airplane':
+            case 'airplane_with_wings':
+            case 'PLANE':
+            case 'PLANE_PLUS_WINGS':
+                this.playSound('plane');
+                break;
+            default:
+                this.playSound('play');
         }
     }
 

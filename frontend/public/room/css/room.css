@@ -416,6 +416,7 @@
     pointer-events: none;
     width: 100%;
     height: 100%;
+    position: relative; /* 为倒计时提供定位参考 */
 }
 
 .game-controls-overlay > * {

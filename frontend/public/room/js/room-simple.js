@@ -15,6 +15,7 @@ class DoudizhuRoomClient {
         // 拖拽选择状态
         this.isDragging = false;
         this.dragStartSelected = false; // 拖拽开始时的选中状态
+        this.hasDragged = false; // 是否真的发生了拖拽
         
         // 倒计时
         this.turnTimer = null;
@@ -2163,16 +2164,11 @@ class DoudizhuRoomClient {
     onCardMouseDown(e, cardElement) {
         e.preventDefault();
         this.isDragging = true;
+        this.hasDragged = false; // 重置拖拽标记
         this.dragStartSelected = cardElement.classList.contains('selected');
+        this.dragStartCard = cardElement; // 记录起始卡牌
         
-        // 立即切换起始点击牌的选中状态
-        if (this.dragStartSelected) {
-            // 如果开始时是选中的，取消选中
-            cardElement.classList.remove('selected');
-        } else {
-            // 如果开始时是未选中的，选中
-            cardElement.classList.add('selected');
-        }
+        // 不在这里切换状态，等到真正拖拽时再切换
         
         // 添加全局鼠标松开监听
         document.addEventListener('mouseup', this.onMouseUp.bind(this), { once: true });
@@ -2183,6 +2179,19 @@ class DoudizhuRoomClient {
      */
     onCardMouseEnter(cardElement) {
         if (!this.isDragging) return;
+        
+        // 标记为已拖拽
+        this.hasDragged = true;
+        
+        // 如果是第一次拖拽，先切换起始卡牌的状态
+        if (this.dragStartCard && !this.dragStartCard.dataset.dragProcessed) {
+            this.dragStartCard.dataset.dragProcessed = 'true';
+            if (this.dragStartSelected) {
+                this.dragStartCard.classList.remove('selected');
+            } else {
+                this.dragStartCard.classList.add('selected');
+            }
+        }
         
         // 根据拖拽开始时的状态，切换选中状态
         if (this.dragStartSelected) {
@@ -2198,7 +2207,14 @@ class DoudizhuRoomClient {
      * 鼠标松开结束拖拽
      */
     onMouseUp() {
+        // 清理拖拽标记
+        if (this.dragStartCard) {
+            delete this.dragStartCard.dataset.dragProcessed;
+            this.dragStartCard = null;
+        }
+        
         this.isDragging = false;
+        this.hasDragged = false;
     }
     
     /**

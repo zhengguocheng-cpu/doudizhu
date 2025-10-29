@@ -194,9 +194,19 @@ export class CardPlayHandler {
       landlordWin: landlordWin
     });
 
-    // 重置房间状态
-    room.status = 'finished';
+    // 重置房间状态为waiting，允许再来一局
+    room.status = 'waiting';
     room.gameState = null;
+    
+    // 重置所有玩家的准备状态
+    room.players.forEach((p: any) => {
+      p.ready = false;
+      p.role = null;
+      p.cards = [];
+      p.cardCount = 0;
+    });
+    
+    console.log(`🔄 房间${roomId}已重置，可以开始新一局`);
 
     return true;
   }

@@ -1621,6 +1621,8 @@
     padding: 12px 30px;
     border-radius: 25px;
     font-weight: bold;
+    color: white;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 

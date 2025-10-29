@@ -981,7 +981,15 @@ class DoudizhuRoomClient {
         // 显示房间操作按钮
         this.showRoomActions();
         
-        this.addGameMessage('准备开始新一局游戏', 'info');
+        this.addGameMessage('🔄 准备开始新一局...', 'info');
+        
+        // 自动发送准备事件
+        this.socket.emit('player_ready', {
+            roomId: this.currentRoom.id,
+            userId: this.currentPlayerId
+        });
+        
+        console.log('🔄 [再来一局] 已发送player_ready事件');
     }
 
     /**

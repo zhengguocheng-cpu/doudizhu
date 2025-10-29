@@ -346,8 +346,75 @@ export class CardTypeDetector {
    * 飞机带翅膀（飞机+单牌或对子）
    */
   private static isAirplaneWithWings(cards: string[]): CardPattern | null {
-    // 简化实现：暂不支持
-    // 完整实现需要复杂的组合判断
+    if (cards.length < 8) return null; // 最少8张：2个三张+2个单牌
+    
+    const counts = this.countCards(cards);
+    
+    // 找出所有三张
+    const triples: string[] = [];
+    for (const [rank, count] of counts.entries()) {
+      if (count === 3) {
+        triples.push(rank);
+      }
+    }
+    
+    // 至少需要2个三张
+    if (triples.length < 2) return null;
+    
+    // 三张的值
+    const tripleValues = triples.map(rank => CARD_VALUES[rank]).sort((a, b) => a - b);
+    
+    // 不能包含2和王
+    if (tripleValues.some(v => v >= 15)) return null;
+    
+    // 检查三张是否连续
+    for (let i = 1; i < tripleValues.length; i++) {
+      if (tripleValues[i] !== tripleValues[i - 1] + 1) {
+        return null;
+      }
+    }
+    
+    const planeCount = triples.length;
+    const wingCount = cards.length - planeCount * 3;
+    
+    // 飞机带单牌：每个三张带1张单牌
+    if (wingCount === planeCount) {
+      // 检查是否有足够的单牌
+      let singleCount = 0;
+      for (const [rank, count] of counts.entries()) {
+        if (count === 1) singleCount++;
+        else if (count === 3) continue; // 三张不算
+        else return null; // 有其他数量的牌，不符合
+      }
+      
+      if (singleCount === planeCount) {
+        return {
+          type: CardType.AIRPLANE_WITH_WINGS,
+          value: tripleValues[tripleValues.length - 1],
+          cards
+        };
+      }
+    }
+    
+    // 飞机带对子：每个三张带1对
+    if (wingCount === planeCount * 2) {
+      // 检查是否有足够的对子
+      let pairCount = 0;
+      for (const [rank, count] of counts.entries()) {
+        if (count === 2) pairCount++;
+        else if (count === 3) continue; // 三张不算
+        else return null; // 有其他数量的牌，不符合
+      }
+      
+      if (pairCount === planeCount) {
+        return {
+          type: CardType.AIRPLANE_WITH_WINGS,
+          value: tripleValues[tripleValues.length - 1],
+          cards
+        };
+      }
+    }
+    
     return null;
   }
 

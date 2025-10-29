@@ -356,8 +356,7 @@ class CardTypeDetector {
             type,           // 牌型类型
             value,          // 牌型值（用于比较大小）
             cards,          // 原始卡牌数组
-            description,    // 牌型描述
-            valid: true     // 是否有效
+            description     // 牌型描述
         };
     }
 

@@ -1886,15 +1886,33 @@ class DoudizhuRoomClient {
         }
 
         // 立即显示自己出的牌在桌面上
+        console.log('🎴 [出牌] 显示上家出牌');
         this.displayPlayedCards(cards, this.currentPlayer, validation.cardType);
 
         // 发送出牌请求
+        console.log('🎴 [出牌] 准备发送play_cards事件');
+        console.log('🎴 [出牌] roomId:', this.currentRoom.id);
+        console.log('🎴 [出牌] userId:', this.currentPlayerId);
+        console.log('🎴 [出牌] cards:', cards);
+        console.log('🎴 [出牌] cardType:', validation.cardType);
+        
+        // 转换cardType为后端期望的格式（小写type）
+        const cardTypeForBackend = {
+            type: CardValidator.normalizeType(validation.cardType.type),
+            value: validation.cardType.value,
+            cards: validation.cardType.cards,
+            description: validation.cardType.description
+        };
+        console.log('🎴 [出牌] 转换后的cardType:', cardTypeForBackend);
+        
         this.socket.emit('play_cards', {
             roomId: this.currentRoom.id,
             userId: this.currentPlayerId,
             cards: cards,
-            cardType: validation.cardType
+            cardType: cardTypeForBackend
         });
+        
+        console.log('🎴 [出牌] play_cards事件已发送');
 
         // 从手牌数组中移除出的牌
         cards.forEach(card => {

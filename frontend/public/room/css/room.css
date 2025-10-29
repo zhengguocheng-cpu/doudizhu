@@ -427,11 +427,17 @@
 .room-actions {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 两列等宽 */
-    gap: 15px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    max-width: 400px; /* 限制最大宽度，避免按钮过宽 */
+    gap: 20px;
+    padding: 20px;
+}
+
+/* 禁用状态的按钮 */
+.room-actions .btn.disabled,
+.room-actions .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #95a5a6 !important;
+    transform: none !important;
 }
 
 .btn-lg {

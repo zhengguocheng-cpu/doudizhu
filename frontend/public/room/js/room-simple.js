@@ -230,6 +230,12 @@ class DoudizhuRoomClient {
                 
                 // 更新玩家列表显示
                 this.updatePlayerList();
+                
+                // 禁用开始游戏按钮
+                startGameBtn.disabled = true;
+                startGameBtn.textContent = '已准备';
+                startGameBtn.classList.add('disabled');
+                console.log('✅ 开始游戏按钮已禁用');
             });
         }
 
@@ -1008,6 +1014,14 @@ class DoudizhuRoomClient {
         
         // 显示房间操作按钮
         this.showRoomActions();
+        
+        // 重置开始游戏按钮状态
+        const startGameBtn = document.getElementById('startGameBtn');
+        if (startGameBtn) {
+            startGameBtn.disabled = true;
+            startGameBtn.textContent = '已准备';
+            startGameBtn.classList.add('disabled');
+        }
         
         this.addGameMessage('🔄 准备开始新一局...', 'info');
         

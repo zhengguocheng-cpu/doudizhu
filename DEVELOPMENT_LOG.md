@@ -80,10 +80,55 @@ feat: implement sound system with SoundManager and TempSoundGenerator
 ```
 
 **下一步**：
-- [ ] 在游戏流程中集成音效调用
+- [x] 在游戏流程中集成音效调用
+- [x] 修复音频文件扩展名问题
+- [x] 实现背景音乐降噪
+- [x] 修复开始游戏按钮状态
 - [ ] 添加音量控制UI
-- [ ] 下载/创建真实音效文件
-- [ ] 测试音效播放
+- [ ] 完善计分系统
+
+---
+
+### 2025-10-29 10:00 - 音效系统完善和Bug修复
+
+**目标**：修复音效播放问题和按钮状态问题
+
+**完成内容**：
+1. ✅ 修复音频文件扩展名
+   - jiaodizhu.wav → jiaodizhu.mp3
+   - zhadan.wav → zhadan.mp3
+   - 解决 NotSupportedError 问题
+
+2. ✅ 实现背景音乐降噪（Audio Ducking）
+   - 播放音效时降低背景音乐到20%
+   - 音效结束后自动恢复
+   - 提升音效清晰度
+
+3. ✅ 修复开始游戏按钮状态
+   - 改为直接隐藏按钮
+   - 简化代码逻辑
+   - 添加版本号强制刷新缓存
+
+4. ✅ 添加详细调试日志
+   - 追踪音效播放流程
+   - 帮助诊断问题
+
+**技术细节**：
+- 使用 `duckBackgroundMusic()` 和 `restoreBackgroundMusic()`
+- 使用 `onended` 事件自动恢复音量
+- 使用 URL 版本号（?v=1.0.3）强制刷新缓存
+
+**Git提交**：
+```
+fix: correct audio file extensions from .wav to .mp3
+feat: add audio ducking for background music
+fix: hide start game button instead of disabling it
+```
+
+**下一步**：
+- [ ] 完善计分系统（倍数计算）
+- [ ] 添加音量控制UI
+- [ ] 性能优化
 
 ---
 

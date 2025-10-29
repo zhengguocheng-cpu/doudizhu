@@ -2165,6 +2165,15 @@ class DoudizhuRoomClient {
         this.isDragging = true;
         this.dragStartSelected = cardElement.classList.contains('selected');
         
+        // 立即切换起始点击牌的选中状态
+        if (this.dragStartSelected) {
+            // 如果开始时是选中的，取消选中
+            cardElement.classList.remove('selected');
+        } else {
+            // 如果开始时是未选中的，选中
+            cardElement.classList.add('selected');
+        }
+        
         // 添加全局鼠标松开监听
         document.addEventListener('mouseup', this.onMouseUp.bind(this), { once: true });
     }

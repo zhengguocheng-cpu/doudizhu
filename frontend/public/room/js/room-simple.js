@@ -11,6 +11,14 @@ class DoudizhuRoomClient {
         this.gameStarted = false;
         this.isMyTurn = false;
         this.selectedCards = [];
+        
+        // 拖拽选择状态
+        this.isDragging = false;
+        this.dragStartSelected = false; // 拖拽开始时的选中状态
+        
+        // 倒计时
+        this.turnTimer = null;
+        this.turnTimeLeft = 0;
         this.roomPlayers = []; // 房间内所有玩家
         this.alreadyJoined = false; // 标记是否已经在大厅加入
         this.eventsAlreadyBound = false; // 标记事件是否已经绑定
@@ -762,9 +770,13 @@ class DoudizhuRoomClient {
             
             this.showGameActions(canPass);
             this.addGameMessage('🎯 轮到你出牌了！', 'important');
+            
+            // 开始倒计时（30秒）
+            this.startTurnTimer(30);
         } else {
             this.isMyTurn = false;
             this.hideGameActions();
+            this.stopTurnTimer(); // 不是自己的回合，停止倒计时
             this.addGameMessage(`等待 ${data.playerName} 出牌...`, 'system');
         }
     }
@@ -1739,7 +1751,12 @@ class DoudizhuRoomClient {
             cardElement.dataset.index = index;
             cardElement.dataset.card = card;
 
+            // 单击选择
             cardElement.addEventListener('click', () => this.toggleCardSelection(cardElement));
+            
+            // 拖拽选择
+            cardElement.addEventListener('mousedown', (e) => this.onCardMouseDown(e, cardElement));
+            cardElement.addEventListener('mouseenter', () => this.onCardMouseEnter(cardElement));
 
             container.appendChild(cardElement);
         });
@@ -1855,6 +1872,9 @@ class DoudizhuRoomClient {
      * 出牌
      */
     playCards() {
+        // 停止倒计时
+        this.stopTurnTimer();
+        
         const container = document.getElementById('playerHand');
         if (!container) return;
 
@@ -1946,6 +1966,9 @@ class DoudizhuRoomClient {
      * 不出牌
      */
     passTurn() {
+        // 停止倒计时
+        this.stopTurnTimer();
+        
         this.socket.emit('pass_turn', {
             roomId: this.currentRoom.id,
             userId: this.currentPlayerId
@@ -2048,6 +2071,107 @@ class DoudizhuRoomClient {
                 errorDiv.parentNode.removeChild(errorDiv);
             }
         }, 3000);
+    }
+
+    /**
+     * 鼠标按下开始拖拽
+     */
+    onCardMouseDown(e, cardElement) {
+        e.preventDefault();
+        this.isDragging = true;
+        this.dragStartSelected = cardElement.classList.contains('selected');
+        
+        // 添加全局鼠标松开监听
+        document.addEventListener('mouseup', this.onMouseUp.bind(this), { once: true });
+    }
+    
+    /**
+     * 鼠标进入卡牌区域
+     */
+    onCardMouseEnter(cardElement) {
+        if (!this.isDragging) return;
+        
+        // 根据拖拽开始时的状态，切换选中状态
+        if (this.dragStartSelected) {
+            // 如果开始时是选中的，拖拽时取消选中
+            cardElement.classList.remove('selected');
+        } else {
+            // 如果开始时是未选中的，拖拽时选中
+            cardElement.classList.add('selected');
+        }
+    }
+    
+    /**
+     * 鼠标松开结束拖拽
+     */
+    onMouseUp() {
+        this.isDragging = false;
+    }
+    
+    /**
+     * 开始出牌倒计时
+     */
+    startTurnTimer(duration = 30) {
+        // 清除之前的计时器
+        this.stopTurnTimer();
+        
+        this.turnTimeLeft = duration;
+        this.updateTimerDisplay();
+        
+        // 显示倒计时UI
+        const timerEl = document.getElementById('turnTimer');
+        if (timerEl) {
+            timerEl.style.display = 'block';
+        }
+        
+        // 每秒更新一次
+        this.turnTimer = setInterval(() => {
+            this.turnTimeLeft--;
+            this.updateTimerDisplay();
+            
+            if (this.turnTimeLeft <= 0) {
+                this.stopTurnTimer();
+                // 倒计时结束，自动不出
+                if (this.isMyTurn) {
+                    console.log('⏰ [倒计时] 时间到，自动不出');
+                    this.addGameMessage('⏰ 时间到，自动不出', 'warning');
+                    this.passTurn();
+                }
+            }
+        }, 1000);
+    }
+    
+    /**
+     * 停止倒计时
+     */
+    stopTurnTimer() {
+        if (this.turnTimer) {
+            clearInterval(this.turnTimer);
+            this.turnTimer = null;
+        }
+        
+        // 隐藏倒计时UI
+        const timerEl = document.getElementById('turnTimer');
+        if (timerEl) {
+            timerEl.style.display = 'none';
+        }
+    }
+    
+    /**
+     * 更新倒计时显示
+     */
+    updateTimerDisplay() {
+        const timerEl = document.getElementById('turnTimer');
+        if (timerEl) {
+            timerEl.textContent = `⏰ ${this.turnTimeLeft}秒`;
+            
+            // 时间不足10秒时变红
+            if (this.turnTimeLeft <= 10) {
+                timerEl.classList.add('warning');
+            } else {
+                timerEl.classList.remove('warning');
+            }
+        }
     }
 
     /**

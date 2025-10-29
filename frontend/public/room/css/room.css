@@ -1629,6 +1629,7 @@
 .settlement-footer .btn-primary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
+    color: white !important;
 }
 
 .settlement-footer .btn-primary:hover {
@@ -1639,9 +1640,51 @@
 .settlement-footer .btn-secondary {
     background: #6c757d;
     border: none;
+    color: white !important;
 }
 
 .settlement-footer .btn-secondary:hover {
     background: #5a6268;
     transform: translateY(-2px);
+}
+
+/* ==================== 出牌倒计时样式 ==================== */
+.turn-timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(52, 152, 219, 0.9);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    animation: timerPulse 1s ease-in-out infinite;
+}
+
+.turn-timer.warning {
+    background: rgba(231, 76, 60, 0.9);
+    animation: timerWarning 0.5s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes timerWarning {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(231, 76, 60, 0.8);
+    }
 }

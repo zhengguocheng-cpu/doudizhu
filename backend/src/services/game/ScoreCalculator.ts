@@ -55,8 +55,8 @@ export class ScoreCalculator {
     const { bombCount, rocketCount } = this.countBombsAndRockets(gameHistory);
     
     // 判断春天和反春
-    const isSpring = this.checkSpring(players, landlordWin);
-    const isAntiSpring = this.checkAntiSpring(players, landlordWin);
+    const isSpring = this.checkSpring(players, landlordWin, gameHistory);
+    const isAntiSpring = this.checkAntiSpring(players, landlordWin, gameHistory);
     
     // 计算倍数
     const multipliers = this.calculateMultipliers(bombCount, rocketCount, isSpring, isAntiSpring);
@@ -109,26 +109,33 @@ export class ScoreCalculator {
    * 检查是否春天
    * 春天：地主获胜，且农民一张牌都没出过
    */
-  private static checkSpring(players: any[], landlordWin: boolean): boolean {
+  private static checkSpring(players: any[], landlordWin: boolean, gameHistory: any[]): boolean {
     if (!landlordWin) return false;
 
     const farmers = players.filter(p => p.role === 'farmer');
-    // 检查农民是否一张牌都没出过（手牌数量等于初始17张）
-    return farmers.every(farmer => farmer.cardCount === 17);
+    if (farmers.length === 0) return false;
+
+    // 检查游戏历史中是否有农民出过牌
+    const farmerIds = farmers.map(f => f.id);
+    const farmerPlayed = gameHistory.some(play => farmerIds.includes(play.playerId));
+    
+    return !farmerPlayed;  // 农民没出过牌就是春天
   }
 
   /**
    * 检查是否反春
    * 反春：农民获胜，且地主一张牌都没出过
    */
-  private static checkAntiSpring(players: any[], landlordWin: boolean): boolean {
+  private static checkAntiSpring(players: any[], landlordWin: boolean, gameHistory: any[]): boolean {
     if (landlordWin) return false;
 
     const landlord = players.find(p => p.role === 'landlord');
     if (!landlord) return false;
 
-    // 检查地主是否一张牌都没出过（手牌数量等于初始20张）
-    return landlord.cardCount === 20;
+    // 检查游戏历史中地主是否出过牌
+    const landlordPlayed = gameHistory.some(play => play.playerId === landlord.id);
+    
+    return !landlordPlayed;  // 地主没出过牌就是反春
   }
 
   /**

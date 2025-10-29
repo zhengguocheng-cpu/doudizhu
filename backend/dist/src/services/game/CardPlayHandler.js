@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardPlayHandler = void 0;
 const CardPlayValidator_1 = require("./CardPlayValidator");
 const roomService_1 = require("../room/roomService");
+const ScoreCalculator_1 = require("./ScoreCalculator");
 class CardPlayHandler {
     constructor(io) {
         this.io = io;
@@ -46,8 +47,18 @@ class CardPlayHandler {
                 }
             }
             player.cardCount = player.cards.length;
+            room.gameState.lastPlayedCards = validation.pattern;
             room.gameState.lastPlayerId = userId;
-            room.gameState.lastPattern = validation.pattern;
+            if (!room.gameState.playHistory) {
+                room.gameState.playHistory = [];
+            }
+            room.gameState.playHistory.push({
+                playerId: userId,
+                playerName: player.name,
+                cards: cards,
+                cardType: validation.pattern,
+                timestamp: new Date()
+            });
             room.gameState.passCount = 0;
             room.gameState.isNewRound = false;
             console.log(`✅ 玩家 ${userId} 出牌成功:`, cards);
@@ -56,7 +67,7 @@ class CardPlayHandler {
                 playerId: userId,
                 playerName: player.name,
                 cards: cards,
-                pattern: validation.pattern,
+                cardType: validation.pattern,
                 remainingCards: player.cardCount
             });
             if (this.checkGameOver(roomId, userId)) {
@@ -123,14 +134,24 @@ class CardPlayHandler {
         }
         console.log(`🎊 游戏结束！获胜者: ${winner.name}`);
         const landlordWin = winner.role === 'landlord';
+        const gameScore = ScoreCalculator_1.ScoreCalculator.calculateGameScore(room.players, winner.id, room.gameState?.playHistory || []);
+        console.log('💰 游戏得分:', gameScore);
         this.io.to(`room_${roomId}`).emit('game_over', {
             winnerId: winner.id,
             winnerName: winner.name,
             winnerRole: winner.role,
-            landlordWin: landlordWin
+            landlordWin: landlordWin,
+            score: gameScore
         });
-        room.status = 'finished';
+        room.status = 'waiting';
         room.gameState = null;
+        room.players.forEach((p) => {
+            p.ready = false;
+            p.role = null;
+            p.cards = [];
+            p.cardCount = 0;
+        });
+        console.log(`🔄 房间${roomId}已重置，可以开始新一局`);
         return true;
     }
     nextPlayer(roomId) {

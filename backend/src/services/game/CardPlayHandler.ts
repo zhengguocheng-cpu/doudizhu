@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 import { CardTypeDetector, CardPattern } from './CardTypeDetector';
 import { CardPlayValidator } from './CardPlayValidator';
 import { roomService } from '../room/roomService';
+import { ScoreCalculator } from './ScoreCalculator';
 
 export class CardPlayHandler {
   constructor(private io: Server) {}
@@ -73,8 +74,21 @@ export class CardPlayHandler {
       player.cardCount = player.cards.length;
 
       // 更新游戏状态
+      room.gameState.lastPlayedCards = validation.pattern;
       room.gameState.lastPlayerId = userId;
-      room.gameState.lastPattern = validation.pattern;
+
+      // 记录出牌历史（用于计分）
+      if (!room.gameState.playHistory) {
+        room.gameState.playHistory = [];
+      }
+      room.gameState.playHistory.push({
+        playerId: userId,
+        playerName: player.name,
+        cards: cards,
+        cardType: validation.pattern,
+        timestamp: new Date()
+      });
+
       room.gameState.passCount = 0;
       room.gameState.isNewRound = false;
 
@@ -186,12 +200,22 @@ export class CardPlayHandler {
     // 判断地主是否获胜
     const landlordWin = winner.role === 'landlord';
 
-    // 广播游戏结束
+    // 计算得分
+    const gameScore = ScoreCalculator.calculateGameScore(
+      room.players,
+      winner.id,
+      room.gameState?.playHistory || []
+    );
+
+    console.log('💰 游戏得分:', gameScore);
+
+    // 广播游戏结束（包含得分信息）
     this.io.to(`room_${roomId}`).emit('game_over', {
       winnerId: winner.id,
       winnerName: winner.name,
       winnerRole: winner.role,
-      landlordWin: landlordWin
+      landlordWin: landlordWin,
+      score: gameScore  // 添加得分信息
     });
 
     // 重置房间状态为waiting，允许再来一局

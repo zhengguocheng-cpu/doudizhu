@@ -978,10 +978,37 @@ class DoudizhuRoomClient {
             winnerRole.textContent = roleText;
         }
 
-        // 计算得分（简单版本）
-        const baseScore = 1;
-        const multiplier = 1; // TODO: 后续添加倍数计算
-        const totalScore = baseScore * multiplier;
+        // 获取得分信息
+        const score = data.score;
+        let baseScore = 1;
+        let multiplier = 1;
+        let totalScore = 1;
+        let multiplierDesc = [];
+
+        if (score) {
+            baseScore = score.baseScore || 1;
+            multiplier = score.playerScores?.[0]?.multipliers?.total || 1;
+            totalScore = baseScore * multiplier;
+            
+            // 格式化倍数说明
+            const multipliers = score.playerScores?.[0]?.multipliers;
+            if (multipliers) {
+                if (multipliers.bomb > 1) {
+                    const bombCount = Math.log2(multipliers.bomb);
+                    multiplierDesc.push(`炸弹×${bombCount}`);
+                }
+                if (multipliers.rocket > 1) {
+                    const rocketCount = Math.log(multipliers.rocket) / Math.log(4);
+                    multiplierDesc.push(`王炸×${rocketCount}`);
+                }
+                if (multipliers.spring > 1) {
+                    multiplierDesc.push('春天');
+                }
+                if (multipliers.antiSpring > 1) {
+                    multiplierDesc.push('反春');
+                }
+            }
+        }
 
         // 设置得分信息
         const baseScoreEl = document.getElementById('baseScore');
@@ -989,10 +1016,25 @@ class DoudizhuRoomClient {
         const totalScoreEl = document.getElementById('totalScore');
 
         if (baseScoreEl) baseScoreEl.textContent = baseScore;
-        if (multiplierEl) multiplierEl.textContent = `×${multiplier}`;
+        if (multiplierEl) {
+            let text = `×${multiplier}`;
+            if (multiplierDesc.length > 0) {
+                text += ` (${multiplierDesc.join(', ')})`;
+            }
+            multiplierEl.textContent = text;
+        }
         if (totalScoreEl) {
             const sign = data.winnerId === this.currentPlayerId ? '+' : '-';
             totalScoreEl.textContent = `${sign}${totalScore}`;
+            totalScoreEl.style.color = sign === '+' ? '#27ae60' : '#e74c3c';
+        }
+
+        // 显示详细得分（如果有）
+        if (score && score.playerScores) {
+            console.log('💰 [结算] 详细得分:', score);
+            score.playerScores.forEach(ps => {
+                console.log(`   ${ps.playerName} (${ps.role}): ${ps.finalScore > 0 ? '+' : ''}${ps.finalScore}`);
+            });
         }
 
         // 绑定按钮事件

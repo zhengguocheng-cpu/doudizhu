@@ -18,6 +18,7 @@ export interface CardPattern {
     value: number;
     cards: string[];
     length?: number;
+    description?: string;
 }
 export declare class CardTypeDetector {
     static detect(cards: string[]): CardPattern;

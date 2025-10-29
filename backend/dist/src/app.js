@@ -127,10 +127,14 @@ class Application {
         socket.on('get_rooms_list', (data) => {
             this.eventHandler.handleGetRoomsList(socket, data);
         });
+        socket.on('get_room_state', (data) => {
+            this.eventHandler.handleGetRoomState(socket, data);
+        });
         socket.on('start_game', (data) => {
             this.handleStartGame(socket, data);
         });
-        socket.on('bid_landlord', (data) => {
+        socket.on('bid', (data) => {
+            console.log('🎲 [Socket] 收到bid事件:', data);
             this.eventHandler.handleBidLandlord(socket, data);
         });
         socket.on('play_cards', (data) => {

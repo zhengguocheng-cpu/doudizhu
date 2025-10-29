@@ -47,9 +47,12 @@ class RoomManager {
         if (!joinValidation.valid) {
             throw new Error(joinValidation.error);
         }
+        const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
+        const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
         const player = {
             id: playerName,
             name: playerName,
+            avatar: avatars[avatarIndex],
             ready: false,
             cards: [],
             cardCount: 0
@@ -218,6 +221,15 @@ class RoomManager {
                 stats.full++;
         });
         return stats;
+    }
+    getPlayerAvatarIndex(playerName, avatarCount) {
+        let hash = 0;
+        for (let i = 0; i < playerName.length; i++) {
+            const char = playerName.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash) % avatarCount;
     }
 }
 exports.RoomManager = RoomManager;

@@ -44,18 +44,18 @@ class GameFlowHandler {
                 })),
                 timestamp: new Date()
             });
-            room.players.forEach((player, index) => {
-                const socketId = this.findSocketIdByUserId(player.id);
-                if (socketId) {
-                    this.io.to(socketId).emit('deal_cards', {
-                        cards: dealResult.playerCards[index],
-                        cardCount: dealResult.playerCards[index].length,
-                        bottomCards: dealResult.bottomCards,
-                        bottomCardCount: dealResult.bottomCards.length
-                    });
-                    console.log(`发牌给玩家${player.name}: ${dealResult.playerCards[index].length}张`);
-                }
+            console.log(`📢 向房间 room_${roomId} 广播发牌事件`);
+            this.io.to(`room_${roomId}`).emit('deal_cards_all', {
+                players: room.players.map((player, index) => ({
+                    playerId: player.id,
+                    playerName: player.name,
+                    cards: dealResult.playerCards[index],
+                    cardCount: dealResult.playerCards[index].length
+                })),
+                bottomCards: dealResult.bottomCards,
+                bottomCardCount: dealResult.bottomCards.length
             });
+            console.log(`✅ 发牌事件已广播给房间 room_${roomId}`);
             console.log(`✅ 游戏开始成功: 房间${roomId}`);
             setTimeout(() => {
                 this.startBidding(roomId);
@@ -170,25 +170,25 @@ class GameFlowHandler {
                 landlordId: landlordId,
                 currentPlayerId: landlordId,
                 lastPlayedCards: null,
-                lastPlayerId: null
+                lastPlayerId: null,
+                lastPattern: null,
+                passCount: 0,
+                isNewRound: true
             };
             console.log(`👑 确定地主: ${landlord.name}`);
+            console.log(`📢 向房间 room_${roomId} 广播地主确定事件`);
             this.io.to(`room_${roomId}`).emit('landlord_determined', {
                 landlordId: landlordId,
                 landlordName: landlord.name,
                 bottomCards: room.bottomCards,
+                landlordCards: landlord.cards,
+                landlordCardCount: landlord.cards.length,
                 roles: room.players.reduce((acc, p) => {
                     acc[p.id] = p.role;
                     return acc;
                 }, {})
             });
-            const landlordSocketId = this.findSocketIdByUserId(landlordId);
-            if (landlordSocketId) {
-                this.io.to(landlordSocketId).emit('landlord_cards_update', {
-                    cards: landlord.cards,
-                    cardCount: landlord.cards.length
-                });
-            }
+            console.log(`✅ 地主确定事件已广播: ${landlord.name} 成为地主，手牌${landlord.cards.length}张`);
             setTimeout(() => {
                 this.io.to(`room_${roomId}`).emit('turn_to_play', {
                     playerId: landlordId,
@@ -247,14 +247,20 @@ class GameFlowHandler {
     findSocketIdByUserId(userId) {
         if (!this.io)
             return null;
+        console.log(`🔍 [查找Socket] 开始查找userId: ${userId}`);
         const sockets = this.io.sockets.sockets;
+        console.log(`🔍 [查找Socket] 当前连接的Socket数量: ${sockets.size}`);
         for (const [socketId, socket] of sockets) {
             const authSocket = socket;
-            if (authSocket.handshake?.auth?.userId === userId ||
-                authSocket.handshake?.auth?.userName === userId) {
+            const authUserId = authSocket.handshake?.auth?.userId;
+            const authUserName = authSocket.handshake?.auth?.userName;
+            console.log(`🔍 [查找Socket] Socket ${socketId}: userId=${authUserId}, userName=${authUserName}`);
+            if (authUserId === userId || authUserName === userId) {
+                console.log(`✅ [查找Socket] 找到匹配的Socket: ${socketId}`);
                 return socketId;
             }
         }
+        console.error(`❌ [查找Socket] 未找到userId=${userId}的Socket连接`);
         return null;
     }
 }

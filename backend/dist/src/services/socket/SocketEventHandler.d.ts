@@ -15,6 +15,7 @@ export declare class SocketEventHandler {
     static getInstance(): SocketEventHandler;
     initialize(io: any): void;
     handleGetRoomsList(socket: AuthenticatedSocket, data: any): Promise<void>;
+    handleGetRoomState(socket: AuthenticatedSocket, data: any): Promise<void>;
     handleJoinGame(socket: AuthenticatedSocket, data: any): Promise<void>;
     handleLeaveGame(socket: AuthenticatedSocket, data: any): Promise<void>;
     handlePlayerReady(socket: AuthenticatedSocket, data: any): Promise<void>;

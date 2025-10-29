@@ -17,6 +17,21 @@ var CardType;
     CardType["ROCKET"] = "rocket";
     CardType["INVALID"] = "invalid";
 })(CardType || (exports.CardType = CardType = {}));
+const CARD_TYPE_DESCRIPTIONS = {
+    [CardType.SINGLE]: '单牌',
+    [CardType.PAIR]: '对子',
+    [CardType.TRIPLE]: '三张',
+    [CardType.TRIPLE_WITH_SINGLE]: '三带一',
+    [CardType.TRIPLE_WITH_PAIR]: '三带二',
+    [CardType.STRAIGHT]: '顺子',
+    [CardType.CONSECUTIVE_PAIRS]: '连对',
+    [CardType.AIRPLANE]: '飞机',
+    [CardType.AIRPLANE_WITH_WINGS]: '飞机带翅膀',
+    [CardType.FOUR_WITH_TWO]: '四带二',
+    [CardType.BOMB]: '炸弹',
+    [CardType.ROCKET]: '王炸',
+    [CardType.INVALID]: '无效牌型'
+};
 const CARD_VALUES = {
     '3': 3,
     '4': 4,
@@ -39,7 +54,7 @@ class CardTypeDetector {
         if (!cards || cards.length === 0) {
             return { type: CardType.INVALID, value: 0, cards: [] };
         }
-        return (this.isRocket(cards) ||
+        const pattern = (this.isRocket(cards) ||
             this.isBomb(cards) ||
             this.isStraight(cards) ||
             this.isConsecutivePairs(cards) ||
@@ -52,13 +67,17 @@ class CardTypeDetector {
             this.isPair(cards) ||
             this.isSingle(cards) ||
             { type: CardType.INVALID, value: 0, cards });
+        if (pattern && !pattern.description) {
+            pattern.description = CARD_TYPE_DESCRIPTIONS[pattern.type];
+        }
+        return pattern;
     }
     static getCardValue(card) {
-        const rank = card.replace(/[♠♥♣♦]/g, '');
+        const rank = card.replace(/[♠♥♣♦🃏]/g, '');
         return CARD_VALUES[rank] || 0;
     }
     static getCardRank(card) {
-        return card.replace(/[♠♥♣♦]/g, '');
+        return card.replace(/[♠♥♣♦🃏]/g, '');
     }
     static countCards(cards) {
         const counts = new Map();
@@ -223,6 +242,63 @@ class CardTypeDetector {
         };
     }
     static isAirplaneWithWings(cards) {
+        if (cards.length < 8)
+            return null;
+        const counts = this.countCards(cards);
+        const triples = [];
+        for (const [rank, count] of counts.entries()) {
+            if (count === 3) {
+                triples.push(rank);
+            }
+        }
+        if (triples.length < 2)
+            return null;
+        const tripleValues = triples.map(rank => CARD_VALUES[rank]).sort((a, b) => a - b);
+        if (tripleValues.some(v => v >= 15))
+            return null;
+        for (let i = 1; i < tripleValues.length; i++) {
+            if (tripleValues[i] !== tripleValues[i - 1] + 1) {
+                return null;
+            }
+        }
+        const planeCount = triples.length;
+        const wingCount = cards.length - planeCount * 3;
+        if (wingCount === planeCount) {
+            let singleCount = 0;
+            for (const [rank, count] of counts.entries()) {
+                if (count === 1)
+                    singleCount++;
+                else if (count === 3)
+                    continue;
+                else
+                    return null;
+            }
+            if (singleCount === planeCount) {
+                return {
+                    type: CardType.AIRPLANE_WITH_WINGS,
+                    value: tripleValues[tripleValues.length - 1],
+                    cards
+                };
+            }
+        }
+        if (wingCount === planeCount * 2) {
+            let pairCount = 0;
+            for (const [rank, count] of counts.entries()) {
+                if (count === 2)
+                    pairCount++;
+                else if (count === 3)
+                    continue;
+                else
+                    return null;
+            }
+            if (pairCount === planeCount) {
+                return {
+                    type: CardType.AIRPLANE_WITH_WINGS,
+                    value: tripleValues[tripleValues.length - 1],
+                    cards
+                };
+            }
+        }
         return null;
     }
     static isFourWithTwo(cards) {

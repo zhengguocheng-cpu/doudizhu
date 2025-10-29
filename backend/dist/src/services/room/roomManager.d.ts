@@ -23,5 +23,6 @@ export declare class RoomManager {
         empty: number;
         full: number;
     };
+    private getPlayerAvatarIndex;
 }
 //# sourceMappingURL=roomManager.d.ts.map

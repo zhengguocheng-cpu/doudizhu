@@ -38,6 +38,41 @@ class SocketEventHandler {
             });
         }
     }
+    async handleGetRoomState(socket, data) {
+        try {
+            const { roomId, userId } = data;
+            console.log('🔍 收到获取房间状态请求:', { roomId, userId });
+            const room = roomService_1.roomService.getRoom(roomId);
+            if (!room) {
+                socket.emit('room_state_error', { message: '房间不存在' });
+                return;
+            }
+            const playerInRoom = room.players?.some((p) => p.id === userId);
+            if (!playerInRoom) {
+                socket.emit('room_state_error', { message: '您不在此房间中' });
+                return;
+            }
+            socket.emit('join_game_success', {
+                roomId: roomId,
+                roomName: room.name,
+                players: room.players || [],
+                room: {
+                    id: roomId,
+                    name: room.name,
+                    players: room.players || [],
+                    maxPlayers: room.maxPlayers || 3,
+                    status: room.status || 'waiting'
+                }
+            });
+            console.log('✅ 发送房间状态成功:', roomId);
+        }
+        catch (error) {
+            console.error('获取房间状态错误:', error);
+            socket.emit('room_state_error', {
+                message: error instanceof Error ? error.message : '获取房间状态失败'
+            });
+        }
+    }
     async handleJoinGame(socket, data) {
         try {
             console.log('🔄 收到join_game请求:', {
@@ -49,46 +84,50 @@ class SocketEventHandler {
             const { roomId, userId } = data;
             console.log('玩家加入游戏:', roomId, userId);
             const user = { name: userId };
-            const result = roomService_1.roomService.joinRoom(roomId, user.name);
-            if (result) {
-                socket.join(`room_${roomId}`);
-                const room = roomService_1.roomService.getRoom(roomId);
-                if (!room) {
-                    socket.emit('error', { message: '房间不存在' });
-                    return;
+            const result = roomService_1.roomService.joinRoom(roomId, userId);
+            const room = roomService_1.roomService.getRoom(roomId);
+            if (!room) {
+                socket.emit('join_game_failed', { message: '房间不存在' });
+                return;
+            }
+            await socket.join(`room_${roomId}`);
+            console.log(`✅ Socket ${socket.id} 已加入房间 room_${roomId}`);
+            console.log('✅ 房间加入成功，发送join_game_success事件:', {
+                roomId: roomId,
+                roomName: room.name,
+            });
+            socket.emit('join_game_success', {
+                roomId: roomId,
+                roomName: room.name,
+                players: room.players || [],
+                room: {
+                    id: roomId,
+                    name: room.name,
+                    players: room.players || [],
+                    maxPlayers: room.maxPlayers || 3,
+                    status: room.status || 'waiting'
                 }
-                console.log('✅ 房间加入成功，发送join_game_success事件:', {
-                    roomId: roomId,
-                    roomName: room.name,
-                    players: room.players
-                });
-                socket.emit('join_game_success', {
-                    roomId: roomId,
-                    room: {
-                        id: roomId,
-                        name: room.name,
-                        players: room.players || [],
-                        maxPlayers: room.maxPlayers || 3,
-                        status: room.status || 'waiting'
-                    }
-                });
-                socket.to(`room_${roomId}`).emit('player_joined', {
-                    playerId: userId,
-                    playerName: user.name
-                });
-                this.broadcastRoomsUpdate('player_joined', roomId, {
-                    playerName: user.name
-                });
-                console.log('加入游戏成功:', roomId, userId);
-            }
-            else {
-                socket.emit('error', { message: '加入游戏失败' });
-            }
+            });
+            console.log(`📢 向房间 room_${roomId} 的其他玩家广播 player_joined 事件`);
+            console.log(`📢 当前房间内的所有socket:`, Array.from(this.io.sockets.adapter.rooms.get(`room_${roomId}`) || []));
+            console.log(`📢 当前socket ID: ${socket.id}`);
+            socket.to(`room_${roomId}`).emit('player_joined', {
+                playerId: userId,
+                playerName: user.name,
+                players: room.players || []
+            });
+            console.log(`✅ player_joined 事件已发送`);
+            this.broadcastRoomsUpdate('player_joined', roomId, {
+                playerName: user.name
+            });
+            console.log('加入游戏成功:', roomId, userId);
         }
         catch (error) {
-            console.error('加入游戏错误:', error);
-            socket.emit('error', {
-                message: error instanceof Error ? error.message : '加入游戏过程中发生错误'
+            console.error('❌ 加入游戏错误:', error);
+            const errorMessage = error instanceof Error ? error.message : '加入游戏过程中发生错误';
+            console.error('❌ 发送错误消息给客户端:', errorMessage);
+            socket.emit('join_game_failed', {
+                message: errorMessage
             });
         }
     }
@@ -99,7 +138,12 @@ class SocketEventHandler {
             const result = roomService_1.roomService.leaveRoom(roomId, userId);
             if (result) {
                 socket.leave(`room_${roomId}`);
-                socket.to(`room_${roomId}`).emit('player_left', { playerId: userId });
+                const room = roomService_1.roomService.getRoom(roomId);
+                socket.to(`room_${roomId}`).emit('player_left', {
+                    playerId: userId,
+                    playerName: userId,
+                    players: room?.players || []
+                });
                 this.broadcastRoomsUpdate('player_left', roomId, {
                     playerId: userId
                 });
@@ -125,7 +169,8 @@ class SocketEventHandler {
                 const room = roomService_1.roomService.getRoom(roomId);
                 this.io.to(`room_${roomId}`).emit('player_ready', {
                     playerId: userId,
-                    playerName: userId
+                    playerName: userId,
+                    players: room?.players || []
                 });
                 this.broadcastRoomsUpdate('player_ready', roomId, {
                     playerId: userId

@@ -66,6 +66,24 @@ class CardPlayHandler {
             room.gameState.isNewRound = false;
             console.log(`✅ 玩家 ${userId} 出牌成功:`, cards);
             console.log(`   牌型: ${validation.pattern?.type}, 剩余: ${player.cardCount}张`);
+            roomService_1.roomService.saveGameState(roomId, {
+                phase: room.gameState.phase || 'playing',
+                currentPlayerId: room.gameState.currentPlayerId,
+                lastPlayerId: userId,
+                lastPlayedCards: validation.pattern,
+                lastPattern: validation.pattern,
+                isNewRound: false,
+                passCount: 0,
+                players: room.players.map((p) => ({
+                    id: p.id,
+                    name: p.name,
+                    avatar: p.avatar,
+                    cards: p.cards,
+                    cardCount: p.cardCount
+                })),
+                landlordId: room.gameState.landlordId,
+                bottomCards: room.gameState.bottomCards
+            });
             this.io.to(`room_${roomId}`).emit('cards_played', {
                 playerId: userId,
                 playerName: player.name,
@@ -111,6 +129,24 @@ class CardPlayHandler {
             }
             room.gameState.passCount++;
             console.log(`✅ 玩家 ${userId} 不出，连续不出: ${room.gameState.passCount}`);
+            roomService_1.roomService.saveGameState(roomId, {
+                phase: room.gameState.phase || 'playing',
+                currentPlayerId: room.gameState.currentPlayerId,
+                lastPlayerId: room.gameState.lastPlayerId,
+                lastPlayedCards: room.gameState.lastPlayedCards,
+                lastPattern: room.gameState.lastPattern,
+                isNewRound: room.gameState.isNewRound,
+                passCount: room.gameState.passCount,
+                players: room.players.map((p) => ({
+                    id: p.id,
+                    name: p.name,
+                    avatar: p.avatar,
+                    cards: p.cards,
+                    cardCount: p.cardCount
+                })),
+                landlordId: room.gameState.landlordId,
+                bottomCards: room.gameState.bottomCards
+            });
             this.io.to(`room_${roomId}`).emit('player_passed', {
                 playerId: userId,
                 playerName: player.name

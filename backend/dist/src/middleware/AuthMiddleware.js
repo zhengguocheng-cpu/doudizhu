@@ -129,7 +129,8 @@ class AuthMiddleware extends BaseService_1.BaseService {
     emitUserDisconnectedEvent(userId, sessionId) {
         this.log(types_1.LogLevel.INFO, 'User disconnected event emitted', { userId });
         try {
-            const eventBus = this.container.resolve('EventBus');
+            const { EventBus } = require('../core/EventBus');
+            const eventBus = EventBus.getInstance();
             eventBus.publish('user:disconnected', {
                 userId,
                 sessionId,

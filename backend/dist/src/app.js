@@ -115,7 +115,8 @@ class Application {
     }
     setupDisconnectionHandler() {
         try {
-            const eventBus = this.container.resolve('EventBus');
+            const { EventBus } = require('./core/EventBus');
+            const eventBus = EventBus.getInstance();
             eventBus.subscribe('user:disconnected', (event) => {
                 const { userId } = event;
                 console.log(`🔄 [清理] 用户断开连接，清理房间状态: ${userId}`);

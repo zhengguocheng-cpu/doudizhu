@@ -79,6 +79,7 @@ export class CardPlayHandler {
       // 更新游戏状态
       room.gameState.lastPlayedCards = validation.pattern;
       room.gameState.lastPlayerId = userId;
+      room.gameState.lastPattern = validation.pattern;  // 🔧 修复：同时更新lastPattern
 
       // 记录出牌历史（用于计分）
       if (!room.gameState.playHistory) {

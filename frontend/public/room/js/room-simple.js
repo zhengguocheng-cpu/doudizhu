@@ -263,7 +263,7 @@ class DoudizhuRoomClient {
                 }
                 
                 // 更新玩家列表显示
-                this.updatePlayerList();
+                this.updateRoomPlayers();
                 
                 // 1秒后解除锁定
                 setTimeout(() => {

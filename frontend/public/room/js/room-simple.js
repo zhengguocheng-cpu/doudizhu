@@ -202,10 +202,26 @@ class DoudizhuRoomClient {
         console.log('🔗 绑定UI事件监听器');
         this.eventsAlreadyBound = true;
         
-        // 绑定开始游戏按钮
+        // 绑定开始游戏按钮（添加防抖）
         const startGameBtn = document.getElementById('startGameBtn');
         if (startGameBtn) {
+            let isProcessing = false; // 防抖标志
+            
             startGameBtn.addEventListener('click', () => {
+                // 防止重复点击
+                if (isProcessing) {
+                    console.log('⚠️ 操作正在处理中，请稍候...');
+                    if (window.MessageToast) {
+                        window.MessageToast.warning('操作正在处理中，请稍候...');
+                    }
+                    return;
+                }
+                
+                // 设置处理标志并禁用按钮
+                isProcessing = true;
+                const originalText = startGameBtn.textContent;
+                startGameBtn.disabled = true;
+                
                 // 初始化音效系统
                 this.initSound();
                 
@@ -248,6 +264,12 @@ class DoudizhuRoomClient {
                 
                 // 更新玩家列表显示
                 this.updatePlayerList();
+                
+                // 1秒后解除锁定
+                setTimeout(() => {
+                    isProcessing = false;
+                    startGameBtn.disabled = false;
+                }, 1000);
             });
         }
 

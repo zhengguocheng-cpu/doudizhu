@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>结算页面测试</title>
+  <style>
+    body {
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .test-section {
+      background: white;
+      padding: 30px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .test-section h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+    .test-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .test-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .test-button.success {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    }
+    .test-button.danger {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+    .description {
+      color: #666;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎊 结算页面测试工具</h1>
+
+  <div class="test-section">
+    <h2>📋 测试场景</h2>
+    <p class="description">
+      点击下面的按钮测试不同的结算场景。每个按钮会设置不同的测试数据并跳转到结算页面。
+    </p>
+
+    <button class="test-button success" onclick="testLandlordWin()">
+      🏆 测试场景1: 地主获胜
+    </button>
+    <p class="description">
+      地主获胜，有炸弹，总得分 +4
+    </p>
+
+    <button class="test-button success" onclick="testFarmerWin()">
+      🏆 测试场景2: 农民获胜
+    </button>
+    <p class="description">
+      农民获胜，有王炸，总得分 +8
+    </p>
+
+    <button class="test-button success" onclick="testSpring()">
+      🌸 测试场景3: 春天
+    </button>
+    <p class="description">
+      地主获胜，春天，倍数×4，总得分 +4
+    </p>
+
+    <button class="test-button success" onclick="testWithAchievements()">
+      🏅 测试场景4: 带成就
+    </button>
+    <p class="description">
+      地主获胜，解锁成就：首胜、三连胜
+    </p>
+
+    <button class="test-button" onclick="testMultipleBombs()">
+      💣 测试场景5: 多个炸弹
+    </button>
+    <p class="description">
+      地主获胜，2个炸弹 + 1个王炸，倍数×16
+    </p>
+
+    <button class="test-button danger" onclick="testDirectAccess()">
+      🔗 测试场景6: 直接访问（无数据）
+    </button>
+    <p class="description">
+      清除localStorage，直接访问结算页面，会显示测试数据
+    </p>
+  </div>
+
+  <div class="test-section">
+    <h2>🛠️ 工具</h2>
+    
+    <button class="test-button" onclick="viewLocalStorage()">
+      📦 查看 localStorage 数据
+    </button>
+    <p class="description">
+      在控制台查看当前保存的结算数据
+    </p>
+
+    <button class="test-button danger" onclick="clearLocalStorage()">
+      🗑️ 清除 localStorage 数据
+    </button>
+    <p class="description">
+      清除保存的结算数据
+    </p>
+  </div>
+
+  <div class="test-section">
+    <h2>📖 说明</h2>
+    <ul>
+      <li>点击测试按钮会自动跳转到结算页面</li>
+      <li>结算页面会从 <code>localStorage</code> 读取数据</li>
+      <li>可以点击"返回大厅"或"再来一局"测试导航</li>
+      <li>打开浏览器控制台可以看到详细日志</li>
+    </ul>
+  </div>
+
+  <script>
+    // 测试场景1: 地主获胜
+    function testLandlordWin() {
+      const data = {
+        winnerId: 'player1',
+        winnerName: '地主玩家',
+        winnerRole: 'landlord',
+        landlordWin: true,
+        roomId: 'test_room_1',
+        score: {
+          baseScore: 1,
+          bombCount: 1,
+          rocketCount: 0,
+          isSpring: false,
+          isAntiSpring: false,
+          playerScores: [
+            {
+              playerId: 'player1',
+              playerName: '地主玩家',
+              role: 'landlord',
+              finalScore: 4,
+              multipliers: { base: 1, bomb: 2, rocket: 1, spring: 1, antiSpring: 1, total: 2 }
+            },
+            {
+              playerId: 'player2',
+              playerName: '农民A',
+              role: 'farmer',
+              finalScore: -2,
+              multipliers: { base: 1, bomb: 2, rocket: 1, spring: 1, antiSpring: 1, total: 2 }
+            },
+            {
+              playerId: 'player3',
+              playerName: '农民B',
+              role: 'farmer',
+              finalScore: -2,
+              multipliers: { base: 1, bomb: 2, rocket: 1, spring: 1, antiSpring: 1, total: 2 }
+            }
+          ]
+        }
+      };
+      saveAndRedirect(data);
+    }
+
+    // 测试场景2: 农民获胜
+    function testFarmerWin() {
+      const data = {
+        winnerId: 'player2',
+        winnerName: '农民A',
+        winnerRole: 'farmer',
+        landlordWin: false,
+        roomId: 'test_room_2',
+        score: {
+          baseScore: 1,
+          bombCount: 0,
+          rocketCount: 1,
+          isSpring: false,
+          isAntiSpring: false,
+          playerScores: [
+            {
+              playerId: 'player1',
+              playerName: '地主玩家',
+              role: 'landlord',
+              finalScore: -8,
+              multipliers: { base: 1, bomb: 1, rocket: 4, spring: 1, antiSpring: 1, total: 4 }
+            },
+            {
+              playerId: 'player2',
+              playerName: '农民A',
+              role: 'farmer',
+              finalScore: 4,
+              multipliers: { base: 1, bomb: 1, rocket: 4, spring: 1, antiSpring: 1, total: 4 }
+            },
+            {
+              playerId: 'player3',
+              playerName: '农民B',
+              role: 'farmer',
+              finalScore: 4,
+              multipliers: { base: 1, bomb: 1, rocket: 4, spring: 1, antiSpring: 1, total: 4 }
+            }
+          ]
+        }
+      };
+      saveAndRedirect(data);
+    }
+
+    // 测试场景3: 春天
+    function testSpring() {
+      const data = {
+        winnerId: 'player1',
+        winnerName: '地主玩家',
+        winnerRole: 'landlord',
+        landlordWin: true,
+        roomId: 'test_room_3',
+        score: {
+          baseScore: 1,
+          bombCount: 0,
+          rocketCount: 0,
+          isSpring: true,
+          isAntiSpring: false,
+          playerScores: [
+            {
+              playerId: 'player1',
+              playerName: '地主玩家',
+              role: 'landlord',
+              finalScore: 4,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 2, antiSpring: 1, total: 4 }
+            },
+            {
+              playerId: 'player2',
+              playerName: '农民A',
+              role: 'farmer',
+              finalScore: -2,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 2, antiSpring: 1, total: 4 }
+            },
+            {
+              playerId: 'player3',
+              playerName: '农民B',
+              role: 'farmer',
+              finalScore: -2,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 2, antiSpring: 1, total: 4 }
+            }
+          ]
+        }
+      };
+      saveAndRedirect(data);
+    }
+
+    // 测试场景4: 带成就
+    function testWithAchievements() {
+      const data = {
+        winnerId: 'player1',
+        winnerName: '成就玩家',
+        winnerRole: 'landlord',
+        landlordWin: true,
+        roomId: 'test_room_4',
+        score: {
+          baseScore: 1,
+          bombCount: 0,
+          rocketCount: 0,
+          isSpring: false,
+          isAntiSpring: false,
+          playerScores: [
+            {
+              playerId: 'player1',
+              playerName: '成就玩家',
+              role: 'landlord',
+              finalScore: 2,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 1, antiSpring: 1, total: 1 }
+            },
+            {
+              playerId: 'player2',
+              playerName: '农民A',
+              role: 'farmer',
+              finalScore: -1,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 1, antiSpring: 1, total: 1 }
+            },
+            {
+              playerId: 'player3',
+              playerName: '农民B',
+              role: 'farmer',
+              finalScore: -1,
+              multipliers: { base: 1, bomb: 1, rocket: 1, spring: 1, antiSpring: 1, total: 1 }
+            }
+          ]
+        },
+        achievements: {
+          'player1': ['first_win', 'streak_3']
+        }
+      };
+      saveAndRedirect(data);
+    }
+
+    // 测试场景5: 多个炸弹
+    function testMultipleBombs() {
+      const data = {
+        winnerId: 'player1',
+        winnerName: '炸弹王',
+        winnerRole: 'landlord',
+        landlordWin: true,
+        roomId: 'test_room_5',
+        score: {
+          baseScore: 1,
+          bombCount: 2,
+          rocketCount: 1,
+          isSpring: false,
+          isAntiSpring: false,
+          playerScores: [
+            {
+              playerId: 'player1',
+              playerName: '炸弹王',
+              role: 'landlord',
+              finalScore: 32,
+              multipliers: { base: 1, bomb: 4, rocket: 4, spring: 1, antiSpring: 1, total: 16 }
+            },
+            {
+              playerId: 'player2',
+              playerName: '农民A',
+              role: 'farmer',
+              finalScore: -16,
+              multipliers: { base: 1, bomb: 4, rocket: 4, spring: 1, antiSpring: 1, total: 16 }
+            },
+            {
+              playerId: 'player3',
+              playerName: '农民B',
+              role: 'farmer',
+              finalScore: -16,
+              multipliers: { base: 1, bomb: 4, rocket: 4, spring: 1, antiSpring: 1, total: 16 }
+            }
+          ]
+        }
+      };
+      saveAndRedirect(data);
+    }
+
+    // 测试场景6: 直接访问
+    function testDirectAccess() {
+      localStorage.removeItem('lastGameSettlement');
+      window.location.href = '/settlement/index.html';
+    }
+
+    // 保存数据并跳转
+    function saveAndRedirect(data) {
+      console.log('💾 保存测试数据:', data);
+      localStorage.setItem('lastGameSettlement', JSON.stringify(data));
+      window.location.href = '/settlement/index.html';
+    }
+
+    // 查看localStorage
+    function viewLocalStorage() {
+      const data = localStorage.getItem('lastGameSettlement');
+      if (data) {
+        console.log('📦 localStorage 数据:');
+        console.log(JSON.parse(data));
+        alert('数据已输出到控制台，请按F12查看');
+      } else {
+        alert('localStorage 中没有数据');
+      }
+    }
+
+    // 清除localStorage
+    function clearLocalStorage() {
+      localStorage.removeItem('lastGameSettlement');
+      console.log('🗑️ localStorage 已清除');
+      alert('localStorage 已清除');
+    }
+  </script>
+</body>
+</html>

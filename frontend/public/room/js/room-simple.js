@@ -439,7 +439,26 @@ class DoudizhuRoomClient {
         // 标记游戏已开始
         this.gameStarted = true;
         
-        // 恢复玩家手牌
+        // 恢复所有玩家信息（包括其他玩家）
+        if (gameState.players && Array.isArray(gameState.players)) {
+            console.log('🔄 恢复所有玩家信息:', gameState.players);
+            
+            // 更新roomPlayers数组
+            this.roomPlayers = gameState.players.map(p => ({
+                id: p.id,
+                name: p.name,
+                avatar: p.avatar || '👤',
+                ready: true,  // 游戏中都是准备状态
+                cardCount: p.cardCount || p.cards?.length || 0
+            }));
+            
+            // 更新玩家列表UI
+            this.updatePlayerList(this.roomPlayers);
+            
+            console.log('✅ 恢复玩家列表:', this.roomPlayers);
+        }
+        
+        // 恢复当前玩家手牌
         const currentPlayerState = gameState.players?.find(p => 
             p.id === this.currentPlayerId || p.name === this.currentPlayer
         );
@@ -460,8 +479,9 @@ class DoudizhuRoomClient {
         this.addGameMessage('🔄 游戏状态已恢复，继续游戏', 'system');
         this.addGameMessage(`📋 当前阶段: ${gameState.phase || '未知'}`, 'system');
         
-        // 隐藏准备按钮，显示游戏操作
+        // 隐藏房间操作按钮（开始游戏、返回大厅）
         this.hideRoomActions();
+        // 显示游戏操作按钮（提示、出牌、不出）
         this.showGameActions();
     }
     

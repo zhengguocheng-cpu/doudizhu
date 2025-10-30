@@ -22,6 +22,7 @@ class UIManager {
             refreshRoomsBtn: document.getElementById('refreshRoomsBtn'),
             quickJoinBtn: document.getElementById('quickJoinBtn'),
             myRoomsBtn: document.getElementById('myRoomsBtn'),
+            feedbackBtn: document.getElementById('feedbackBtn'),
             messageLog: document.getElementById('messageLog')
         };
     }
@@ -44,6 +45,9 @@ class UIManager {
         }
         if (this.elements.myRoomsBtn) {
             this.elements.myRoomsBtn.addEventListener('click', eventHandlers.onMyRooms);
+        }
+        if (this.elements.feedbackBtn) {
+            this.elements.feedbackBtn.addEventListener('click', eventHandlers.onFeedback);
         }
     }
 

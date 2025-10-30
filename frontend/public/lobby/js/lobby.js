@@ -182,10 +182,19 @@ class LobbyController {
             onLogout: () => this.handleLogout(),
             onRefreshRooms: () => this.handleRefreshRooms(),
             onQuickJoin: () => this.handleQuickJoin(),
-            onMyRooms: () => this.handleMyRooms()
+            onMyRooms: () => this.handleMyRooms(),
+            onFeedback: () => this.handleFeedback()
         });
 
         this.uiManager.setRoomJoinHandler((roomId) => this.handleJoinRoom(roomId));
+    }
+    
+    /**
+     * 处理反馈
+     */
+    handleFeedback() {
+        console.log('📝 跳转到反馈页面');
+        window.location.href = '/feedback/';
     }
 
     /**

@@ -357,9 +357,28 @@ class SettlementPage {
    */
   backToLobby() {
     console.log('🏠 返回大厅');
+    
+    // 先通知后端离开房间
+    const roomId = this.settlementData?.roomId;
+    if (roomId) {
+      try {
+        const socketManager = window.GlobalSocketManager?.getInstance();
+        if (socketManager && socketManager.socket) {
+          console.log('📤 发送离开房间请求:', roomId);
+          socketManager.socket.emit('leave_room', { roomId });
+        }
+      } catch (error) {
+        console.error('离开房间失败:', error);
+      }
+    }
+    
     // 清除结算数据
     localStorage.removeItem('lastGameSettlement');
-    window.location.href = '/lobby/index.html';
+    
+    // 延迟跳转，确保离开房间请求发送成功
+    setTimeout(() => {
+      window.location.href = '/lobby/index.html';
+    }, 100);
   }
 
   /**

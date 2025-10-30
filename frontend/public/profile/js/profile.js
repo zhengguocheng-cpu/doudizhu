@@ -10,16 +10,29 @@ class ProfilePage {
 
   /**
    * 获取用户ID
+   * 优先从URL参数获取，其次从localStorage获取
    */
   getUserId() {
-    // 从localStorage获取
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      alert('请先登录');
-      window.location.href = '/';
-      return null;
+    // 优先从URL参数获取（支持查看其他玩家的个人中心）
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromUrl = urlParams.get('userId');
+    
+    if (userIdFromUrl) {
+      console.log('📋 从URL参数获取userId:', userIdFromUrl);
+      return decodeURIComponent(userIdFromUrl);
     }
-    return userId;
+    
+    // 其次从localStorage获取（当前登录用户）
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      console.log('💾 从localStorage获取userId:', userId);
+      return userId;
+    }
+    
+    // 都没有，提示登录
+    alert('请先登录');
+    window.location.href = '/';
+    return null;
   }
 
   /**

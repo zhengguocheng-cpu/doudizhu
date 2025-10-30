@@ -953,8 +953,12 @@ class DoudizhuRoomClient {
         const role = data.winnerRole === 'landlord' ? '地主' : '农民';
         this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
 
-        // 保存结算数据到localStorage
-        localStorage.setItem('lastGameSettlement', JSON.stringify(data));
+        // 保存结算数据到localStorage，并添加当前玩家ID
+        const settlementData = {
+            ...data,
+            currentUserId: this.currentPlayerId  // 添加当前玩家ID，用于个人中心查看
+        };
+        localStorage.setItem('lastGameSettlement', JSON.stringify(settlementData));
 
         // 跳转到独立的结算页面
         setTimeout(() => {

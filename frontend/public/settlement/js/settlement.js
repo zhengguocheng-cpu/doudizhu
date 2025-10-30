@@ -302,7 +302,38 @@ class SettlementPage {
    */
   viewProfile() {
     console.log('👤 跳转到个人中心');
-    window.location.href = '/profile';
+    
+    // 从结算数据中获取当前玩家的userId
+    // 注意：不要使用localStorage，因为多标签页会互相覆盖
+    const currentUserId = this.getCurrentUserId();
+    
+    if (!currentUserId) {
+      console.error('❌ 无法获取当前玩家ID');
+      alert('无法获取玩家信息');
+      return;
+    }
+    
+    // 通过URL参数传递userId，确保查看的是当前玩家的个人中心
+    window.location.href = `/profile?userId=${encodeURIComponent(currentUserId)}`;
+  }
+  
+  /**
+   * 获取当前玩家的userId
+   */
+  getCurrentUserId() {
+    // 优先从结算数据中获取
+    if (this.settlementData && this.settlementData.currentUserId) {
+      return this.settlementData.currentUserId;
+    }
+    
+    // 尝试从localStorage获取（作为后备方案）
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      console.warn('⚠️ 从localStorage获取userId，多标签页可能不准确');
+      return userId;
+    }
+    
+    return null;
   }
 
   /**

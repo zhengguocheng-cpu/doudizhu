@@ -49,20 +49,44 @@
     "dd": {
       "userId": "dd",
       "username": "dd",
-      "totalScore": 998,
-      "gamesPlayed": 1,
-      "gamesWon": 0,
+      "totalScore": 1124,
+      "gamesPlayed": 2,
+      "gamesWon": 1,
       "gamesLost": 1,
-      "winRate": 0,
-      "maxStreak": 0,
-      "currentStreak": 0,
-      "maxScore": 1000,
+      "winRate": 50,
+      "maxStreak": 1,
+      "currentStreak": 1,
+      "maxScore": 1124,
       "minScore": 998,
-      "landlordGames": 0,
-      "landlordWins": 0,
+      "landlordGames": 1,
+      "landlordWins": 1,
       "farmerGames": 1,
       "farmerWins": 0,
       "gameHistory": [
+        {
+          "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+          "timestamp": "2025-10-30T00:37:38.898Z",
+          "roomId": "A01",
+          "role": "landlord",
+          "isWinner": true,
+          "scoreChange": 16,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 4,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "玩家",
+            "a1"
+          ],
+          "tags": [
+            "春天",
+            "王炸×1"
+          ]
+        },
         {
           "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
           "timestamp": "2025-10-29T23:15:55.422Z",
@@ -88,26 +112,50 @@
         }
       ],
       "createdAt": "2025-10-29T23:15:55.468Z",
-      "updatedAt": "2025-10-29T23:15:55.476Z",
-      "lastPlayedAt": "2025-10-29T23:15:55.422Z"
+      "updatedAt": "2025-10-30T00:37:38.931Z",
+      "lastPlayedAt": "2025-10-30T00:37:38.898Z"
     },
     "a1": {
       "userId": "a1",
       "username": "a1",
-      "totalScore": 998,
-      "gamesPlayed": 1,
+      "totalScore": 990,
+      "gamesPlayed": 2,
       "gamesWon": 0,
-      "gamesLost": 1,
+      "gamesLost": 2,
       "winRate": 0,
       "maxStreak": 0,
       "currentStreak": 0,
       "maxScore": 1000,
-      "minScore": 998,
+      "minScore": 990,
       "landlordGames": 0,
       "landlordWins": 0,
-      "farmerGames": 1,
+      "farmerGames": 2,
       "farmerWins": 0,
       "gameHistory": [
+        {
+          "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+          "timestamp": "2025-10-30T00:37:38.898Z",
+          "roomId": "A01",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -8,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 4,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "dd",
+            "玩家"
+          ],
+          "tags": [
+            "春天",
+            "王炸×1"
+          ]
+        },
         {
           "gameId": "e99459ab-c4ee-4569-a2a3-daa19820d697",
           "timestamp": "2025-10-29T23:15:55.422Z",
@@ -133,11 +181,109 @@
         }
       ],
       "createdAt": "2025-10-29T23:15:55.484Z",
-      "updatedAt": "2025-10-29T23:15:55.513Z",
-      "lastPlayedAt": "2025-10-29T23:15:55.422Z"
+      "updatedAt": "2025-10-30T00:37:38.950Z",
+      "lastPlayedAt": "2025-10-30T00:37:38.898Z"
+    },
+    "玩家": {
+      "userId": "玩家",
+      "username": "玩家",
+      "totalScore": 992,
+      "gamesPlayed": 1,
+      "gamesWon": 0,
+      "gamesLost": 1,
+      "winRate": 0,
+      "maxStreak": 0,
+      "currentStreak": 0,
+      "maxScore": 1000,
+      "minScore": 992,
+      "landlordGames": 0,
+      "landlordWins": 0,
+      "farmerGames": 1,
+      "farmerWins": 0,
+      "gameHistory": [
+        {
+          "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+          "timestamp": "2025-10-30T00:37:38.898Z",
+          "roomId": "A01",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -8,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 4,
+            "spring": 2,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "dd",
+            "a1"
+          ],
+          "tags": [
+            "春天",
+            "王炸×1"
+          ]
+        }
+      ],
+      "createdAt": "2025-10-30T00:37:38.936Z",
+      "updatedAt": "2025-10-30T00:37:38.941Z",
+      "lastPlayedAt": "2025-10-30T00:37:38.898Z"
     }
   },
   "scoreChanges": [
+    {
+      "id": "1b589f5e-1e31-4269-8730-0a870a26627d",
+      "userId": "a1",
+      "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+      "scoreBefore": 998,
+      "scoreAfter": 990,
+      "scoreChange": -8,
+      "reason": "game_lose",
+      "timestamp": "2025-10-30T00:37:38.898Z"
+    },
+    {
+      "id": "2d1dcada-0af2-4b87-b420-a7041bea0b93",
+      "userId": "玩家",
+      "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+      "scoreBefore": 1000,
+      "scoreAfter": 992,
+      "scoreChange": -8,
+      "reason": "game_lose",
+      "timestamp": "2025-10-30T00:37:38.898Z"
+    },
+    {
+      "id": "0ed02a05-522c-469d-a448-2e45f52d6845",
+      "userId": "dd",
+      "gameId": "",
+      "scoreBefore": 1024,
+      "scoreAfter": 1124,
+      "scoreChange": 100,
+      "reason": "system_reward",
+      "timestamp": "2025-10-30T00:37:38.933Z",
+      "note": "解锁成就: 千分玩家"
+    },
+    {
+      "id": "9b646bc2-5f5a-4416-920b-49f4957a1c4a",
+      "userId": "dd",
+      "gameId": "",
+      "scoreBefore": 1014,
+      "scoreAfter": 1024,
+      "scoreChange": 10,
+      "reason": "system_reward",
+      "timestamp": "2025-10-30T00:37:38.923Z",
+      "note": "解锁成就: 首胜"
+    },
+    {
+      "id": "b5b1fd11-2b3f-4bbd-8214-3e620218d7d1",
+      "userId": "dd",
+      "gameId": "4cae6f03-e1d5-4a27-9bfe-c43a24f45b16",
+      "scoreBefore": 998,
+      "scoreAfter": 1014,
+      "scoreChange": 16,
+      "reason": "game_win",
+      "timestamp": "2025-10-30T00:37:38.898Z"
+    },
     {
       "id": "1bfd8589-2f44-4a08-a62b-5e873c2f2fe0",
       "userId": "a1",
@@ -329,7 +475,23 @@
         "progress": 100,
         "isUnlocked": true
       }
+    ],
+    "dd": [
+      {
+        "userId": "dd",
+        "achievementId": "first_win",
+        "unlockedAt": "2025-10-30T00:37:38.909Z",
+        "progress": 100,
+        "isUnlocked": true
+      },
+      {
+        "userId": "dd",
+        "achievementId": "score_1000",
+        "unlockedAt": "2025-10-30T00:37:38.927Z",
+        "progress": 100,
+        "isUnlocked": true
+      }
     ]
   },
-  "lastUpdated": "2025-10-29T23:15:55.515Z"
+  "lastUpdated": "2025-10-30T00:37:38.952Z"
 }

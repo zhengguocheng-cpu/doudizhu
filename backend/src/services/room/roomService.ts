@@ -139,6 +139,27 @@ export class RoomService {
     const userManager = getUserManager();
     return userManager.findUserByName(userName);
   }
+  
+  /**
+   * 保存游戏状态
+   */
+  public saveGameState(roomId: string, gameState: any): void {
+    return this.roomManager.saveGameState(roomId, gameState);
+  }
+  
+  /**
+   * 获取游戏状态
+   */
+  public getGameState(roomId: string): any | undefined {
+    return this.roomManager.getGameState(roomId);
+  }
+  
+  /**
+   * 清除游戏状态
+   */
+  public clearGameState(roomId: string): void {
+    return this.roomManager.clearGameState(roomId);
+  }
 }
 
 // 导出单例实例

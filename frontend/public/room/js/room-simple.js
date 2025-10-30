@@ -9,6 +9,7 @@ class DoudizhuRoomClient {
         this.playerAvatar = null; // 玩家头像
         this.playerHand = [];
         this.gameStarted = false;
+        this.gameEnded = false; // 游戏是否结束
         this.isMyTurn = false;
         this.selectedCards = [];
         
@@ -37,6 +38,24 @@ class DoudizhuRoomClient {
         // 从URL获取用户信息
         this.initializeFromUrl();
         this.connectToServer();
+        
+        // 设置刷新保护
+        this.setupRefreshProtection();
+    }
+    
+    /**
+     * 设置刷新保护
+     * 游戏进行中时，提示用户确认是否离开
+     */
+    setupRefreshProtection() {
+        window.addEventListener('beforeunload', (e) => {
+            // 只在游戏进行中才提示
+            if (this.gameStarted && !this.gameEnded) {
+                e.preventDefault();
+                e.returnValue = '游戏正在进行中，确定要离开吗？离开后可以重新进入继续游戏。';
+                return e.returnValue;
+            }
+        });
     }
 
     /**
@@ -151,6 +170,10 @@ class DoudizhuRoomClient {
         this.socket.on('join_game_failed', (data) => {
             console.error('❌ [Socket事件] 收到 join_game_failed');
             this.onJoinGameFailed(data);
+        });
+        this.socket.on('game_state_restored', (data) => {
+            console.log('🔄 [Socket事件] 收到 game_state_restored，恢复游戏状态');
+            this.restoreGameState(data);
         });
         this.socket.on('room_joined', (data) => this.onRoomJoined(data));
         this.socket.on('room_left', (data) => this.onRoomLeft(data));
@@ -394,16 +417,54 @@ class DoudizhuRoomClient {
         const success = this.socketManager.joinGame({
             roomId: this.currentRoom.id,
             userId: this.currentPlayerId,
-            playerName: this.currentPlayer
+            playerName: this.currentPlayer,
+            playerAvatar: this.playerAvatar  // 传递头像
         });
 
         if (success) {
-            console.log('加入房间请求已发送');
+            console.log('🎯 加入房间请求已发送，头像:', this.playerAvatar);
         } else {
             console.error('加入房间失败');
         }
     }
 
+    /**
+     * 恢复游戏状态（玩家重连）
+     */
+    restoreGameState(gameState) {
+        console.log('🔄 恢复游戏状态:', gameState);
+        
+        if (!gameState) return;
+        
+        // 标记游戏已开始
+        this.gameStarted = true;
+        
+        // 恢复玩家手牌
+        const currentPlayerState = gameState.players?.find(p => 
+            p.id === this.currentPlayerId || p.name === this.currentPlayer
+        );
+        
+        if (currentPlayerState && currentPlayerState.cards) {
+            this.playerHand = currentPlayerState.cards;
+            this.updatePlayerHand();
+            console.log(`✅ 恢复手牌: ${this.playerHand.length}张`);
+        }
+        
+        // 恢复底牌
+        if (gameState.bottomCards) {
+            this.bottomCards = gameState.bottomCards;
+            console.log(`✅ 恢复底牌: ${this.bottomCards.length}张`);
+        }
+        
+        // 显示提示消息
+        this.addGameMessage('🔄 游戏状态已恢复，继续游戏', 'system');
+        this.addGameMessage(`📋 当前阶段: ${gameState.phase || '未知'}`, 'system');
+        
+        // 隐藏准备按钮，显示游戏操作
+        this.hideRoomActions();
+        this.showGameActions();
+    }
+    
     /**
      * 加入游戏成功
      */

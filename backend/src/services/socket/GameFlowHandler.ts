@@ -25,6 +25,20 @@ export class GameFlowHandler {
     this.cardPlayHandler = new CardPlayHandler(io);
     console.log('GameFlowHandler initialized with CardPlayHandler');
   }
+  
+  /**
+   * 保存游戏状态
+   */
+  private saveGameState(roomId: string, gameState: any): void {
+    roomService.saveGameState(roomId, gameState);
+  }
+  
+  /**
+   * 获取游戏状态
+   */
+  private getGameState(roomId: string): any | undefined {
+    return roomService.getGameState(roomId);
+  }
 
   /**
    * 获取CardPlayHandler实例
@@ -85,6 +99,18 @@ export class GameFlowHandler {
       console.log(`✅ 发牌事件已广播给房间 room_${roomId}`);
 
       console.log(`✅ 游戏开始成功: 房间${roomId}`);
+      
+      // 保存游戏状态
+      this.saveGameState(roomId, {
+        phase: 'dealing',
+        players: room.players.map((player: any, index: number) => ({
+          id: player.id,
+          name: player.name,
+          cards: dealResult.playerCards[index],
+          cardCount: dealResult.playerCards[index].length
+        })),
+        bottomCards: dealResult.bottomCards
+      });
 
       // 延迟2秒后开始抢地主流程
       setTimeout(() => {

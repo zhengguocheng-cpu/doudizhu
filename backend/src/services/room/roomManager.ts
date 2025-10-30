@@ -9,9 +9,36 @@ import { RoomValidator } from './roomValidator';
  */
 export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
+  private gameStates: Map<string, any> = new Map(); // 保存游戏状态
 
   constructor() {
     this.initializeDefaultRooms();
+  }
+  
+  /**
+   * 保存游戏状态
+   */
+  public saveGameState(roomId: string, gameState: any): void {
+    this.gameStates.set(roomId, {
+      ...gameState,
+      savedAt: new Date()
+    });
+    console.log(`💾 保存房间 ${roomId} 的游戏状态`);
+  }
+  
+  /**
+   * 获取游戏状态
+   */
+  public getGameState(roomId: string): any | undefined {
+    return this.gameStates.get(roomId);
+  }
+  
+  /**
+   * 清除游戏状态
+   */
+  public clearGameState(roomId: string): void {
+    this.gameStates.delete(roomId);
+    console.log(`🗑️ 清除房间 ${roomId} 的游戏状态`);
   }
 
   /**

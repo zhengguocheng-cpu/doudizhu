@@ -163,6 +163,9 @@ export class SocketEventHandler {
         //players: room.players
       });
 
+      // 检查是否有保存的游戏状态（玩家重连）
+      const savedGameState = roomService.getGameState(roomId);
+      
       // 发送成功响应给当前玩家
       socket.emit('join_game_success', {
         roomId: roomId,
@@ -174,8 +177,16 @@ export class SocketEventHandler {
           players: room.players || [],
           maxPlayers: room.maxPlayers || 3,
           status: room.status || 'waiting'
-        }
+        },
+        // 如果有保存的游戏状态，一并发送
+        gameState: savedGameState || null
       });
+      
+      // 如果有游戏状态，说明是重连，额外发送游戏状态恢复事件
+      if (savedGameState) {
+        console.log(`🔄 玩家 ${userId} 重连，恢复游戏状态`);
+        socket.emit('game_state_restored', savedGameState);
+      }
 
       // 通知房间内其他玩家（发送完整的房间玩家列表）
       console.log(`📢 向房间 room_${roomId} 的其他玩家广播 player_joined 事件`);

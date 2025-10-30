@@ -727,12 +727,25 @@ class CardHintHelper {
 
     /**
      * 按点数分组
+     * 支持字符串格式（'♠3'）和对象格式（{suit: '♠', rank: '3', value: 3}）
      */
     static groupCardsByRank(cards) {
         const groups = new Map();
         
         for (const card of cards) {
-            const rank = card.replace(/[♠♥♣♦]/g, '');
+            // 兼容两种格式
+            let rank;
+            if (typeof card === 'string') {
+                // 字符串格式：'♠3' -> '3'
+                rank = card.replace(/[♠♥♣♦]/g, '');
+            } else if (card && typeof card === 'object') {
+                // 对象格式：{rank: '3', value: 3} -> 3 (使用value作为key)
+                rank = card.value;
+            } else {
+                console.error('❌ 无效的卡牌格式:', card);
+                continue;
+            }
+            
             if (!groups.has(rank)) {
                 groups.set(rank, []);
             }
@@ -741,8 +754,9 @@ class CardHintHelper {
 
         // 按牌值排序
         return new Map([...groups.entries()].sort((a, b) => {
-            const valueA = CardTypeDetector.RANK_VALUES[a[0]] || 0;
-            const valueB = CardTypeDetector.RANK_VALUES[b[0]] || 0;
+            // a[0] 和 b[0] 是 rank (可能是字符串或数字)
+            const valueA = typeof a[0] === 'number' ? a[0] : (CardTypeDetector.RANK_VALUES[a[0]] || 0);
+            const valueB = typeof b[0] === 'number' ? b[0] : (CardTypeDetector.RANK_VALUES[b[0]] || 0);
             return valueA - valueB;
         }));
     }

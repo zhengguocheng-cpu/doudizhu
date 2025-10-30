@@ -96,7 +96,31 @@ class CardHintHelper {
             hints.push(...planes);
         }
         
-        // 4. 查找三带二（5张，从最小的三张开始）
+        // 4. 查找飞机带翅膀（带对子）
+        const planesWithPairs = this.findAllPlanesWithPairs(playerHand);
+        if (planesWithPairs.length > 0) {
+            planesWithPairs.sort((a, b) => {
+                if (b.length !== a.length) {
+                    return b.length - a.length;
+                }
+                return this.getCardValue(a[0]) - this.getCardValue(b[0]);
+            });
+            hints.push(...planesWithPairs);
+        }
+        
+        // 5. 查找飞机带翅膀（带单牌）
+        const planesWithSingles = this.findAllPlanesWithSingles(playerHand);
+        if (planesWithSingles.length > 0) {
+            planesWithSingles.sort((a, b) => {
+                if (b.length !== a.length) {
+                    return b.length - a.length;
+                }
+                return this.getCardValue(a[0]) - this.getCardValue(b[0]);
+            });
+            hints.push(...planesWithSingles);
+        }
+        
+        // 6. 查找三带二（5张，从最小的三张开始）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
@@ -116,7 +140,7 @@ class CardHintHelper {
             }
         }
         
-        // 5. 查找三带一（4张，从最小的三张开始）
+        // 7. 查找三带一（4张，从最小的三张开始）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
@@ -129,7 +153,7 @@ class CardHintHelper {
             }
         }
         
-        // 6. 查找炸弹（4张，从小到大）
+        // 8. 查找炸弹（4张，从小到大）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length === 4) {
@@ -137,7 +161,7 @@ class CardHintHelper {
             }
         }
         
-        // 7. 查找三张（从小到大）
+        // 9. 查找三张（从小到大）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
@@ -145,7 +169,7 @@ class CardHintHelper {
             }
         }
         
-        // 8. 查找对子（从小到大）
+        // 10. 查找对子（从小到大）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 2) {
@@ -153,13 +177,13 @@ class CardHintHelper {
             }
         }
         
-        // 9. 单牌（从小到大）
+        // 11. 单牌（从小到大）
         const sortedHand = this.sortCards(playerHand);
         for (const card of sortedHand) {
             hints.push([card]);
         }
         
-        // 10. 王炸（最后提示，因为是最大的牌）
+        // 12. 王炸（最后提示，因为是最大的牌）
         const rocket = this.findRocket(playerHand);
         if (rocket) {
             hints.push(rocket);
@@ -292,6 +316,115 @@ class CardHintHelper {
         }
         
         return planes;
+    }
+
+    /**
+     * 查找所有飞机带翅膀（带对子）
+     * 例如：333444+5566 (2个三张+2个对子，10张)
+     */
+    static findAllPlanesWithPairs(playerHand) {
+        const planesWithPairs = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 飞机最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 3);
+        
+        // 从最长开始尝试
+        for (let length = 6; length >= 2; length--) {
+            for (let i = 0; i <= validRanks.length - length; i++) {
+                // 检查是否连续
+                let isConsecutive = true;
+                const planeCards = [];
+                
+                for (let j = 0; j < length; j++) {
+                    const expectedRank = validRanks[i] + j;
+                    if (validRanks[i + j] !== expectedRank) {
+                        isConsecutive = false;
+                        break;
+                    }
+                    const cards = cardGroups.get(validRanks[i + j]);
+                    if (cards && cards.length >= 3) {
+                        planeCards.push(...cards.slice(0, 3));
+                    } else {
+                        isConsecutive = false;
+                        break;
+                    }
+                }
+                
+                if (isConsecutive && planeCards.length === length * 3) {
+                    // 找到飞机，现在找对子作为翅膀
+                    const remainingCards = playerHand.filter(c => !planeCards.includes(c));
+                    const remainingGroups = this.groupCardsByRank(remainingCards);
+                    const pairRanks = Array.from(remainingGroups.keys())
+                        .filter(r => remainingGroups.get(r).length >= 2)
+                        .sort((a, b) => a - b);
+                    
+                    // 需要length个对子
+                    if (pairRanks.length >= length) {
+                        const wings = [];
+                        for (let k = 0; k < length; k++) {
+                            const pairCards = remainingGroups.get(pairRanks[k]);
+                            wings.push(...pairCards.slice(0, 2));
+                        }
+                        planesWithPairs.push([...planeCards, ...wings]);
+                    }
+                }
+            }
+        }
+        
+        return planesWithPairs;
+    }
+
+    /**
+     * 查找所有飞机带翅膀（带单牌）
+     * 例如：333444+56 (2个三张+2个单牌，8张)
+     */
+    static findAllPlanesWithSingles(playerHand) {
+        const planesWithSingles = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 飞机最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 3);
+        
+        // 从最长开始尝试
+        for (let length = 6; length >= 2; length--) {
+            for (let i = 0; i <= validRanks.length - length; i++) {
+                // 检查是否连续
+                let isConsecutive = true;
+                const planeCards = [];
+                
+                for (let j = 0; j < length; j++) {
+                    const expectedRank = validRanks[i] + j;
+                    if (validRanks[i + j] !== expectedRank) {
+                        isConsecutive = false;
+                        break;
+                    }
+                    const cards = cardGroups.get(validRanks[i + j]);
+                    if (cards && cards.length >= 3) {
+                        planeCards.push(...cards.slice(0, 3));
+                    } else {
+                        isConsecutive = false;
+                        break;
+                    }
+                }
+                
+                if (isConsecutive && planeCards.length === length * 3) {
+                    // 找到飞机，现在找单牌作为翅膀
+                    const remainingCards = playerHand.filter(c => !planeCards.includes(c));
+                    
+                    // 需要length个单牌
+                    if (remainingCards.length >= length) {
+                        const sortedRemaining = this.sortCards(remainingCards);
+                        const wings = sortedRemaining.slice(0, length);
+                        planesWithSingles.push([...planeCards, ...wings]);
+                    }
+                }
+            }
+        }
+        
+        return planesWithSingles;
     }
 
     /**

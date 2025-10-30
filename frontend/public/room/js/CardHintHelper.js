@@ -478,32 +478,71 @@ class CardHintHelper {
 
     /**
      * 查找所有更大的单牌
+     * 优先级：真单张 > 拆对子 > 拆三张 > 绝不拆炸弹
      */
     static findAllBiggerSingles(playerHand, minValue) {
         const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
         const sortedHand = this.sortCards(playerHand);
         
+        // 1. 优先找真正的单张（不是对子、三张、炸弹的一部分）
         for (const card of sortedHand) {
             const value = this.getCardValue(card);
             if (value > minValue) {
-                hints.push([card]);
+                const rank = card.value;
+                const count = cardGroups.get(rank)?.length || 0;
+                if (count === 1) {
+                    hints.push([card]);
+                }
             }
         }
+        
+        // 2. 如果没有单张，考虑拆对子
+        if (hints.length === 0) {
+            for (const card of sortedHand) {
+                const value = this.getCardValue(card);
+                if (value > minValue) {
+                    const rank = card.value;
+                    const count = cardGroups.get(rank)?.length || 0;
+                    if (count === 2) {
+                        hints.push([card]);
+                    }
+                }
+            }
+        }
+        
+        // 3. 如果还没有，考虑拆三张
+        if (hints.length === 0) {
+            for (const card of sortedHand) {
+                const value = this.getCardValue(card);
+                if (value > minValue) {
+                    const rank = card.value;
+                    const count = cardGroups.get(rank)?.length || 0;
+                    if (count === 3) {
+                        hints.push([card]);
+                    }
+                }
+            }
+        }
+        
+        // 4. 绝对不拆炸弹（count === 4 的情况不处理）
         
         return hints;
     }
 
     /**
      * 查找所有更大的对子
+     * 优先级：真对子 > 拆三张 > 绝不拆炸弹
      */
     static findAllBiggerPairs(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
         const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
+        // 1. 优先找真对子（恰好2张的）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
-            if (cards.length >= 2) {
+            if (cards.length === 2) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
                     hints.push(cards.slice(0, 2));
@@ -511,11 +550,27 @@ class CardHintHelper {
             }
         }
         
+        // 2. 如果没有真对子，考虑拆三张
+        if (hints.length === 0) {
+            for (const rank of sortedRanks) {
+                const cards = cardGroups.get(rank);
+                if (cards.length === 3) {
+                    const value = CardTypeDetector.RANK_VALUES[rank];
+                    if (value > minValue) {
+                        hints.push(cards.slice(0, 2));
+                    }
+                }
+            }
+        }
+        
+        // 3. 绝对不拆炸弹（count === 4 的情况不处理）
+        
         return hints;
     }
 
     /**
      * 查找所有更大的三张
+     * 绝对不拆炸弹
      */
     static findAllBiggerTriples(playerHand, minValue) {
         const hints = [];
@@ -524,7 +579,8 @@ class CardHintHelper {
         
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
-            if (cards.length >= 3) {
+            // 只有恰好3张或超过4张时才能出三张，不拆炸弹
+            if (cards.length === 3 || cards.length > 4) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
                     hints.push(cards.slice(0, 3));

@@ -269,6 +269,7 @@ class DoudizhuRoomClient {
                 setTimeout(() => {
                     isProcessing = false;
                     startGameBtn.disabled = false;
+                    console.log('✅ 准备按钮已解锁，可以再次点击');
                 }, 1000);
             });
         }

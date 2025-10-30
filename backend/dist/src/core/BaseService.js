@@ -49,7 +49,6 @@ class BaseService {
                 };
                 const levelName = levelNames[level] || 'INFO';
                 const serviceName = this.constructor.name;
-                this.logger.log(`[${timestamp}] ${levelName} [${serviceName}] ${message}`, metadata || '');
             }
         }
     }

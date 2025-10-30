@@ -241,22 +241,24 @@ class LobbyController {
 
     /**
      * 处理加入房间
+     * MPA架构：大厅不发送join_game，直接跳转到房间页面
+     * 房间页面的Socket会负责真正的加入操作
      */
     async handleJoinRoom(roomId) {
         try {
-            const success = await this.roomManager.joinRoom(roomId);
-            if (success) {
-                // 跳转到房间页面，添加joined=true参数表示已在大厅加入成功
-                const params = new URLSearchParams({
-                    roomId: roomId,
-                    playerName: encodeURIComponent(this.currentPlayer),
-                    playerAvatar: encodeURIComponent(this.playerAvatar),
-                    joined: 'true'  // 标记已经在大厅加入成功
-                });
-                window.location.href = `/room/room.html?${params.toString()}`;
-            }
+            console.log('🚀 [大厅] 准备跳转到房间:', roomId);
+            
+            // 直接跳转到房间页面，不在大厅发送join_game
+            // 房间页面会建立新的Socket连接并发送join_game请求
+            const params = new URLSearchParams({
+                roomId: roomId,
+                playerName: encodeURIComponent(this.currentPlayer),
+                playerAvatar: encodeURIComponent(this.playerAvatar)
+            });
+            
+            window.location.href = `/room/room.html?${params.toString()}`;
         } catch (error) {
-            this.messageManager.addError(`加入房间失败: ${error.message}`);
+            this.messageManager.addError(`跳转失败: ${error.message}`);
         }
     }
 

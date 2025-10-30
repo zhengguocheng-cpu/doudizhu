@@ -8,7 +8,7 @@ class UserManager {
         this.users = new Map();
         this.sessionManager = sessionManager;
     }
-    authenticateUser(userName, socketId) {
+    authenticateUser(userName, socketId, pageNavigationToken) {
         const trimmedUserName = userName.trim();
         let user = this.findUserByName(trimmedUserName);
         if (!user) {
@@ -20,15 +20,27 @@ class UserManager {
                 console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
                 console.log(`   旧socketId: ${user.socketId}`);
                 console.log(`   新socketId: ${socketId}`);
-                const session = this.sessionManager.findSessionByUserId(trimmedUserName);
-                if (session && session.sessionId) {
-                    console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 的旧连接仍然活跃`);
-                    console.log(`   活跃会话ID: ${session.sessionId}`);
-                    throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+                console.log(`   页面跳转令牌: ${pageNavigationToken ? '有' : '无'}`);
+                if (pageNavigationToken) {
+                    console.log(`✅ [MPA] 检测到页面跳转令牌，允许新连接`);
+                    const session = this.sessionManager.findSessionByUserId(trimmedUserName);
+                    if (session) {
+                        this.sessionManager.setOnlineStatus(session.sessionId, false);
+                        console.log(`   已断开旧会话: ${session.sessionId}`);
+                    }
+                    this.updateUserConnection(trimmedUserName, socketId);
                 }
                 else {
-                    console.log(`✅ [MPA] 旧连接已断开，允许新连接`);
-                    this.updateUserConnection(trimmedUserName, socketId);
+                    const session = this.sessionManager.findSessionByUserId(trimmedUserName);
+                    if (session && session.sessionId) {
+                        console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
+                        console.log(`   活跃会话ID: ${session.sessionId}`);
+                        throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+                    }
+                    else {
+                        console.log(`✅ [MPA] 旧连接已断开，允许新连接`);
+                        this.updateUserConnection(trimmedUserName, socketId);
+                    }
                 }
             }
             else {

@@ -83,7 +83,7 @@ export class Application {
 
     // 请求日志中间件
     this.app.use((req, res, next) => {
-      console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+      //console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
       next();
     });
   }

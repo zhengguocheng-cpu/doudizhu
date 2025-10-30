@@ -125,7 +125,7 @@ class DoudizhuRoomClient {
 
         // 连接成功后加入房间
         this.socket.on('connect', () => {
-            console.log('房间连接成功');
+            console.log('✅ [房间] Socket连接成功');
             this.updateConnectionStatus(true);
 
             // 显示房间号
@@ -134,11 +134,12 @@ class DoudizhuRoomClient {
                 roomIdElement.textContent = this.currentRoom.id;
             }
 
-            // 🔥 重要：即使已经在大厅加入，新的Socket连接也必须重新加入Socket.IO房间
-            // 因为页面跳转会创建新的Socket连接，旧的Socket已经断开
-            console.log('🔄 Socket连接成功，重新加入房间（确保新Socket在房间内）');
+            // MPA架构：房间页面负责真正的加入操作
+            // 大厅页面只负责导航，不发送join_game
+            // 这里是唯一发送join_game的地方
+            console.log('🔄 [房间] 发送join_game请求，加入房间:', this.currentRoom.id);
             
-            // 总是发送join_game请求，让新的Socket加入房间
+            // 发送join_game请求，让Socket加入房间
             this.joinRoom();
         });
 

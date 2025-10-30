@@ -4,7 +4,7 @@ export declare class UserManager {
     private users;
     private sessionManager;
     constructor(sessionManager: PlayerSession);
-    authenticateUser(userName: string, socketId: string): Player;
+    authenticateUser(userName: string, socketId: string, pageNavigationToken?: string): Player;
     createUser(userName: string): Player;
     findUserByName(userName: string): Player | undefined;
     getUserById(userId: string): Player | undefined;

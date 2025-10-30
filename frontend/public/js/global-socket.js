@@ -35,7 +35,12 @@ class GlobalSocketManager {
         this.userName = userName;
         this.userId = userId || userName;
 
+        // 保存到localStorage，供个人中心等页面使用
+        localStorage.setItem('userId', this.userId);
+        localStorage.setItem('userName', this.userName);
+
         console.log('🔔 建立新的Socket连接，用户:', userName);
+        console.log('💾 保存用户信息到localStorage:', { userId: this.userId, userName: this.userName });
 
         // 连接时传递auth参数，后端自动认证
         this.socket = io('http://localhost:3000', {

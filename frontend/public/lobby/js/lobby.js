@@ -180,6 +180,11 @@ class LobbyController {
         // 注释掉认证状态清理
         // this.socketManager.clearAuthentication();
 
+        // 清除localStorage中的用户信息
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('lastGameSettlement');
+
         this.messageManager.addInfo('已登出');
 
         // 跳转到登录页面

@@ -1,7 +1,11 @@
 import { GameRoom, Player } from '../../types';
 export declare class RoomManager {
     private rooms;
+    private gameStates;
     constructor();
+    saveGameState(roomId: string, gameState: any): void;
+    getGameState(roomId: string): any | undefined;
+    clearGameState(roomId: string): void;
     createRoom(name: string, maxPlayers?: number): GameRoom;
     getRoom(roomId: string): GameRoom | undefined;
     getAllRooms(): GameRoom[];

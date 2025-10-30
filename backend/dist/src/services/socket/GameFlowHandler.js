@@ -18,6 +18,12 @@ class GameFlowHandler {
         this.cardPlayHandler = new CardPlayHandler_1.CardPlayHandler(io);
         console.log('GameFlowHandler initialized with CardPlayHandler');
     }
+    saveGameState(roomId, gameState) {
+        roomService_1.roomService.saveGameState(roomId, gameState);
+    }
+    getGameState(roomId) {
+        return roomService_1.roomService.getGameState(roomId);
+    }
     getCardPlayHandler() {
         return this.cardPlayHandler;
     }
@@ -57,6 +63,16 @@ class GameFlowHandler {
             });
             console.log(`✅ 发牌事件已广播给房间 room_${roomId}`);
             console.log(`✅ 游戏开始成功: 房间${roomId}`);
+            this.saveGameState(roomId, {
+                phase: 'dealing',
+                players: room.players.map((player, index) => ({
+                    id: player.id,
+                    name: player.name,
+                    cards: dealResult.playerCards[index],
+                    cardCount: dealResult.playerCards[index].length
+                })),
+                bottomCards: dealResult.bottomCards
+            });
             setTimeout(() => {
                 this.startBidding(roomId);
             }, 2000);

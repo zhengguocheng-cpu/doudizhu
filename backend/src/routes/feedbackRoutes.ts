@@ -61,10 +61,11 @@ router.post('/feedback', upload.array('screenshots', 3), async (req: Request, re
     
     // 验证必填字段
     if (!feedbackContent || !feedbackType) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: '缺少必填字段'
       });
+      return;
     }
     
     // 获取上传的文件
@@ -131,10 +132,11 @@ router.get('/feedback/list', (req: Request, res: Response) => {
     const feedbackDir = path.join(process.cwd(), 'data', 'feedback');
     
     if (!fs.existsSync(feedbackDir)) {
-      return res.json({
+      res.json({
         success: true,
         feedbacks: []
       });
+      return;
     }
     
     const files = fs.readdirSync(feedbackDir)

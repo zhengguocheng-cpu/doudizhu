@@ -97,6 +97,7 @@ class SocketEventHandler {
                 roomId: roomId,
                 roomName: room.name,
             });
+            const savedGameState = roomService_1.roomService.getGameState(roomId);
             socket.emit('join_game_success', {
                 roomId: roomId,
                 roomName: room.name,
@@ -107,8 +108,13 @@ class SocketEventHandler {
                     players: room.players || [],
                     maxPlayers: room.maxPlayers || 3,
                     status: room.status || 'waiting'
-                }
+                },
+                gameState: savedGameState || null
             });
+            if (savedGameState) {
+                console.log(`🔄 玩家 ${userId} 重连，恢复游戏状态`);
+                socket.emit('game_state_restored', savedGameState);
+            }
             console.log(`📢 向房间 room_${roomId} 的其他玩家广播 player_joined 事件`);
             console.log(`📢 当前房间内的所有socket:`, Array.from(this.io.sockets.adapter.rooms.get(`room_${roomId}`) || []));
             console.log(`📢 当前socket ID: ${socket.id}`);

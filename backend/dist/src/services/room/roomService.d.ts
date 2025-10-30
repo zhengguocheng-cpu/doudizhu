@@ -27,6 +27,9 @@ export declare class RoomService {
     };
     isDefaultRoom(roomId: string): boolean;
     findUserByName(userName: string): Player | undefined;
+    saveGameState(roomId: string, gameState: any): void;
+    getGameState(roomId: string): any | undefined;
+    clearGameState(roomId: string): void;
 }
 export declare const roomService: RoomService;
 //# sourceMappingURL=roomService.d.ts.map

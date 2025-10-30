@@ -7,7 +7,22 @@ const roomValidator_1 = require("./roomValidator");
 class RoomManager {
     constructor() {
         this.rooms = new Map();
+        this.gameStates = new Map();
         this.initializeDefaultRooms();
+    }
+    saveGameState(roomId, gameState) {
+        this.gameStates.set(roomId, {
+            ...gameState,
+            savedAt: new Date()
+        });
+        console.log(`💾 保存房间 ${roomId} 的游戏状态`);
+    }
+    getGameState(roomId) {
+        return this.gameStates.get(roomId);
+    }
+    clearGameState(roomId) {
+        this.gameStates.delete(roomId);
+        console.log(`🗑️ 清除房间 ${roomId} 的游戏状态`);
     }
     createRoom(name, maxPlayers = 3) {
         const validation = roomValidator_1.RoomValidator.validateRoomParams(name, maxPlayers);

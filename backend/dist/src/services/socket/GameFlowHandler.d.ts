@@ -6,6 +6,8 @@ export declare class GameFlowHandler {
     private constructor();
     static getInstance(): GameFlowHandler;
     initialize(io: any): void;
+    private saveGameState;
+    private getGameState;
     getCardPlayHandler(): CardPlayHandler | null;
     startGame(roomId: string): void;
     private startBidding;

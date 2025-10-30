@@ -70,6 +70,15 @@ class RoomService {
         const userManager = (0, userManager_1.getUserManager)();
         return userManager.findUserByName(userName);
     }
+    saveGameState(roomId, gameState) {
+        return this.roomManager.saveGameState(roomId, gameState);
+    }
+    getGameState(roomId) {
+        return this.roomManager.getGameState(roomId);
+    }
+    clearGameState(roomId) {
+        return this.roomManager.clearGameState(roomId);
+    }
 }
 exports.RoomService = RoomService;
 exports.roomService = new RoomService();

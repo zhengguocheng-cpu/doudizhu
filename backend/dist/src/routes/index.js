@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const config_1 = __importDefault(require("../config"));
+const feedbackRoutes_1 = __importDefault(require("./feedbackRoutes"));
 const router = express_1.default.Router();
 router.get('/', (req, res) => {
     res.redirect('/login/');
@@ -47,5 +48,6 @@ router.get('/lobby/', (req, res) => {
 router.get('/room/', (req, res) => {
     res.sendFile(config_1.default.paths.frontend.room + '/index.html');
 });
+router.use('/api', feedbackRoutes_1.default);
 exports.default = router;
 //# sourceMappingURL=index.js.map

@@ -1,6 +1,12 @@
 /**
- * 斗地主出牌提示助手
- * 负责分析手牌，给出智能出牌建议
+ * 斗地主出牌提示助手（优化版）
+ * 策略：优先提示能出最多张数的牌型，从最小的牌开始
+ * 例如：有 33 444 5678 → 提示顺序：
+ * 1. 3456 78 (顺子6张)
+ * 2. 444带33 (三带二5张)
+ * 3. 444 (三张3张)
+ * 4. 33 (对子2张)
+ * 5. 3 (单牌1张)
  */
 class CardHintHelper {
     // 提示索引，用于循环提示
@@ -8,36 +14,30 @@ class CardHintHelper {
 
     /**
      * 获取出牌提示
-     * @param {Array<string>} playerHand - 玩家手牌
-     * @param {Object|null} lastPlay - 上家出的牌型
-     * @param {boolean} isFirstPlay - 是否首次出牌
-     * @returns {Array<string>|null} 推荐的牌，如果没有可出的牌返回null
      */
     static getHint(playerHand, lastPlay = null, isFirstPlay = false) {
         if (!playerHand || playerHand.length === 0) {
             return null;
         }
 
-        // 首次出牌或新一轮，获取所有可能的牌型
+        // 首次出牌或新一轮
         if (isFirstPlay || !lastPlay) {
             const allHints = this.getAllPlayableCards(playerHand);
             if (allHints.length === 0) {
                 return null;
             }
             
-            // 循环提示
             const hint = allHints[this.hintIndex % allHints.length];
             this.hintIndex++;
             return hint;
         }
 
-        // 需要压过上家的牌，获取所有可能的牌型
+        // 需要压过上家的牌
         const allHints = this.getAllBeatingCards(playerHand, lastPlay);
         if (allHints.length === 0) {
             return null;
         }
         
-        // 循环提示
         const hint = allHints[this.hintIndex % allHints.length];
         this.hintIndex++;
         return hint;
@@ -52,44 +52,73 @@ class CardHintHelper {
 
     /**
      * 获取所有可出的牌组合（首次出牌时使用）
-     * @param {Array<string>} playerHand - 玩家手牌
-     * @returns {Array<Array<string>>} 所有可能的牌型，按优先级排序
+     * 策略：优先提示张数多的牌型，从最小的牌开始
      */
     static getAllPlayableCards(playerHand) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        // 1. 查找所有炸弹（优先级最高，尽快出掉）
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length === 4) {
-                hints.push([...cards]);
-            }
+        // 1. 优先查找顺子（5-12张，从最小的牌开始）
+        const straights = this.findAllStraights(playerHand);
+        if (straights.length > 0) {
+            // 按张数从多到少排序，张数相同则按起始牌从小到大
+            straights.sort((a, b) => {
+                if (b.length !== a.length) {
+                    return b.length - a.length;
+                }
+                return this.getCardValue(a[0]) - this.getCardValue(b[0]);
+            });
+            hints.push(...straights);
         }
         
-        // 2. 查找王炸
-        const rocket = this.findRocket(playerHand);
-        if (rocket) {
-            hints.push(rocket);
+        // 2. 查找连对（3对以上，从最小的牌开始）
+        const consecutivePairs = this.findAllConsecutivePairs(playerHand);
+        if (consecutivePairs.length > 0) {
+            consecutivePairs.sort((a, b) => {
+                if (b.length !== a.length) {
+                    return b.length - a.length;
+                }
+                return this.getCardValue(a[0]) - this.getCardValue(b[0]);
+            });
+            hints.push(...consecutivePairs);
         }
         
-        // 3. 查找所有三带二（尽可能多出牌）
-        for (const [rank, cards] of cardGroups.entries()) {
+        // 3. 查找飞机（2个或以上连续的三张）
+        const planes = this.findAllPlanes(playerHand);
+        if (planes.length > 0) {
+            planes.sort((a, b) => {
+                if (b.length !== a.length) {
+                    return b.length - a.length;
+                }
+                return this.getCardValue(a[0]) - this.getCardValue(b[0]);
+            });
+            hints.push(...planes);
+        }
+        
+        // 4. 查找三带二（5张，从最小的三张开始）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 const triple = cards.slice(0, 3);
                 const remainingCards = playerHand.filter(c => !triple.includes(c));
                 const remainingGroups = this.groupCardsByRank(remainingCards);
+                const remainingRanks = Array.from(remainingGroups.keys()).sort((a, b) => a - b);
                 
-                for (const [pairRank, pairCards] of remainingGroups.entries()) {
+                // 找最小的对子
+                for (const pairRank of remainingRanks) {
+                    const pairCards = remainingGroups.get(pairRank);
                     if (pairCards.length >= 2) {
                         hints.push([...triple, ...pairCards.slice(0, 2)]);
-                        break; // 只取第一个三带二
+                        break;
                     }
                 }
             }
         }
         
-        // 4. 查找所有三带一
-        for (const [rank, cards] of cardGroups.entries()) {
+        // 5. 查找三带一（4张，从最小的三张开始）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 const triple = cards.slice(0, 3);
                 const remainingCards = playerHand.filter(c => !triple.includes(c));
@@ -100,34 +129,173 @@ class CardHintHelper {
             }
         }
         
-        // 5. 查找所有三张
-        for (const [rank, cards] of cardGroups.entries()) {
+        // 6. 查找炸弹（4张，从小到大）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
+            if (cards.length === 4) {
+                hints.push([...cards]);
+            }
+        }
+        
+        // 7. 查找三张（从小到大）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 hints.push(cards.slice(0, 3));
             }
         }
         
-        // 6. 查找所有对子
-        for (const [rank, cards] of cardGroups.entries()) {
+        // 8. 查找对子（从小到大）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 2) {
                 hints.push(cards.slice(0, 2));
             }
         }
         
-        // 7. 所有单牌（从小到大）
+        // 9. 单牌（从小到大）
         const sortedHand = this.sortCards(playerHand);
         for (const card of sortedHand) {
             hints.push([card]);
+        }
+        
+        // 10. 王炸（最后提示，因为是最大的牌）
+        const rocket = this.findRocket(playerHand);
+        if (rocket) {
+            hints.push(rocket);
         }
         
         return hints;
     }
 
     /**
+     * 查找所有顺子（5张及以上连续的单牌）
+     */
+    static findAllStraights(playerHand) {
+        const straights = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 顺子最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14);
+        
+        // 从最长开始尝试，最多12张
+        for (let length = 12; length >= 5; length--) {
+            for (let i = 0; i <= validRanks.length - length; i++) {
+                // 检查是否连续
+                let isConsecutive = true;
+                const straightCards = [];
+                
+                for (let j = 0; j < length; j++) {
+                    const expectedRank = validRanks[i] + j;
+                    if (validRanks[i + j] !== expectedRank) {
+                        isConsecutive = false;
+                        break;
+                    }
+                    const cards = cardGroups.get(validRanks[i + j]);
+                    if (cards && cards.length > 0) {
+                        straightCards.push(cards[0]);
+                    } else {
+                        isConsecutive = false;
+                        break;
+                    }
+                }
+                
+                if (isConsecutive && straightCards.length === length) {
+                    straights.push(straightCards);
+                }
+            }
+        }
+        
+        return straights;
+    }
+    
+    /**
+     * 查找所有连对（3对及以上连续的对子）
+     */
+    static findAllConsecutivePairs(playerHand) {
+        const consecutivePairs = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 连对最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 2);
+        
+        // 从最长开始尝试
+        for (let length = 10; length >= 3; length--) {
+            for (let i = 0; i <= validRanks.length - length; i++) {
+                // 检查是否连续
+                let isConsecutive = true;
+                const pairCards = [];
+                
+                for (let j = 0; j < length; j++) {
+                    const expectedRank = validRanks[i] + j;
+                    if (validRanks[i + j] !== expectedRank) {
+                        isConsecutive = false;
+                        break;
+                    }
+                    const cards = cardGroups.get(validRanks[i + j]);
+                    if (cards && cards.length >= 2) {
+                        pairCards.push(...cards.slice(0, 2));
+                    } else {
+                        isConsecutive = false;
+                        break;
+                    }
+                }
+                
+                if (isConsecutive && pairCards.length === length * 2) {
+                    consecutivePairs.push(pairCards);
+                }
+            }
+        }
+        
+        return consecutivePairs;
+    }
+    
+    /**
+     * 查找所有飞机（2个及以上连续的三张）
+     */
+    static findAllPlanes(playerHand) {
+        const planes = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 飞机最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 3);
+        
+        // 从最长开始尝试
+        for (let length = 6; length >= 2; length--) {
+            for (let i = 0; i <= validRanks.length - length; i++) {
+                // 检查是否连续
+                let isConsecutive = true;
+                const planeCards = [];
+                
+                for (let j = 0; j < length; j++) {
+                    const expectedRank = validRanks[i] + j;
+                    if (validRanks[i + j] !== expectedRank) {
+                        isConsecutive = false;
+                        break;
+                    }
+                    const cards = cardGroups.get(validRanks[i + j]);
+                    if (cards && cards.length >= 3) {
+                        planeCards.push(...cards.slice(0, 3));
+                    } else {
+                        isConsecutive = false;
+                        break;
+                    }
+                }
+                
+                if (isConsecutive && planeCards.length === length * 3) {
+                    planes.push(planeCards);
+                }
+            }
+        }
+        
+        return planes;
+    }
+
+    /**
      * 获取所有能压过上家的牌组合
-     * @param {Array<string>} playerHand - 玩家手牌
-     * @param {Object} lastPlay - 上家出的牌型
-     * @returns {Array<Array<string>>} 所有可能的牌型
      */
     static getAllBeatingCards(playerHand, lastPlay) {
         const hints = [];
@@ -183,7 +351,7 @@ class CardHintHelper {
         const sortedHand = this.sortCards(playerHand);
         
         for (const card of sortedHand) {
-            const value = CardTypeDetector.getCardValue(card);
+            const value = this.getCardValue(card);
             if (value > minValue) {
                 hints.push([card]);
             }
@@ -198,8 +366,10 @@ class CardHintHelper {
     static findAllBiggerPairs(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 2) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
@@ -217,8 +387,10 @@ class CardHintHelper {
     static findAllBiggerTriples(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
@@ -236,8 +408,10 @@ class CardHintHelper {
     static findAllBiggerTripleWithSingles(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
@@ -246,10 +420,7 @@ class CardHintHelper {
                     
                     if (remainingCards.length > 0) {
                         const sortedRemaining = this.sortCards(remainingCards);
-                        // 可以带不同的单牌
-                        for (const single of sortedRemaining) {
-                            hints.push([...triple, single]);
-                        }
+                        hints.push([...triple, sortedRemaining[0]]);
                     }
                 }
             }
@@ -264,18 +435,23 @@ class CardHintHelper {
     static findAllBiggerTripleWithPairs(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
                     const triple = cards.slice(0, 3);
                     const remainingCards = playerHand.filter(c => !triple.includes(c));
                     const remainingGroups = this.groupCardsByRank(remainingCards);
+                    const remainingRanks = Array.from(remainingGroups.keys()).sort((a, b) => a - b);
                     
-                    for (const [pairRank, pairCards] of remainingGroups.entries()) {
+                    for (const pairRank of remainingRanks) {
+                        const pairCards = remainingGroups.get(pairRank);
                         if (pairCards.length >= 2) {
                             hints.push([...triple, ...pairCards.slice(0, 2)]);
+                            break;
                         }
                     }
                 }
@@ -291,8 +467,10 @@ class CardHintHelper {
     static findAllBiggerBombs(playerHand, minValue) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length === 4) {
                 const value = CardTypeDetector.RANK_VALUES[rank];
                 if (value > minValue) {
@@ -310,213 +488,16 @@ class CardHintHelper {
     static findAllBombs(playerHand) {
         const hints = [];
         const cardGroups = this.groupCardsByRank(playerHand);
+        const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        for (const [rank, cards] of cardGroups.entries()) {
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
             if (cards.length === 4) {
                 hints.push(cards);
             }
         }
         
         return hints;
-    }
-
-    /**
-     * 获取能压过上家的牌
-     * @param {Array<string>} playerHand - 玩家手牌
-     * @param {Object} lastPlay - 上家出的牌型
-     * @returns {Array<string>|null} 推荐的牌
-     */
-    static getBeatingCards(playerHand, lastPlay) {
-        const lastType = CardValidator.normalizeType(lastPlay.type);
-        const lastValue = lastPlay.value;
-
-        // 按牌型查找能压过的牌
-        switch (lastType) {
-            case 'single':
-                return this.findBiggerSingle(playerHand, lastValue);
-            
-            case 'pair':
-                return this.findBiggerPair(playerHand, lastValue);
-            
-            case 'triple':
-                return this.findBiggerTriple(playerHand, lastValue);
-            
-            case 'triple_with_single':
-                return this.findBiggerTripleWithSingle(playerHand, lastValue);
-            
-            case 'triple_with_pair':
-                return this.findBiggerTripleWithPair(playerHand, lastValue);
-            
-            case 'straight':
-                return this.findBiggerStraight(playerHand, lastValue, lastPlay.cards.length);
-            
-            case 'consecutive_pairs':
-                return this.findBiggerConsecutivePairs(playerHand, lastValue, lastPlay.cards.length / 2);
-            
-            case 'bomb':
-                return this.findBiggerBomb(playerHand, lastValue);
-            
-            default:
-                // 尝试用炸弹或王炸压
-                return this.findBomb(playerHand) || this.findRocket(playerHand);
-        }
-    }
-
-    /**
-     * 查找更大的单牌
-     */
-    static findBiggerSingle(playerHand, minValue) {
-        const sortedHand = this.sortCards(playerHand);
-        
-        for (const card of sortedHand) {
-            const value = CardTypeDetector.getCardValue(card);
-            if (value > minValue) {
-                return [card];
-            }
-        }
-
-        // 没有更大的单牌，尝试炸弹或王炸
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的对子
-     */
-    static findBiggerPair(playerHand, minValue) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length >= 2) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
-                if (value > minValue) {
-                    return cards.slice(0, 2);
-                }
-            }
-        }
-
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的三张
-     */
-    static findBiggerTriple(playerHand, minValue) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length >= 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
-                if (value > minValue) {
-                    return cards.slice(0, 3);
-                }
-            }
-        }
-
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的三带一
-     */
-    static findBiggerTripleWithSingle(playerHand, minValue) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        // 找三张
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length >= 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
-                if (value > minValue) {
-                    const triple = cards.slice(0, 3);
-                    
-                    // 找一张单牌（优先选最小的）
-                    const remainingCards = playerHand.filter(c => !triple.includes(c));
-                    if (remainingCards.length > 0) {
-                        const sortedRemaining = this.sortCards(remainingCards);
-                        return [...triple, sortedRemaining[0]];
-                    }
-                }
-            }
-        }
-
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的三带二
-     */
-    static findBiggerTripleWithPair(playerHand, minValue) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        // 找三张
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length >= 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
-                if (value > minValue) {
-                    const triple = cards.slice(0, 3);
-                    
-                    // 找一对（优先选最小的）
-                    const remainingCards = playerHand.filter(c => !triple.includes(c));
-                    const remainingGroups = this.groupCardsByRank(remainingCards);
-                    
-                    for (const [pairRank, pairCards] of remainingGroups.entries()) {
-                        if (pairCards.length >= 2) {
-                            return [...triple, ...pairCards.slice(0, 2)];
-                        }
-                    }
-                }
-            }
-        }
-
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的顺子
-     */
-    static findBiggerStraight(playerHand, minValue, length) {
-        // TODO: 实现顺子查找逻辑
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的连对
-     */
-    static findBiggerConsecutivePairs(playerHand, minValue, pairCount) {
-        // TODO: 实现连对查找逻辑
-        return this.findBomb(playerHand) || this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找更大的炸弹
-     */
-    static findBiggerBomb(playerHand, minValue) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length === 4) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
-                if (value > minValue) {
-                    return cards;
-                }
-            }
-        }
-
-        return this.findRocket(playerHand);
-    }
-
-    /**
-     * 查找炸弹
-     */
-    static findBomb(playerHand) {
-        const cardGroups = this.groupCardsByRank(playerHand);
-        
-        for (const [rank, cards] of cardGroups.entries()) {
-            if (cards.length === 4) {
-                return cards;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -540,11 +521,18 @@ class CardHintHelper {
     }
 
     /**
+     * 获取牌的数值
+     */
+    static getCardValue(card) {
+        return CardTypeDetector.getCardValue(card);
+    }
+
+    /**
      * 按牌值排序
      */
     static sortCards(cards) {
         return [...cards].sort((a, b) => {
-            return CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b);
+            return this.getCardValue(a) - this.getCardValue(b);
         });
     }
 

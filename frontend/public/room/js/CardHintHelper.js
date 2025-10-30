@@ -539,7 +539,7 @@ class CardHintHelper {
         const cardGroups = this.groupCardsByRank(playerHand);
         const sortedRanks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
         
-        // 1. 优先找真对子（恰好2张的）
+        // 1. 找所有真对子（恰好2张的）
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length === 2) {
@@ -550,15 +550,13 @@ class CardHintHelper {
             }
         }
         
-        // 2. 如果没有真对子，考虑拆三张
-        if (hints.length === 0) {
-            for (const rank of sortedRanks) {
-                const cards = cardGroups.get(rank);
-                if (cards.length === 3) {
-                    const value = CardTypeDetector.RANK_VALUES[rank];
-                    if (value > minValue) {
-                        hints.push(cards.slice(0, 2));
-                    }
+        // 2. 找所有可以拆的三张（3张或更多，但不是炸弹）
+        for (const rank of sortedRanks) {
+            const cards = cardGroups.get(rank);
+            if (cards.length === 3) {
+                const value = CardTypeDetector.RANK_VALUES[rank];
+                if (value > minValue) {
+                    hints.push(cards.slice(0, 2));
                 }
             }
         }

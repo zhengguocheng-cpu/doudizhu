@@ -16,7 +16,7 @@ export class UserManager {
 
   /**
    * 创建或查找用户（使用用户名作为唯一标识）
-   * 如果用户在线，检查是否是同一个socket，如果不是则判断是否允许覆盖
+   * 单连接架构：同一用户的新连接会替换旧连接
    */
   public authenticateUser(userName: string, socketId: string): Player {
     const trimmedUserName = userName.trim();
@@ -27,38 +27,22 @@ export class UserManager {
     if (!user) {
       // 2. 创建新用户
       user = this.createUser(trimmedUserName);
-      console.log(`新用户注册: ${trimmedUserName}, ID: ${trimmedUserName}`);
+      console.log(`✅ [单连接] 新用户注册: ${trimmedUserName}`);
     } else {
-      // 3. 检查用户是否在线
-      if (user.isOnline) {
-        // 检查是否是同一个socketId（页面跳转导致的重连）
-        if (user.socketId && user.socketId !== socketId) {
-          console.log(`⚠️ 用户 ${trimmedUserName} 已在线，socketId不同`);
-          console.log(`   旧socketId: ${user.socketId}`);
-          console.log(`   新socketId: ${socketId}`);
-          
-          // 检查旧连接是否真的还活着
-          // findSessionByUserId只返回在线的会话，如果返回undefined说明旧会话已失效
-          const session = this.sessionManager.findSessionByUserId(trimmedUserName);
-          if (!session) {
-            // 旧会话已失效（findSessionByUserId只返回在线会话），允许新连接
-            console.log(`✅ 旧会话已失效，允许新连接覆盖`);
-            this.updateUserConnection(trimmedUserName, socketId);
-          } else {
-            // 真的有另一个活跃连接，拒绝
-            console.log(`❌ 拒绝重复登录：用户真的在其他地方在线`);
-            throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
-          }
-        } else {
-          // 同一个socketId或socketId为空，允许更新
-          console.log(`✅ 同一socket或空socket，允许更新`);
-          this.updateUserConnection(trimmedUserName, socketId);
+      // 3. 用户已存在，检查是否在线
+      if (user.isOnline && user.socketId !== socketId) {
+        // 检查是否有活跃会话
+        const session = this.sessionManager.findSessionByUserId(trimmedUserName);
+        if (session) {
+          // 有活跃会话，拒绝重复登录
+          console.log(`❌ [单连接] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
+          throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
         }
-      } else {
-        // 4. 用户离线，允许重新登录
-        this.updateUserConnection(trimmedUserName, socketId);
-        console.log(`用户重连: ${trimmedUserName}, ID: ${trimmedUserName}`);
       }
+      
+      // 4. 允许登录（新用户、离线用户、或旧会话已失效）
+      this.updateUserConnection(trimmedUserName, socketId);
+      console.log(`✅ [单连接] 用户登录: ${trimmedUserName}`);
     }
 
     return user;

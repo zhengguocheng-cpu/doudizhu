@@ -27,50 +27,31 @@ class GlobalSocketManager {
     }
 
     /**
-     * 建立Socket连接（一次性认证）
-     * @param {string} userName - 用户名（可选，如果已认证则从localStorage读取）
-     * @param {string} userId - 用户ID（可选，如果已认证则从localStorage读取）
+     * 建立Socket连接（仅在登录时调用）
+     * @param {string} userName - 用户名
+     * @param {string} userId - 用户ID
      */
     connect(userName, userId) {
-        // 如果已有连接且已连接，直接复用
+        // 如果已有连接且已连接，直接复用（单连接架构的核心）
         if (this.socket && this.isConnected) {
-            console.log('🔄 复用现有Socket连接:', this.socket.id);
+            console.log('🔄 [单连接] 复用现有Socket连接:', this.socket.id);
             console.log('📋 当前用户:', { userId: this.userId, userName: this.userName });
             return this.socket;
         }
 
-        // 如果Socket存在但未连接（可能断线重连），尝试重连
+        // 如果Socket存在但未连接（断线重连场景）
         if (this.socket && !this.isConnected) {
-            console.log('🔄 Socket存在但未连接，尝试重连...');
+            console.log('🔄 [单连接] Socket存在但未连接，尝试重连...');
             this.socket.connect();
             return this.socket;
         }
 
-        // 确定用户信息：优先使用参数，其次从实例变量，最后从localStorage
-        if (userName && userId) {
-            // 新登录，保存用户信息
-            this.userName = userName;
-            this.userId = userId;
-            localStorage.setItem('userId', this.userId);
-            localStorage.setItem('userName', this.userName);
-            console.log('🆕 新用户登录:', { userId: this.userId, userName: this.userName });
-        } else if (this.userName && this.userId) {
-            // 使用实例中已有的用户信息
-            console.log('📌 使用实例中的用户信息:', { userId: this.userId, userName: this.userName });
-        } else {
-            // 从localStorage恢复用户信息
-            this.userId = localStorage.getItem('userId');
-            this.userName = localStorage.getItem('userName');
-            
-            if (!this.userId || !this.userName) {
-                console.error('❌ 无法获取用户信息，请先登录');
-                window.location.href = '/';
-                return null;
-            }
-            console.log('💾 从localStorage恢复用户信息:', { userId: this.userId, userName: this.userName });
-        }
-
-        console.log('🔔 建立新的Socket连接，用户:', this.userName);
+        // 保存用户信息
+        this.userName = userName;
+        this.userId = userId;
+        localStorage.setItem('userId', this.userId);
+        localStorage.setItem('userName', this.userName);
+        console.log('🆕 [单连接] 新用户登录，建立连接:', { userId: this.userId, userName: this.userName });
 
         // 连接时传递auth参数，后端自动认证
         this.socket = io('http://localhost:3000', {
@@ -82,10 +63,32 @@ class GlobalSocketManager {
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: this.maxReconnectAttempts,
-            timeout: 10000 // 连接超时10秒
+            timeout: 10000
         });
 
         this.setupGlobalListeners();
+        return this.socket;
+    }
+
+    /**
+     * 获取当前Socket连接（不建立新连接）
+     * 用于大厅、房间等页面获取已存在的连接
+     */
+    getSocket() {
+        if (!this.socket || !this.isConnected) {
+            console.error('❌ [单连接] Socket未连接，请先登录');
+            // 尝试从localStorage恢复并重连
+            const userId = localStorage.getItem('userId');
+            const userName = localStorage.getItem('userName');
+            if (userId && userName) {
+                console.log('🔄 [单连接] 尝试恢复连接...');
+                return this.connect(userName, userId);
+            }
+            window.location.href = '/';
+            return null;
+        }
+        
+        console.log('✅ [单连接] 获取现有Socket连接:', this.socket.id);
         return this.socket;
     }
 

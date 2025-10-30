@@ -119,16 +119,25 @@ class LobbyController {
     }
 
     /**
-     * 初始化Socket事件监听（简化版）
+     * 初始化Socket事件监听（单连接架构）
      */
     initializeSocket() {
+        // 获取现有Socket连接（不建立新连接）
+        const socket = this.socketManager.getSocket();
+        if (!socket) {
+            console.error('❌ 无法获取Socket连接');
+            return;
+        }
+
+        console.log('🔌 [单连接] 大厅页面使用现有Socket连接:', socket.id);
+
         // 连接状态事件
-        this.socketManager.socket.on('connect', () => {
+        socket.on('connect', () => {
             console.log('✅ Socket已连接');
             this.uiManager.updateConnectionStatus(true);
         });
 
-        this.socketManager.socket.on('disconnect', () => {
+        socket.on('disconnect', () => {
             console.log('❌ Socket已断开');
             this.uiManager.updateConnectionStatus(false);
         });
@@ -137,23 +146,23 @@ class LobbyController {
         this.uiManager.updateConnectionStatus(this.socketManager.isConnected);
 
         // 房间相关事件
-        this.socketManager.socket.on('room_joined', (data) => {
+        socket.on('room_joined', (data) => {
             this.roomManager.onRoomJoined(data);
         });
 
-        this.socketManager.socket.on('room_left', (data) => {
+        socket.on('room_left', (data) => {
             this.roomManager.onRoomLeft(data);
         });
 
-        this.socketManager.socket.on('player_joined', (data) => {
+        socket.on('player_joined', (data) => {
             this.roomManager.onPlayerJoined(data);
         });
 
-        this.socketManager.socket.on('player_left', (data) => {
+        socket.on('player_left', (data) => {
             this.roomManager.onPlayerLeft(data);
         });
 
-        this.socketManager.socket.on('error', (error) => {
+        socket.on('error', (error) => {
             this.messageManager.addError(`错误: ${error.message}`);
         });
 

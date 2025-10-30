@@ -111,6 +111,34 @@ class Application {
                 this.setupSocketEventHandlers(socket);
             }
         });
+        this.setupDisconnectionHandler();
+    }
+    setupDisconnectionHandler() {
+        try {
+            const eventBus = this.container.resolve('EventBus');
+            eventBus.subscribe('user:disconnected', (event) => {
+                const { userId } = event;
+                console.log(`🔄 [清理] 用户断开连接，清理房间状态: ${userId}`);
+                const rooms = roomService_1.roomService.getAllRooms();
+                rooms.forEach(room => {
+                    const player = room.players.find(p => p.name === userId || p.id === userId);
+                    if (player) {
+                        console.log(`   从房间 ${room.id} 移除玩家 ${userId}`);
+                        roomService_1.roomService.leaveRoom(room.id, userId);
+                        this.io.to(`room_${room.id}`).emit('player_left', {
+                            playerId: userId,
+                            playerName: userId,
+                            roomId: room.id,
+                            currentPlayers: room.players.length
+                        });
+                    }
+                });
+            });
+            console.log('✅ 断开连接处理器已设置');
+        }
+        catch (error) {
+            console.warn('⚠️ 无法设置断开连接处理器:', error);
+        }
     }
     setupSocketEventHandlers(socket) {
         socket.on('join_game', (data) => {

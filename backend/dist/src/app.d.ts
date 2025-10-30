@@ -16,6 +16,7 @@ export declare class Application {
     private setupMiddleware;
     private setupRoutes;
     private setupSocketIO;
+    private setupDisconnectionHandler;
     private setupSocketEventHandlers;
     private handleStartGame;
     broadcastRoomsUpdate(eventType: string, roomId: string, data?: any): void;

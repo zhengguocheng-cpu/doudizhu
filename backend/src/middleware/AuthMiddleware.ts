@@ -219,7 +219,7 @@ export class AuthMiddleware extends BaseService {
     
     // 发布到事件总线，让其他服务（如房间管理器）可以处理
     try {
-      const eventBus = this.container.resolve('EventBus');
+      const eventBus = this.container.resolve('EventBus') as any;
       eventBus.publish('user:disconnected', {
         userId,
         sessionId,

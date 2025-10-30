@@ -341,15 +341,46 @@ class SettlementPage {
    */
   playAgain() {
     console.log('🎮 再来一局');
+    
+    // 获取房间和玩家信息
+    const roomId = this.settlementData?.roomId;
+    const playerName = this.settlementData?.currentUserName || localStorage.getItem('userName');
+    const playerAvatar = this.settlementData?.currentUserAvatar || localStorage.getItem('userAvatar') || '👤';
+    
+    if (!roomId) {
+      console.error('❌ 无法获取房间ID');
+      window.location.href = '/lobby/index.html';
+      return;
+    }
+    
+    if (!playerName) {
+      console.error('❌ 无法获取玩家信息');
+      window.location.href = '/lobby/index.html';
+      return;
+    }
+    
+    console.log('🎮 再来一局，返回房间:', {
+      roomId,
+      playerName,
+      playerAvatar
+    });
+    
     // 清除结算数据
     localStorage.removeItem('lastGameSettlement');
-    // 返回房间
-    const roomId = this.settlementData?.roomId;
-    if (roomId) {
-      window.location.href = `/room/room.html?roomId=${roomId}`;
-    } else {
-      window.location.href = '/lobby/index.html';
-    }
+    
+    // 生成页面跳转令牌
+    const pageNavigationToken = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('pageNavigationToken', pageNavigationToken);
+    localStorage.setItem('pageNavigationTime', Date.now().toString());
+    
+    // 返回房间，带上完整的玩家信息
+    const params = new URLSearchParams({
+      roomId: roomId,
+      playerName: encodeURIComponent(playerName),
+      playerAvatar: encodeURIComponent(playerAvatar)
+    });
+    
+    window.location.href = `/room/room.html?${params.toString()}`;
   }
 
   /**

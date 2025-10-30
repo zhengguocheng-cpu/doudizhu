@@ -122,6 +122,20 @@ class LobbyController {
      * 初始化Socket事件监听（简化版）
      */
     initializeSocket() {
+        // 连接状态事件
+        this.socketManager.socket.on('connect', () => {
+            console.log('✅ Socket已连接');
+            this.uiManager.updateConnectionStatus(true);
+        });
+
+        this.socketManager.socket.on('disconnect', () => {
+            console.log('❌ Socket已断开');
+            this.uiManager.updateConnectionStatus(false);
+        });
+
+        // 初始化时更新连接状态
+        this.uiManager.updateConnectionStatus(this.socketManager.isConnected);
+
         // 房间相关事件
         this.socketManager.socket.on('room_joined', (data) => {
             this.roomManager.onRoomJoined(data);

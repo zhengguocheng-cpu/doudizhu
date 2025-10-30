@@ -1,7 +1,8 @@
 // frontend/public/js/global-socket.js
 /**
- * 全局Socket管理器（极简版）
- * 管理整个应用的Socket.IO连接，确保单连接架构
+ * 全局Socket管理器（多页面架构）
+ * 管理整个应用的Socket.IO连接，每个页面建立新连接
+ * 使用500ms时间窗口允许页面跳转，防止重复登录
  */
 class GlobalSocketManager {
     constructor() {
@@ -90,7 +91,7 @@ class GlobalSocketManager {
 
         // 监听认证失败事件（仅用于登录阶段）
         this.socket.on('auth_failed', (data) => {
-            console.error('❌ [单连接] 认证失败:', data.message);
+            console.error('❌ [MPA] 认证失败:', data.message);
             
             // 只在登录页面才处理认证失败
             if (window.location.pathname === '/' || window.location.pathname.includes('/login/')) {
@@ -107,7 +108,7 @@ class GlobalSocketManager {
                 window.location.href = '/';
             } else {
                 // 其他页面只记录日志，不跳转
-                console.warn('⚠️ [单连接] 收到auth_failed但不在登录页，忽略');
+                console.warn('⚠️ [MPA] 收到auth_failed但不在登录页，忽略');
             }
         });
 

@@ -77,6 +77,12 @@ class AutoTest {
 
   async testSocketConnection() {
     await this.test('检查 Socket 连接', async () => {
+      // 登录页面不需要Socket连接，跳过测试
+      if (window.location.href.includes('/login/')) {
+        this.log('登录页面，跳过Socket连接测试', 'info');
+        return;
+      }
+
       const socketManager = window.GlobalSocketManager?.getInstance();
       this.assert(socketManager, 'Socket 管理器未初始化');
 

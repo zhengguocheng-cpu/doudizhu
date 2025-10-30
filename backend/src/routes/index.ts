@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import config from '../config';
+import feedbackRoutes from './feedbackRoutes';
 
 const router = express.Router();
 
@@ -56,5 +57,8 @@ router.get('/lobby/', (req, res) => {
 router.get('/room/', (req, res) => {
   res.sendFile(config.paths.frontend.room + '/index.html');
 });
+
+// API路由
+router.use('/api', feedbackRoutes);
 
 export default router;

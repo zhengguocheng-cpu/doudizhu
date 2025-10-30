@@ -146,14 +146,21 @@ class LeaderboardPage {
       return;
     }
 
+    // 获取当前用户ID
+    const currentUserId = localStorage.getItem('userId');
+
     // 生成排行榜列表
     const html = this.leaderboardData.map((player, index) => {
       const rank = index + 1;
       const rankClass = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
       const rankIcon = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
       
+      // 判断是否是当前用户
+      const isMyRank = currentUserId && (player.userId === currentUserId || player.username === currentUserId);
+      const myRankClass = isMyRank ? 'my-rank' : '';
+      
       return `
-        <div class="leaderboard-item">
+        <div class="leaderboard-item ${myRankClass}">
           <div class="rank ${rankClass}">${rankIcon}</div>
           <div class="player-info">
             <div class="player-avatar">👤</div>
@@ -170,35 +177,11 @@ class LeaderboardPage {
   }
 
   /**
-   * 显示我的排名
+   * 显示我的排名（已废弃，现在直接在列表中高亮显示）
    */
   displayMyRank() {
-    const container = document.getElementById('myRankContainer');
-    const card = document.getElementById('myRankCard');
-
-    if (!this.myRank) {
-      container.style.display = 'none';
-      return;
-    }
-
-    container.style.display = 'block';
-
-    const rank = this.myRank.rank || '-';
-    const rankClass = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
-    const rankIcon = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-
-    card.innerHTML = `
-      <div class="leaderboard-item">
-        <div class="rank ${rankClass}">${rankIcon}</div>
-        <div class="player-info">
-          <div class="player-avatar">👤</div>
-          <div class="player-name">${this.myRank.username || this.myRank.userId}</div>
-        </div>
-        <div class="score">${this.myRank.totalScore || 0}</div>
-        <div class="games">${this.myRank.gamesPlayed || 0}</div>
-        <div class="winrate">${this.formatWinRate(this.myRank.winRate)}</div>
-      </div>
-    `;
+    // 不再需要单独显示我的排名，已在列表中高亮
+    console.log('我的排名已在列表中高亮显示');
   }
 
   /**

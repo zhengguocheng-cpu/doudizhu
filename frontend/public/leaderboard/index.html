@@ -11,9 +11,15 @@
     <div class="main-container">
         <!-- 顶部标题栏 -->
         <header class="top-header">
-            <button id="backBtn" class="btn btn-secondary">返回大厅</button>
-            <h1>🏆 排行榜</h1>
-            <div class="connection-status" id="connectionStatus">已连接</div>
+            <div class="header-left">
+                <button id="backBtn" class="btn btn-secondary">返回大厅</button>
+            </div>
+            <div class="header-center">
+                <h1>🏆 排行榜</h1>
+            </div>
+            <div class="header-right">
+                <div class="connection-status" id="connectionStatus">已连接</div>
+            </div>
         </header>
 
         <!-- 主要内容区域 -->
@@ -43,13 +49,6 @@
                 </div>
             </div>
 
-            <!-- 我的排名 -->
-            <div class="my-rank-container" id="myRankContainer" style="display: none;">
-                <div class="my-rank-title">我的排名</div>
-                <div class="my-rank-card" id="myRankCard">
-                    <!-- 动态填充 -->
-                </div>
-            </div>
         </div>
     </div>
 

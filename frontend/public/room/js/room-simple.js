@@ -2668,6 +2668,7 @@ class DoudizhuRoomClient {
     /**
      * 将字符串格式的牌转换为对象格式
      * '♠3' -> {suit: '♠', rank: '3', value: 3}
+     * '🃏大王' -> {suit: '🃏', rank: '大王', value: 17}
      */
     convertCardsToObjects(cards) {
         if (!cards || !Array.isArray(cards)) return [];
@@ -2680,9 +2681,23 @@ class DoudizhuRoomClient {
             
             // 字符串格式转对象
             if (typeof card === 'string') {
-                const suit = card.charAt(0); // 花色
-                const rank = card.substring(1); // 点数
-                const value = CardTypeDetector.RANK_VALUES[rank] || 0;
+                let suit, rank, value;
+                
+                // 特殊处理大小王
+                if (card.includes('大王')) {
+                    suit = card.includes('🃏') ? '🃏' : '';
+                    rank = '大王';
+                    value = CardTypeDetector.RANK_VALUES['大王'];
+                } else if (card.includes('小王')) {
+                    suit = card.includes('🃏') ? '🃏' : '';
+                    rank = '小王';
+                    value = CardTypeDetector.RANK_VALUES['小王'];
+                } else {
+                    // 普通牌
+                    suit = card.charAt(0); // 花色
+                    rank = card.substring(1); // 点数
+                    value = CardTypeDetector.RANK_VALUES[rank] || 0;
+                }
                 
                 return {
                     suit: suit,

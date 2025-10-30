@@ -119,17 +119,17 @@ class LobbyController {
     }
 
     /**
-     * 初始化Socket事件监听（单连接架构）
+     * 初始化Socket事件监听（多页面架构）
      */
     initializeSocket() {
-        // 获取现有Socket连接（不建立新连接）
-        const socket = this.socketManager.getSocket();
+        // 建立新的Socket连接
+        const socket = this.socketManager.connect();
         if (!socket) {
-            console.error('❌ 无法获取Socket连接');
+            console.error('❌ 无法建立Socket连接');
             return;
         }
 
-        console.log('🔌 [单连接] 大厅页面使用现有Socket连接:', socket.id);
+        console.log('🔌 [MPA] 大厅页面建立Socket连接:', socket.id);
 
         // 连接状态事件
         socket.on('connect', () => {

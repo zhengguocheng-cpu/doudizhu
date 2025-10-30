@@ -109,19 +109,19 @@ class DoudizhuRoomClient {
     }
 
     /**
-     * 连接到服务器（单连接架构）
+     * 连接到服务器（多页面架构）
      */
     connectToServer() {
-        // 获取现有Socket连接（不建立新连接）
-        this.socket = this.socketManager.getSocket();
+        // 建立新的Socket连接
+        this.socket = this.socketManager.connect();
         
         if (!this.socket) {
-            console.error('❌ 无法获取Socket连接');
+            console.error('❌ 无法建立Socket连接');
             this.backToLobby();
             return;
         }
 
-        console.log('🔌 [单连接] 房间页面使用现有Socket连接:', this.socket.id);
+        console.log('🔌 [MPA] 房间页面建立Socket连接:', this.socket.id);
 
         // 连接成功后加入房间
         this.socket.on('connect', () => {

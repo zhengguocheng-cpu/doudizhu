@@ -16,7 +16,7 @@ export class UserManager {
 
   /**
    * 创建或查找用户（使用用户名作为唯一标识）
-   * 单连接架构：同一用户的新连接会替换旧连接
+   * 多页面架构：允许同一用户的页面跳转重连，但拒绝真正的重复登录
    */
   public authenticateUser(userName: string, socketId: string): Player {
     const trimmedUserName = userName.trim();
@@ -27,22 +27,43 @@ export class UserManager {
     if (!user) {
       // 2. 创建新用户
       user = this.createUser(trimmedUserName);
-      console.log(`✅ [单连接] 新用户注册: ${trimmedUserName}`);
+      console.log(`✅ [MPA] 新用户注册: ${trimmedUserName}`);
     } else {
       // 3. 用户已存在，检查是否在线
       if (user.isOnline && user.socketId !== socketId) {
-        // 检查是否有活跃会话
+        // 检查旧socketId是否还活跃
         const session = this.sessionManager.findSessionByUserId(trimmedUserName);
-        if (session) {
-          // 有活跃会话，拒绝重复登录
-          console.log(`❌ [单连接] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
-          throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+        
+        if (session && session.sessionId) {
+          // 旧会话存在，检查是否是真正的重复登录
+          // 如果旧socketId和新socketId都不同，说明是重复登录
+          console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
+          console.log(`   旧socketId: ${user.socketId}`);
+          console.log(`   新socketId: ${socketId}`);
+          
+          // 给一个短暂的宽限期（500ms），允许页面跳转时的快速重连
+          // 如果是真正的重复登录，用户会在不同的浏览器/标签页
+          const timeSinceLastLogin = Date.now() - (user.lastLoginAt?.getTime() || 0);
+          
+          if (timeSinceLastLogin < 500) {
+            // 很可能是页面跳转，允许重连
+            console.log(`✅ [MPA] 页面跳转重连（${timeSinceLastLogin}ms），允许`);
+            this.updateUserConnection(trimmedUserName, socketId);
+          } else {
+            // 时间间隔较长，可能是真正的重复登录
+            console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线 (${timeSinceLastLogin}ms)`);
+            throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+          }
+        } else {
+          // 旧会话不存在，允许登录
+          console.log(`✅ [MPA] 旧会话已失效，允许登录`);
+          this.updateUserConnection(trimmedUserName, socketId);
         }
+      } else {
+        // 用户离线或同一socketId，允许登录
+        this.updateUserConnection(trimmedUserName, socketId);
+        console.log(`✅ [MPA] 用户登录: ${trimmedUserName}`);
       }
-      
-      // 4. 允许登录（新用户、离线用户、或旧会话已失效）
-      this.updateUserConnection(trimmedUserName, socketId);
-      console.log(`✅ [单连接] 用户登录: ${trimmedUserName}`);
     }
 
     return user;

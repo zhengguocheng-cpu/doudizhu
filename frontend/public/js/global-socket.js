@@ -27,31 +27,36 @@ class GlobalSocketManager {
     }
 
     /**
-     * 建立Socket连接（仅在登录时调用）
-     * @param {string} userName - 用户名
-     * @param {string} userId - 用户ID
+     * 建立Socket连接（多页面架构）
+     * @param {string} userName - 用户名（可选）
+     * @param {string} userId - 用户ID（可选）
      */
     connect(userName, userId) {
-        // 如果已有连接且已连接，直接复用（单连接架构的核心）
-        if (this.socket && this.isConnected) {
-            console.log('🔄 [单连接] 复用现有Socket连接:', this.socket.id);
-            console.log('📋 当前用户:', { userId: this.userId, userName: this.userName });
-            return this.socket;
+        // 确定用户信息
+        if (userName && userId) {
+            this.userName = userName;
+            this.userId = userId;
+            localStorage.setItem('userId', this.userId);
+            localStorage.setItem('userName', this.userName);
+        } else {
+            // 从localStorage恢复
+            this.userId = localStorage.getItem('userId');
+            this.userName = localStorage.getItem('userName');
+            if (!this.userId || !this.userName) {
+                console.error('❌ [MPA] 无法获取用户信息');
+                window.location.href = '/';
+                return null;
+            }
         }
 
-        // 如果Socket存在但未连接（断线重连场景）
-        if (this.socket && !this.isConnected) {
-            console.log('🔄 [单连接] Socket存在但未连接，尝试重连...');
-            this.socket.connect();
-            return this.socket;
+        // 如果已有连接，先断开
+        if (this.socket) {
+            console.log('🔄 [MPA] 断开旧连接');
+            this.socket.disconnect();
+            this.socket = null;
         }
 
-        // 保存用户信息
-        this.userName = userName;
-        this.userId = userId;
-        localStorage.setItem('userId', this.userId);
-        localStorage.setItem('userName', this.userName);
-        console.log('🆕 [单连接] 新用户登录，建立连接:', { userId: this.userId, userName: this.userName });
+        console.log('🔔 [MPA] 建立新Socket连接:', { userId: this.userId, userName: this.userName });
 
         // 连接时传递auth参数，后端自动认证
         this.socket = io('http://localhost:3000', {
@@ -67,28 +72,6 @@ class GlobalSocketManager {
         });
 
         this.setupGlobalListeners();
-        return this.socket;
-    }
-
-    /**
-     * 获取当前Socket连接（不建立新连接）
-     * 用于大厅、房间等页面获取已存在的连接
-     */
-    getSocket() {
-        if (!this.socket || !this.isConnected) {
-            console.error('❌ [单连接] Socket未连接，请先登录');
-            // 尝试从localStorage恢复并重连
-            const userId = localStorage.getItem('userId');
-            const userName = localStorage.getItem('userName');
-            if (userId && userName) {
-                console.log('🔄 [单连接] 尝试恢复连接...');
-                return this.connect(userName, userId);
-            }
-            window.location.href = '/';
-            return null;
-        }
-        
-        console.log('✅ [单连接] 获取现有Socket连接:', this.socket.id);
         return this.socket;
     }
 

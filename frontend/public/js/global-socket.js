@@ -181,7 +181,8 @@ class GlobalSocketManager {
         const requestData = {
             roomId: data.roomId,
             userId: data.userId || this.userId,
-            playerName: data.playerName || this.userName
+            playerName: data.playerName || this.userName,
+            playerAvatar: data.playerAvatar || localStorage.getItem('playerAvatar') || '👑'
         };
 
         console.log('📤 发送join_game:', requestData);

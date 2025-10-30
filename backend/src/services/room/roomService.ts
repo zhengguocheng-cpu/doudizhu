@@ -39,8 +39,8 @@ export class RoomService {
   /**
    * 玩家加入房间
    */
-  public joinRoom(roomId: string, playerName: string): Player {
-    return this.roomManager.joinRoom(roomId, playerName);
+  public joinRoom(roomId: string, playerName: string, playerAvatar?: string): Player {
+    return this.roomManager.joinRoom(roomId, playerName, playerAvatar);
   }
 
   /**

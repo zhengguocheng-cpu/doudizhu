@@ -144,7 +144,8 @@ class RoomManager {
                 const sendSuccess = this.socketManager.joinGame({
                     roomId: roomId,
                     userId: this.currentPlayer,
-                    playerName: this.currentPlayer
+                    playerName: this.currentPlayer,
+                    playerAvatar: this.playerAvatar
                 });
 
                 if (!sendSuccess) {

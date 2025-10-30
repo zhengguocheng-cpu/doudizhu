@@ -61,7 +61,7 @@ export class RoomManager {
   /**
    * 玩家加入房间
    */
-  public joinRoom(roomId: string, playerName: string): Player {
+  public joinRoom(roomId: string, playerName: string, playerAvatar?: string): Player {
     const room = this.rooms.get(roomId);
     if (!room) {
       throw new Error('房间不存在');
@@ -71,6 +71,11 @@ export class RoomManager {
     const existingPlayer = room.players.find(p => p.id === playerName || p.name === playerName);
     if (existingPlayer) {
       console.log(`✅ 玩家 ${playerName} 重新连接房间 ${roomId}（玩家已存在，无需重新加入）`);
+      // 如果提供了新头像，更新头像
+      if (playerAvatar && existingPlayer.avatar !== playerAvatar) {
+        existingPlayer.avatar = playerAvatar;
+        console.log(`🎨 更新玩家头像: ${playerAvatar}`);
+      }
       return existingPlayer;
     }
 
@@ -81,15 +86,20 @@ export class RoomManager {
       throw new Error(joinValidation.error);
     }
 
-    // 为玩家分配头像（基于玩家名称的哈希值，确保同一玩家始终获得相同头像）
-    const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
-    const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
+    // 确定头像：优先使用用户选择的头像，否则自动分配
+    let avatar = playerAvatar;
+    if (!avatar) {
+      // 为玩家分配头像（基于玩家名称的哈希值，确保同一玩家始终获得相同头像）
+      const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
+      const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
+      avatar = avatars[avatarIndex];
+    }
     
     // 创建玩家（使用用户名作为ID）
     const player: Player = {
       id: playerName, // 使用用户名作为ID
       name: playerName,
-      avatar: avatars[avatarIndex], // 添加头像字段
+      avatar: avatar, // 使用用户选择的头像或自动分配的头像
       ready: false,
       cards: [],
       cardCount: 0
@@ -99,7 +109,7 @@ export class RoomManager {
     room.players.push(player);
     room.updatedAt = new Date();
 
-    console.log(`玩家 ${playerName} 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
+    console.log(`玩家 ${playerName} (${avatar}) 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
 
     return player;
   }

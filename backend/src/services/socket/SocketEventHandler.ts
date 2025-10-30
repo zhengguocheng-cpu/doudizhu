@@ -140,8 +140,11 @@ export class SocketEventHandler {
       // 简化用户信息处理
       const user = { name: userId }; // 直接使用用户名作为用户对象
 
+      // 从客户端数据中获取头像（如果有）
+      const playerAvatar = data.playerAvatar;
+
       // 加入房间（会抛出错误如果失败）
-      const result = roomService.joinRoom(roomId, userId);
+      const result = roomService.joinRoom(roomId, userId, playerAvatar);
 
       // 获取房间信息
       const room = roomService.getRoom(roomId);

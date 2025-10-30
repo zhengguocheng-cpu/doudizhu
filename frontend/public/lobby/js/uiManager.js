@@ -93,18 +93,46 @@ class UIManager {
 
         rooms.forEach(room => {
             const roomElement = document.createElement('div');
-            roomElement.className = 'room-item';
+            
+            // 检查房间是否已满
+            const isFull = room.players.length >= room.maxPlayers;
+            const isPlaying = room.status === 'playing';
+            
+            // 根据状态添加不同的class
+            if (isFull) {
+                roomElement.className = 'room-item room-full';
+            } else if (isPlaying) {
+                roomElement.className = 'room-item room-playing';
+            } else {
+                roomElement.className = 'room-item';
+            }
+
+            // 状态标签
+            let statusBadge = '';
+            if (isFull) {
+                statusBadge = '<span class="status-badge badge-full">已满</span>';
+            } else if (isPlaying) {
+                statusBadge = '<span class="status-badge badge-playing">游戏中</span>';
+            } else {
+                statusBadge = '<span class="status-badge badge-available">可加入</span>';
+            }
 
             roomElement.innerHTML = `
-                <h4>${room.name}</h4>
+                <div class="room-header">
+                    <h4>${room.name}</h4>
+                    ${statusBadge}
+                </div>
                 <div class="room-info">
                     <p>房间ID: ${room.id}</p>
-                    <p>最大玩家数: ${room.maxPlayers}</p>
-                    <p>当前玩家数: ${room.players.length}</p>
-                    <p>状态: ${room.status}</p>
+                    <p>玩家: ${room.players.length}/${room.maxPlayers}</p>
+                    <p>状态: ${room.status === 'waiting' ? '等待中' : room.status === 'playing' ? '游戏中' : '已结束'}</p>
                 </div>
                 <div class="room-actions">
-                    <button class="btn btn-primary join-room-btn" data-room-id="${room.id}">加入房间</button>
+                    <button class="btn ${isFull || isPlaying ? 'btn-disabled' : 'btn-primary'} join-room-btn" 
+                            data-room-id="${room.id}" 
+                            ${isFull || isPlaying ? 'disabled' : ''}>
+                        ${isFull ? '房间已满' : isPlaying ? '游戏中' : '加入房间'}
+                    </button>
                 </div>
             `;
 

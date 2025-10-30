@@ -474,12 +474,25 @@ class DoudizhuRoomClient {
         console.log('🎯 [玩家准备事件] 收到数据:', data);
         console.log('🎯 [玩家准备事件] 当前玩家列表:', this.roomPlayers);
         
-        // 显示准备消息（包括自己）
-        this.addGameMessage(`✅ ${data.playerName} 已准备`, 'system');
-        
         // 如果服务器发送了完整的玩家列表，使用它来更新
         if (data.players && Array.isArray(data.players)) {
             console.log('📋 收到完整玩家列表（准备状态更新）:', data.players);
+            
+            // 查找该玩家的最新状态
+            const updatedPlayer = data.players.find(p => p.name === data.playerName || p.id === data.playerId);
+            
+            // 根据玩家的实际状态显示消息
+            if (updatedPlayer) {
+                if (updatedPlayer.ready) {
+                    this.addGameMessage(`✅ ${data.playerName} 已准备`, 'system');
+                } else {
+                    this.addGameMessage(`⏳ ${data.playerName} 取消准备`, 'system');
+                }
+            } else {
+                // 如果找不到玩家，默认显示已准备（向后兼容）
+                this.addGameMessage(`✅ ${data.playerName} 已准备`, 'system');
+            }
+            
             // 为每个玩家补充avatar字段
             this.roomPlayers = this.enrichPlayersWithAvatars(data.players);
             console.log('📋 更新后的玩家列表:', this.roomPlayers);
@@ -491,6 +504,7 @@ class DoudizhuRoomClient {
             const player = this.roomPlayers.find(p => p.name === data.playerName);
             if (player) {
                 player.ready = true;
+                this.addGameMessage(`✅ ${data.playerName} 已准备`, 'system');
                 this.updateRoomPlayers();
             } else {
                 console.error('❌ 未找到玩家:', data.playerName);

@@ -101,9 +101,66 @@
     transform: translateY(-2px);
 }
 
+/* 房间已满样式 */
+.room-item.room-full {
+    background-color: #f5f5f5;
+    border-color: #dcdcdc;
+    opacity: 0.7;
+}
+
+.room-item.room-full:hover {
+    border-color: #dcdcdc;
+    transform: none;
+    cursor: not-allowed;
+}
+
+/* 游戏中样式 */
+.room-item.room-playing {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+}
+
+.room-item.room-playing:hover {
+    border-color: #ffc107;
+    transform: none;
+}
+
+/* 房间头部 */
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .room-item h4 {
-    margin: 0 0 10px 0;
+    margin: 0;
     color: #2c3e50;
+    font-size: 18px;
+}
+
+/* 状态徽章 */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-full {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-playing {
+    background: #fff3cd;
+    color: #856404;
 }
 
 .room-info {

@@ -1,0 +1,26 @@
+# 后端忽略文件
+backend/node_modules
+backend/dist
+backend/logs
+backend/*.log
+
+# 前端忽略文件
+frontend/node_modules
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# 文档
+*.md
+!README.md
+
+# 其他
+.DS_Store
+Thumbs.db

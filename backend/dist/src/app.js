@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Application = void 0;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const config_1 = require("./config");
@@ -81,7 +82,9 @@ class Application {
         this.app.use('/api/score', scoreRoutes_1.default);
         this.app.use('/api/games', gameRoutes_1.default);
         this.app.use(routes_1.default);
-        this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));
+        const frontendPath = path_1.default.join(process.cwd(), '..', 'frontend', 'public');
+        console.log('📁 静态文件路径:', frontendPath);
+        this.app.use(express_1.default.static(frontendPath));
     }
     setupSocketIO() {
         this.server = (0, http_1.createServer)(this.app);

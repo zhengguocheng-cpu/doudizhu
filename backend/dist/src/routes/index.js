@@ -38,7 +38,8 @@ router.get('/info', (req, res) => {
     });
 });
 router.get('/login/', (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, '../../../frontend/public/login/index.html'));
+    const loginPath = path_1.default.join(process.cwd(), '..', 'frontend', 'public', 'login', 'index.html');
+    res.sendFile(loginPath);
 });
 router.get('/lobby/', (req, res) => {
     res.sendFile(config_1.default.paths.frontend.lobby + '/index.html');

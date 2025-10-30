@@ -434,6 +434,7 @@ class CardHintHelper {
         const hints = [];
         const lastType = CardValidator.normalizeType(lastPlay.type);
         const lastValue = lastPlay.value;
+        const lastCards = lastPlay.cards || [];
         
         // 按牌型查找所有能压过的牌
         switch (lastType) {
@@ -455,6 +456,20 @@ class CardHintHelper {
             
             case 'triple_with_pair':
                 hints.push(...this.findAllBiggerTripleWithPairs(playerHand, lastValue));
+                break;
+            
+            case 'straight':
+                hints.push(...this.findAllBiggerStraights(playerHand, lastValue, lastCards.length));
+                break;
+            
+            case 'consecutive_pairs':
+                hints.push(...this.findAllBiggerConsecutivePairs(playerHand, lastValue, lastCards.length / 2));
+                break;
+            
+            case 'plane':
+            case 'plane_with_singles':
+            case 'plane_with_pairs':
+                hints.push(...this.findAllBiggerPlanes(playerHand, lastValue, lastCards.length));
                 break;
             
             case 'bomb':
@@ -786,5 +801,167 @@ class CardHintHelper {
             const valueB = typeof b[0] === 'number' ? b[0] : (CardTypeDetector.RANK_VALUES[b[0]] || 0);
             return valueA - valueB;
         }));
+    }
+
+    /**
+     * 查找所有更大的顺子
+     * @param {Array} playerHand - 手牌
+     * @param {number} minValue - 上家顺子的最小牌值
+     * @param {number} length - 顺子长度
+     */
+    static findAllBiggerStraights(playerHand, minValue, length) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 顺子最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14);
+        
+        // 查找相同长度的更大顺子
+        for (let i = 0; i <= validRanks.length - length; i++) {
+            // 检查是否连续
+            let isConsecutive = true;
+            const straightCards = [];
+            
+            for (let j = 0; j < length; j++) {
+                const expectedRank = validRanks[i] + j;
+                if (validRanks[i + j] !== expectedRank) {
+                    isConsecutive = false;
+                    break;
+                }
+                const cards = cardGroups.get(validRanks[i + j]);
+                if (cards && cards.length > 0) {
+                    straightCards.push(cards[0]);
+                } else {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+            
+            // 检查是否比上家的顺子大
+            if (isConsecutive && straightCards.length === length) {
+                const firstCardValue = this.getCardValue(straightCards[0]);
+                if (firstCardValue > minValue) {
+                    hints.push(straightCards);
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的连对
+     * @param {Array} playerHand - 手牌
+     * @param {number} minValue - 上家连对的最小牌值
+     * @param {number} pairCount - 连对的对数
+     */
+    static findAllBiggerConsecutivePairs(playerHand, minValue, pairCount) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 连对最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 2);
+        
+        // 查找相同对数的更大连对
+        for (let i = 0; i <= validRanks.length - pairCount; i++) {
+            // 检查是否连续
+            let isConsecutive = true;
+            const pairCards = [];
+            
+            for (let j = 0; j < pairCount; j++) {
+                const expectedRank = validRanks[i] + j;
+                if (validRanks[i + j] !== expectedRank) {
+                    isConsecutive = false;
+                    break;
+                }
+                const cards = cardGroups.get(validRanks[i + j]);
+                if (cards && cards.length >= 2) {
+                    pairCards.push(...cards.slice(0, 2));
+                } else {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+            
+            // 检查是否比上家的连对大
+            if (isConsecutive && pairCards.length === pairCount * 2) {
+                const firstCardValue = this.getCardValue(pairCards[0]);
+                if (firstCardValue > minValue) {
+                    hints.push(pairCards);
+                }
+            }
+        }
+        
+        return hints;
+    }
+
+    /**
+     * 查找所有更大的飞机
+     * @param {Array} playerHand - 手牌
+     * @param {number} minValue - 上家飞机的最小牌值
+     * @param {number} totalLength - 飞机总长度（包括翅膀）
+     */
+    static findAllBiggerPlanes(playerHand, minValue, totalLength) {
+        const hints = [];
+        const cardGroups = this.groupCardsByRank(playerHand);
+        const ranks = Array.from(cardGroups.keys()).sort((a, b) => a - b);
+        
+        // 飞机最多到A(14)，不能包含2和王
+        const validRanks = ranks.filter(r => r <= 14 && cardGroups.get(r).length >= 3);
+        
+        // 根据总长度推断飞机的组数
+        // 飞机不带翅膀: 6张=2组, 9张=3组
+        // 飞机带单牌: 8张=2组, 12张=3组
+        // 飞机带对子: 10张=2组, 15张=3组
+        let planeCount = 2;
+        if (totalLength % 6 === 0) planeCount = totalLength / 6; // 不带翅膀
+        else if (totalLength % 4 === 0) planeCount = totalLength / 4; // 带单牌
+        else if (totalLength % 5 === 0) planeCount = totalLength / 5; // 带对子
+        
+        // 查找相同组数的更大飞机
+        for (let i = 0; i <= validRanks.length - planeCount; i++) {
+            // 检查是否连续
+            let isConsecutive = true;
+            const planeCards = [];
+            
+            for (let j = 0; j < planeCount; j++) {
+                const expectedRank = validRanks[i] + j;
+                if (validRanks[i + j] !== expectedRank) {
+                    isConsecutive = false;
+                    break;
+                }
+                const cards = cardGroups.get(validRanks[i + j]);
+                if (cards && cards.length >= 3) {
+                    planeCards.push(...cards.slice(0, 3));
+                } else {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+            
+            // 检查是否比上家的飞机大
+            if (isConsecutive && planeCards.length === planeCount * 3) {
+                const firstCardValue = this.getCardValue(planeCards[0]);
+                if (firstCardValue > minValue) {
+                    // 如果需要带翅膀，添加翅膀
+                    if (totalLength > planeCount * 3) {
+                        const remainingCards = playerHand.filter(c => !planeCards.includes(c));
+                        const wingCount = totalLength - planeCount * 3;
+                        
+                        if (remainingCards.length >= wingCount) {
+                            const sortedRemaining = this.sortCards(remainingCards);
+                            const wings = sortedRemaining.slice(0, wingCount);
+                            hints.push([...planeCards, ...wings]);
+                        }
+                    } else {
+                        hints.push(planeCards);
+                    }
+                }
+            }
+        }
+        
+        return hints;
     }
 }

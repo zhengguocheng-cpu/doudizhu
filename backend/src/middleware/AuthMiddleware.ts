@@ -155,6 +155,14 @@ export class AuthMiddleware extends BaseService {
         userId: socket.userId
       });
       
+      // 同时更新会话状态为离线
+      if (socket.sessionId) {
+        this.sessionManager.setOnlineStatus(socket.sessionId, false);
+        this.log(LogLevel.INFO, 'Session set offline', {
+          sessionId: socket.sessionId
+        });
+      }
+      
       // 发布断开连接事件
       this.emitUserDisconnectedEvent(socket.userId, socket.sessionId);
     }

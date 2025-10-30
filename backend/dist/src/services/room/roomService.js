@@ -18,8 +18,8 @@ class RoomService {
     getAllRooms() {
         return this.roomManager.getAllRooms();
     }
-    joinRoom(roomId, playerName) {
-        return this.roomManager.joinRoom(roomId, playerName);
+    joinRoom(roomId, playerName, playerAvatar) {
+        return this.roomManager.joinRoom(roomId, playerName, playerAvatar);
     }
     addExistingUserToRoom(roomId, user) {
         return this.roomManager.addExistingUserToRoom(roomId, user);

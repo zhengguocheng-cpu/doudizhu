@@ -5,7 +5,7 @@ export declare class RoomService {
     createRoom(name: string, maxPlayers?: number): GameRoom;
     getRoom(roomId: string): GameRoom | undefined;
     getAllRooms(): GameRoom[];
-    joinRoom(roomId: string, playerName: string): Player;
+    joinRoom(roomId: string, playerName: string, playerAvatar?: string): Player;
     addExistingUserToRoom(roomId: string, user: Player): Player;
     leaveRoom(roomId: string, playerId: string): boolean;
     togglePlayerReady(roomId: string, playerId: string): boolean;

@@ -2490,10 +2490,19 @@ class DoudizhuRoomClient {
     viewProfile() {
         console.log('👤 [查看战绩] 跳转到个人中心');
         
-        // 从localStorage或当前玩家信息获取userId
-        const userId = localStorage.getItem('userId') || this.currentPlayerId;
-        const userName = localStorage.getItem('userName') || this.currentPlayerName;
-        const playerAvatar = localStorage.getItem('playerAvatar') || '👤';
+        // 优先使用当前玩家信息（确保无痕窗口显示正确），其次使用localStorage
+        const userId = this.currentPlayerId || localStorage.getItem('userId');
+        const userName = this.currentPlayerName || this.currentPlayer || localStorage.getItem('userName');
+        const playerAvatar = this.playerAvatar || localStorage.getItem('playerAvatar') || '👤';
+        
+        console.log('👤 获取的用户信息:', {
+            currentPlayerId: this.currentPlayerId,
+            currentPlayerName: this.currentPlayerName,
+            currentPlayer: this.currentPlayer,
+            playerAvatar: this.playerAvatar,
+            userId,
+            userName
+        });
         
         if (userId) {
             // 通过URL参数传递用户信息，确保无痕窗口也能正确显示

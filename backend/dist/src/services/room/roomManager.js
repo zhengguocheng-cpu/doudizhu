@@ -33,7 +33,7 @@ class RoomManager {
     getAllRooms() {
         return Array.from(this.rooms.values());
     }
-    joinRoom(roomId, playerName) {
+    joinRoom(roomId, playerName, playerAvatar) {
         const room = this.rooms.get(roomId);
         if (!room) {
             throw new Error('房间不存在');
@@ -41,6 +41,10 @@ class RoomManager {
         const existingPlayer = room.players.find(p => p.id === playerName || p.name === playerName);
         if (existingPlayer) {
             console.log(`✅ 玩家 ${playerName} 重新连接房间 ${roomId}（玩家已存在，无需重新加入）`);
+            if (playerAvatar && existingPlayer.avatar !== playerAvatar) {
+                existingPlayer.avatar = playerAvatar;
+                console.log(`🎨 更新玩家头像: ${playerAvatar}`);
+            }
             return existingPlayer;
         }
         const joinValidation = roomValidator_1.RoomValidator.validateRoomJoinable(room);
@@ -48,19 +52,23 @@ class RoomManager {
             console.log(`⚠️ 玩家 ${playerName} 无法加入房间 ${roomId}: ${joinValidation.error}`);
             throw new Error(joinValidation.error);
         }
-        const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
-        const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
+        let avatar = playerAvatar;
+        if (!avatar) {
+            const avatars = ['👑', '🎲', '🎯', '🎪', '🎨', '🎭', '🎸', '🎹', '🎺', '🎻'];
+            const avatarIndex = this.getPlayerAvatarIndex(playerName, avatars.length);
+            avatar = avatars[avatarIndex];
+        }
         const player = {
             id: playerName,
             name: playerName,
-            avatar: avatars[avatarIndex],
+            avatar: avatar,
             ready: false,
             cards: [],
             cardCount: 0
         };
         room.players.push(player);
         room.updatedAt = new Date();
-        console.log(`玩家 ${playerName} 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
+        console.log(`玩家 ${playerName} (${avatar}) 加入房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
         return player;
     }
     addExistingUserToRoom(roomId, user) {

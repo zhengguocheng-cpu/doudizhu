@@ -84,7 +84,8 @@ class SocketEventHandler {
             console.log('✅ 跳过认证检查，开始处理房间逻辑');
             console.log('玩家加入游戏:', roomId, userId);
             const user = { name: userId };
-            const result = roomService_1.roomService.joinRoom(roomId, userId);
+            const playerAvatar = data.playerAvatar;
+            const result = roomService_1.roomService.joinRoom(roomId, userId, playerAvatar);
             const room = roomService_1.roomService.getRoom(roomId);
             if (!room) {
                 socket.emit('join_game_failed', { message: '房间不存在' });

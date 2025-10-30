@@ -215,8 +215,19 @@ export class AuthMiddleware extends BaseService {
    * 发布用户断开事件
    */
   private emitUserDisconnectedEvent(userId: string, sessionId?: string): void {
-    // 这里可以发布事件到事件总线
     this.log(LogLevel.INFO, 'User disconnected event emitted', { userId });
+    
+    // 发布到事件总线，让其他服务（如房间管理器）可以处理
+    try {
+      const eventBus = this.container.resolve('EventBus');
+      eventBus.publish('user:disconnected', {
+        userId,
+        sessionId,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      this.log(LogLevel.WARN, 'Failed to publish user disconnected event', { error });
+    }
   }
 
 

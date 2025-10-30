@@ -159,6 +159,44 @@ export class Application {
         this.setupSocketEventHandlers(socket);
       }
     });
+    
+    // 监听用户断开连接事件，清理房间状态
+    this.setupDisconnectionHandler();
+  }
+  
+  /**
+   * 设置断开连接处理器
+   * 当用户断开连接时，自动从所有房间中移除该玩家
+   */
+  private setupDisconnectionHandler(): void {
+    try {
+      const eventBus = this.container.resolve('EventBus');
+      eventBus.subscribe('user:disconnected', (event: any) => {
+        const { userId } = event;
+        console.log(`🔄 [清理] 用户断开连接，清理房间状态: ${userId}`);
+        
+        // 遍历所有房间，移除该玩家
+        const rooms = roomService.getAllRooms();
+        rooms.forEach(room => {
+          const player = room.players.find(p => p.name === userId || p.id === userId);
+          if (player) {
+            console.log(`   从房间 ${room.id} 移除玩家 ${userId}`);
+            roomService.leaveRoom(room.id, userId);
+            
+            // 通知房间内其他玩家
+            this.io.to(`room_${room.id}`).emit('player_left', {
+              playerId: userId,
+              playerName: userId,
+              roomId: room.id,
+              currentPlayers: room.players.length
+            });
+          }
+        });
+      });
+      console.log('✅ 断开连接处理器已设置');
+    } catch (error) {
+      console.warn('⚠️ 无法设置断开连接处理器:', error);
+    }
   }
 
   private setupSocketEventHandlers(socket: any): void {

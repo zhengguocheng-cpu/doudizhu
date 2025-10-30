@@ -77,6 +77,7 @@ export class RoomManager {
     // 验证是否可以加入
     const joinValidation = RoomValidator.validateRoomJoinable(room);
     if (!joinValidation.valid) {
+      console.log(`⚠️ 玩家 ${playerName} 无法加入房间 ${roomId}: ${joinValidation.error}`);
       throw new Error(joinValidation.error);
     }
 

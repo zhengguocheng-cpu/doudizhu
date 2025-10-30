@@ -119,6 +119,7 @@ export class SocketEventHandler {
    * 处理加入游戏事件 - 简化版
    */
   public async handleJoinGame(socket: AuthenticatedSocket, data: any): Promise<void> {
+    const { roomId, userId } = data;
     try {
       console.log('🔄 收到join_game请求:', {
         socketId: socket.id,
@@ -134,8 +135,6 @@ export class SocketEventHandler {
       // }
 
       console.log('✅ 跳过认证检查，开始处理房间逻辑');
-
-      const { roomId, userId } = data;
       console.log('玩家加入游戏:', roomId, userId);
 
       // 简化用户信息处理
@@ -196,9 +195,8 @@ export class SocketEventHandler {
       console.log('加入游戏成功:', roomId, userId);
 
     } catch (error) {
-      console.error('❌ 加入游戏错误:', error);
       const errorMessage = error instanceof Error ? error.message : '加入游戏过程中发生错误';
-      console.error('❌ 发送错误消息给客户端:', errorMessage);
+      console.log(`⚠️ 玩家 ${userId} 加入房间 ${roomId} 失败: ${errorMessage}`);
       socket.emit('join_game_failed', {
         message: errorMessage
       });

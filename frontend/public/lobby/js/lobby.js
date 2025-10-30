@@ -241,12 +241,21 @@ class LobbyController {
 
     /**
      * 处理加入房间
-     * MPA架构：大厅不发送join_game，直接跳转到房间页面
+     * MPA架构：大厅只负责导航，不发送join_game请求
      * 房间页面的Socket会负责真正的加入操作
      */
     async handleJoinRoom(roomId) {
         try {
             console.log('🚀 [大厅] 准备跳转到房间:', roomId);
+            
+            // 生成页面跳转令牌，用于后端识别合法的页面跳转
+            const pageNavigationToken = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            
+            // 保存到localStorage，供房间页面使用
+            localStorage.setItem('pageNavigationToken', pageNavigationToken);
+            localStorage.setItem('pageNavigationTime', Date.now().toString());
+            
+            console.log('🎫 [大厅] 生成页面跳转令牌:', pageNavigationToken);
             
             // 直接跳转到房间页面，不在大厅发送join_game
             // 房间页面会建立新的Socket连接并发送join_game请求

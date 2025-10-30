@@ -1002,18 +1002,33 @@ class DoudizhuRoomClient {
         const role = data.winnerRole === 'landlord' ? '地主' : '农民';
         this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
 
-        // 保存结算数据到localStorage，并添加当前玩家ID
-        // 🔧 修复：使用localStorage中的userId，而不是currentPlayerId（轮到出牌的玩家）
-        const currentUserId = localStorage.getItem('userId') || this.currentPlayerId;
+        // 准备结算数据，包含当前玩家信息
+        const currentUserId = this.currentPlayerId;
+        const currentUserName = this.currentPlayer;
+        const currentUserAvatar = this.playerAvatar;
+        
         const settlementData = {
             ...data,
-            currentUserId: currentUserId  // 添加当前浏览器用户的ID，用于个人中心查看
+            currentUserId: currentUserId,
+            currentUserName: currentUserName,
+            currentUserAvatar: currentUserAvatar
         };
+        
+        // 保存到localStorage作为备份
         localStorage.setItem('lastGameSettlement', JSON.stringify(settlementData));
+        
+        console.log('🎊 [结算] 当前玩家信息:', {
+            userId: currentUserId,
+            userName: currentUserName,
+            avatar: currentUserAvatar
+        });
 
-        // 跳转到独立的结算页面
+        // 跳转到结算页面，通过URL参数传递数据
         setTimeout(() => {
-            window.location.href = '/settlement/index.html';
+            const params = new URLSearchParams({
+                data: encodeURIComponent(JSON.stringify(settlementData))
+            });
+            window.location.href = `/settlement/index.html?${params.toString()}`;
         }, 1500); // 延迟1.5秒让玩家看到消息
     }
 

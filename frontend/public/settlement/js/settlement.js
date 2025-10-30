@@ -303,9 +303,16 @@ class SettlementPage {
   viewProfile() {
     console.log('👤 跳转到个人中心');
     
-    // 从结算数据中获取当前玩家的userId
-    // 注意：不要使用localStorage，因为多标签页会互相覆盖
-    const currentUserId = this.getCurrentUserId();
+    // 从结算数据中获取当前玩家信息
+    if (!this.settlementData) {
+      console.error('❌ 无法获取结算数据');
+      alert('无法获取玩家信息');
+      return;
+    }
+    
+    const currentUserId = this.settlementData.currentUserId;
+    const currentUserName = this.settlementData.currentUserName || currentUserId;
+    const currentUserAvatar = this.settlementData.currentUserAvatar || '👤';
     
     if (!currentUserId) {
       console.error('❌ 无法获取当前玩家ID');
@@ -313,27 +320,20 @@ class SettlementPage {
       return;
     }
     
-    // 通过URL参数传递userId，确保查看的是当前玩家的个人中心
-    window.location.href = `/profile?userId=${encodeURIComponent(currentUserId)}`;
-  }
-  
-  /**
-   * 获取当前玩家的userId
-   */
-  getCurrentUserId() {
-    // 优先从结算数据中获取
-    if (this.settlementData && this.settlementData.currentUserId) {
-      return this.settlementData.currentUserId;
-    }
+    console.log('👤 跳转参数:', {
+      userId: currentUserId,
+      userName: currentUserName,
+      avatar: currentUserAvatar
+    });
     
-    // 尝试从localStorage获取（作为后备方案）
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      console.warn('⚠️ 从localStorage获取userId，多标签页可能不准确');
-      return userId;
-    }
+    // 通过URL参数传递完整的用户信息，确保查看的是当前玩家的个人中心
+    const params = new URLSearchParams({
+      userId: encodeURIComponent(currentUserId),
+      userName: encodeURIComponent(currentUserName),
+      playerAvatar: encodeURIComponent(currentUserAvatar)
+    });
     
-    return null;
+    window.location.href = `/profile?${params.toString()}`;
   }
 
   /**

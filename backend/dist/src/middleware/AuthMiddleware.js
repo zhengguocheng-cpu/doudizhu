@@ -94,6 +94,12 @@ class AuthMiddleware extends BaseService_1.BaseService {
             this.log(types_1.LogLevel.INFO, 'User set offline', {
                 userId: socket.userId
             });
+            if (socket.sessionId) {
+                this.sessionManager.setOnlineStatus(socket.sessionId, false);
+                this.log(types_1.LogLevel.INFO, 'Session set offline', {
+                    sessionId: socket.sessionId
+                });
+            }
             this.emitUserDisconnectedEvent(socket.userId, socket.sessionId);
         }
     }

@@ -50,26 +50,50 @@ class GlobalSocketManager {
             }
         }
 
-        // 如果已有连接，先断开
+        // 如果已有连接，先断开并生成页面跳转令牌
+        let pageNavigationToken = null;
         if (this.socket) {
-            console.log('🔄 [MPA] 断开旧连接');
+            console.log('🔄 [MPA] 断开旧连接，生成页面跳转令牌');
+            // 生成临时令牌，证明这是页面跳转
+            pageNavigationToken = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('pageNavigationToken', pageNavigationToken);
+            localStorage.setItem('pageNavigationTime', Date.now().toString());
             this.socket.disconnect();
             this.socket = null;
+        } else {
+            // 检查是否有有效的页面跳转令牌（5秒内有效）
+            const savedToken = localStorage.getItem('pageNavigationToken');
+            const savedTime = parseInt(localStorage.getItem('pageNavigationTime') || '0');
+            if (savedToken && (Date.now() - savedTime) < 5000) {
+                pageNavigationToken = savedToken;
+                console.log('🔄 [MPA] 使用已有页面跳转令牌');
+            }
         }
 
-        console.log('🔔 [MPA] 建立新Socket连接:', { userId: this.userId, userName: this.userName });
+        console.log('🔔 [MPA] 建立新Socket连接:', { 
+            userId: this.userId, 
+            userName: this.userName,
+            hasToken: !!pageNavigationToken
+        });
 
-        // 连接时传递auth参数，后端自动认证
+        // 连接时传递auth参数和页面跳转令牌
         this.socket = io('http://localhost:3000', {
             auth: {
                 userId: this.userId,
-                userName: this.userName
+                userName: this.userName,
+                pageNavigationToken: pageNavigationToken // 页面跳转令牌
             },
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: this.maxReconnectAttempts,
             timeout: 10000
+        });
+
+        // 连接成功后清除令牌
+        this.socket.on('connect', () => {
+            localStorage.removeItem('pageNavigationToken');
+            localStorage.removeItem('pageNavigationTime');
         });
 
         this.setupGlobalListeners();

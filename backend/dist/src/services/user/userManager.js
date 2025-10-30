@@ -17,23 +17,17 @@ class UserManager {
         }
         else {
             if (user.isOnline && user.socketId !== socketId) {
+                console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
+                console.log(`   旧socketId: ${user.socketId}`);
+                console.log(`   新socketId: ${socketId}`);
                 const session = this.sessionManager.findSessionByUserId(trimmedUserName);
                 if (session && session.sessionId) {
-                    console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
-                    console.log(`   旧socketId: ${user.socketId}`);
-                    console.log(`   新socketId: ${socketId}`);
-                    const timeSinceLastLogin = Date.now() - (user.lastLoginAt?.getTime() || 0);
-                    if (timeSinceLastLogin < 500) {
-                        console.log(`✅ [MPA] 页面跳转重连（${timeSinceLastLogin}ms），允许`);
-                        this.updateUserConnection(trimmedUserName, socketId);
-                    }
-                    else {
-                        console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线 (${timeSinceLastLogin}ms)`);
-                        throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
-                    }
+                    console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 的旧连接仍然活跃`);
+                    console.log(`   活跃会话ID: ${session.sessionId}`);
+                    throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
                 }
                 else {
-                    console.log(`✅ [MPA] 旧会话已失效，允许登录`);
+                    console.log(`✅ [MPA] 旧连接已断开，允许新连接`);
                     this.updateUserConnection(trimmedUserName, socketId);
                 }
             }

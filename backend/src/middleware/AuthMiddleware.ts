@@ -86,8 +86,8 @@ export class AuthMiddleware extends BaseService {
       let result: AuthResult;
 
       if (auth.userId) {
-        // 通过用户ID认证
-        result = await this.authenticateByUserId(auth.userId, socket.id);
+        // 通过用户ID认证，传递页面跳转令牌
+        result = await this.authenticateByUserId(auth.userId, socket.id, auth.pageNavigationToken);
       } else {
         this.log(LogLevel.WARN, 'No valid auth data in connection', { socketId: socket.id });
         return;
@@ -186,10 +186,10 @@ export class AuthMiddleware extends BaseService {
    * 通过用户ID认证
    * 如果用户在线，拒绝重复登录
    */
-  private async authenticateByUserId(userId: string, socketId: string): Promise<AuthResult> {
+  private async authenticateByUserId(userId: string, socketId: string, pageNavigationToken?: string): Promise<AuthResult> {
     try {
-      // 使用authenticateUser方法，包含在线检查
-      const user = this.userManager.authenticateUser(userId, socketId);
+      // 使用authenticateUser方法，包含在线检查，传递页面跳转令牌
+      const user = this.userManager.authenticateUser(userId, socketId, pageNavigationToken);
 
       // 创建会话
       const sessionId = this.sessionManager.createUserSession(user, socketId);

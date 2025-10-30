@@ -215,27 +215,39 @@ class DoudizhuRoomClient {
                 // 播放点击音效
                 this.playSound('click');
                 
-                // 点击开始游戏实际上是准备
+                // 获取当前玩家状态
+                const currentPlayer = this.roomPlayers.find(p => p.id === this.currentPlayerId);
+                const isReady = currentPlayer?.ready || false;
+                
+                // 🔧 修复Bug2：切换准备状态
+                // 后端的togglePlayerReady会自动切换状态，所以统一发送player_ready事件
                 this.socket.emit('player_ready', {
                     roomId: this.currentRoom.id,
                     userId: this.currentPlayerId
                 });
                 
-                console.log('🎮 发送player_ready事件');
+                console.log(`🎮 发送player_ready事件 (当前状态: ${isReady ? '已准备' : '未准备'})`);
                 
                 // 立即更新本地玩家的准备状态
-                const currentPlayer = this.roomPlayers.find(p => p.id === this.currentPlayerId);
                 if (currentPlayer) {
-                    currentPlayer.ready = true;
+                    currentPlayer.ready = !currentPlayer.ready;
+                }
+                
+                // 根据新状态更新按钮
+                if (currentPlayer?.ready) {
+                    // 更新按钮文字为"取消准备"
+                    startGameBtn.textContent = '取消准备';
+                    startGameBtn.classList.remove('btn-success');
+                    startGameBtn.classList.add('btn-warning');
+                } else {
+                    // 更新按钮文字为"开始游戏"
+                    startGameBtn.textContent = '开始游戏';
+                    startGameBtn.classList.remove('btn-warning');
+                    startGameBtn.classList.add('btn-success');
                 }
                 
                 // 更新玩家列表显示
                 this.updatePlayerList();
-                
-                // 隐藏开始游戏按钮
-                console.log('🔧 [按钮状态] 隐藏开始游戏按钮');
-                startGameBtn.style.display = 'none';
-                console.log('✅ [按钮状态] 开始游戏按钮已隐藏');
             });
         }
 
@@ -954,9 +966,11 @@ class DoudizhuRoomClient {
         this.addGameMessage(`🎊 游戏结束！${winnerName}（${role}）获胜！`, 'important');
 
         // 保存结算数据到localStorage，并添加当前玩家ID
+        // 🔧 修复：使用localStorage中的userId，而不是currentPlayerId（轮到出牌的玩家）
+        const currentUserId = localStorage.getItem('userId') || this.currentPlayerId;
         const settlementData = {
             ...data,
-            currentUserId: this.currentPlayerId  // 添加当前玩家ID，用于个人中心查看
+            currentUserId: currentUserId  // 添加当前浏览器用户的ID，用于个人中心查看
         };
         localStorage.setItem('lastGameSettlement', JSON.stringify(settlementData));
 

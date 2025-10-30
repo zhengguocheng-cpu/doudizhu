@@ -4,6 +4,8 @@ exports.CardPlayHandler = void 0;
 const CardPlayValidator_1 = require("./CardPlayValidator");
 const roomService_1 = require("../room/roomService");
 const ScoreCalculator_1 = require("./ScoreCalculator");
+const ScoreService_1 = require("../score/ScoreService");
+const uuid_1 = require("uuid");
 class CardPlayHandler {
     constructor(io) {
         this.io = io;
@@ -49,6 +51,7 @@ class CardPlayHandler {
             player.cardCount = player.cards.length;
             room.gameState.lastPlayedCards = validation.pattern;
             room.gameState.lastPlayerId = userId;
+            room.gameState.lastPattern = validation.pattern;
             if (!room.gameState.playHistory) {
                 room.gameState.playHistory = [];
             }
@@ -136,12 +139,53 @@ class CardPlayHandler {
         const landlordWin = winner.role === 'landlord';
         const gameScore = ScoreCalculator_1.ScoreCalculator.calculateGameScore(room.players, winner.id, room.gameState?.playHistory || []);
         console.log('💰 游戏得分:', gameScore);
+        const gameId = (0, uuid_1.v4)();
+        const gameTimestamp = new Date();
+        const achievements = {};
+        for (const playerScore of gameScore.playerScores) {
+            const player = room.players.find((p) => p.id === playerScore.playerId);
+            if (!player)
+                continue;
+            const gameRecord = {
+                gameId,
+                timestamp: gameTimestamp,
+                roomId,
+                role: playerScore.role,
+                isWinner: playerScore.playerId === winner.id,
+                scoreChange: playerScore.finalScore,
+                multipliers: playerScore.multipliers,
+                opponents: room.players
+                    .filter((p) => p.id !== playerScore.playerId)
+                    .map((p) => p.id),
+                tags: []
+            };
+            if (gameScore.isSpring)
+                gameRecord.tags?.push('春天');
+            if (gameScore.isAntiSpring)
+                gameRecord.tags?.push('反春');
+            if (gameScore.bombCount > 0)
+                gameRecord.tags?.push(`炸弹×${gameScore.bombCount}`);
+            if (gameScore.rocketCount > 0)
+                gameRecord.tags?.push(`王炸×${gameScore.rocketCount}`);
+            try {
+                const result = ScoreService_1.scoreService.recordGameResult(playerScore.playerId, player.name, gameRecord);
+                achievements[playerScore.playerId] = result.achievements;
+                console.log(`📊 ${player.name} 积分: ${result.scoreChange > 0 ? '+' : ''}${result.scoreChange} → ${result.newScore}`);
+                if (result.achievements.length > 0) {
+                    console.log(`🏆 ${player.name} 解锁成就:`, result.achievements);
+                }
+            }
+            catch (error) {
+                console.error(`记录玩家 ${player.name} 积分失败:`, error);
+            }
+        }
         this.io.to(`room_${roomId}`).emit('game_over', {
             winnerId: winner.id,
             winnerName: winner.name,
             winnerRole: winner.role,
             landlordWin: landlordWin,
-            score: gameScore
+            score: gameScore,
+            achievements
         });
         room.status = 'waiting';
         room.gameState = null;

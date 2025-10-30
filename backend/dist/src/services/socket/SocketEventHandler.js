@@ -74,6 +74,7 @@ class SocketEventHandler {
         }
     }
     async handleJoinGame(socket, data) {
+        const { roomId, userId } = data;
         try {
             console.log('🔄 收到join_game请求:', {
                 socketId: socket.id,
@@ -81,7 +82,6 @@ class SocketEventHandler {
                 handshakeAuth: socket.handshake.auth
             });
             console.log('✅ 跳过认证检查，开始处理房间逻辑');
-            const { roomId, userId } = data;
             console.log('玩家加入游戏:', roomId, userId);
             const user = { name: userId };
             const result = roomService_1.roomService.joinRoom(roomId, userId);
@@ -123,9 +123,8 @@ class SocketEventHandler {
             console.log('加入游戏成功:', roomId, userId);
         }
         catch (error) {
-            console.error('❌ 加入游戏错误:', error);
             const errorMessage = error instanceof Error ? error.message : '加入游戏过程中发生错误';
-            console.error('❌ 发送错误消息给客户端:', errorMessage);
+            console.log(`⚠️ 玩家 ${userId} 加入房间 ${roomId} 失败: ${errorMessage}`);
             socket.emit('join_game_failed', {
                 message: errorMessage
             });

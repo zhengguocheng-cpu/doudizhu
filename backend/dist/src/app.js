@@ -11,6 +11,7 @@ const socket_io_1 = require("socket.io");
 const config_1 = require("./config");
 const routes_1 = __importDefault(require("./routes"));
 const gameRoutes_1 = __importDefault(require("./routes/gameRoutes"));
+const scoreRoutes_1 = __importDefault(require("./routes/scoreRoutes"));
 const stateRecovery_1 = require("./services/state/stateRecovery");
 const gameRoomsService_1 = require("./services/game/gameRoomsService");
 const roomService_1 = require("./services/room/roomService");
@@ -70,10 +71,14 @@ class Application {
                     'POST /api/games/rooms': '创建房间',
                     'GET /api/games/rooms/:roomId': '获取房间详情',
                     'POST /api/games/rooms/:roomId/join': '加入房间',
-                    'POST /api/games/rooms/:roomId/ready': '玩家准备'
+                    'POST /api/games/rooms/:roomId/ready': '玩家准备',
+                    'GET /api/score/:userId': '获取玩家积分',
+                    'GET /api/score/:userId/stats': '获取玩家统计',
+                    'GET /api/score/leaderboard/:type': '获取排行榜'
                 }
             });
         });
+        this.app.use('/api/score', scoreRoutes_1.default);
         this.app.use('/api/games', gameRoutes_1.default);
         this.app.use(routes_1.default);
         this.app.use(express_1.default.static(__dirname + '/../../frontend/public'));

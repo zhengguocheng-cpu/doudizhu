@@ -23,13 +23,13 @@ router.get('/:userId', (req: Request, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: record
     });
   } catch (error: any) {
     console.error('获取玩家积分失败:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message
     });
@@ -52,13 +52,13 @@ router.get('/:userId/stats', (req: Request, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: stats
     });
   } catch (error: any) {
     console.error('获取玩家统计失败:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message
     });
@@ -106,13 +106,13 @@ router.get('/leaderboard/:type', (req: Request, res: Response) => {
 
     const leaderboard = scoreService.getLeaderboard(type as any, limit);
 
-    res.json({
+    return res.json({
       success: true,
       data: leaderboard
     });
   } catch (error: any) {
     console.error('获取排行榜失败:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message
     });
@@ -136,7 +136,7 @@ router.get('/:userId/rank/:type', (req: Request, res: Response) => {
 
     const rank = scoreService.getPlayerRank(userId, type as any);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         userId,
@@ -146,7 +146,7 @@ router.get('/:userId/rank/:type', (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error('获取玩家排名失败:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message
     });
@@ -171,13 +171,13 @@ router.post('/:userId/adjust', (req: Request, res: Response) => {
 
     scoreService.adjustScore(userId, amount, reason || 'admin_adjust', note);
 
-    res.json({
+    return res.json({
       success: true,
       message: '积分调整成功'
     });
   } catch (error: any) {
     console.error('调整积分失败:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message
     });

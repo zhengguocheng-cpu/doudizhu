@@ -24,30 +24,59 @@ class GlobalSocketManager {
 
     /**
      * 建立Socket连接（一次性认证）
+     * @param {string} userName - 用户名（可选，如果已认证则从localStorage读取）
+     * @param {string} userId - 用户ID（可选，如果已认证则从localStorage读取）
      */
     connect(userName, userId) {
+        // 如果已有连接且已连接，直接复用
         if (this.socket && this.isConnected) {
             console.log('🔄 复用现有Socket连接:', this.socket.id);
+            console.log('📋 当前用户:', { userId: this.userId, userName: this.userName });
             return this.socket;
         }
 
-        // 保存用户信息
-        this.userName = userName;
-        this.userId = userId || userName;
+        // 如果Socket存在但未连接（可能断线重连），尝试重连
+        if (this.socket && !this.isConnected) {
+            console.log('🔄 Socket存在但未连接，尝试重连...');
+            this.socket.connect();
+            return this.socket;
+        }
 
-        // 保存到localStorage，供个人中心等页面使用
-        localStorage.setItem('userId', this.userId);
-        localStorage.setItem('userName', this.userName);
+        // 确定用户信息：优先使用参数，其次从实例变量，最后从localStorage
+        if (userName && userId) {
+            // 新登录，保存用户信息
+            this.userName = userName;
+            this.userId = userId;
+            localStorage.setItem('userId', this.userId);
+            localStorage.setItem('userName', this.userName);
+            console.log('🆕 新用户登录:', { userId: this.userId, userName: this.userName });
+        } else if (this.userName && this.userId) {
+            // 使用实例中已有的用户信息
+            console.log('📌 使用实例中的用户信息:', { userId: this.userId, userName: this.userName });
+        } else {
+            // 从localStorage恢复用户信息
+            this.userId = localStorage.getItem('userId');
+            this.userName = localStorage.getItem('userName');
+            
+            if (!this.userId || !this.userName) {
+                console.error('❌ 无法获取用户信息，请先登录');
+                window.location.href = '/';
+                return null;
+            }
+            console.log('💾 从localStorage恢复用户信息:', { userId: this.userId, userName: this.userName });
+        }
 
-        console.log('🔔 建立新的Socket连接，用户:', userName);
-        console.log('💾 保存用户信息到localStorage:', { userId: this.userId, userName: this.userName });
+        console.log('🔔 建立新的Socket连接，用户:', this.userName);
 
         // 连接时传递auth参数，后端自动认证
         this.socket = io('http://localhost:3000', {
             auth: {
                 userId: this.userId,
                 userName: this.userName
-            }
+            },
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionAttempts: 5
         });
 
         this.setupGlobalListeners();
@@ -62,6 +91,7 @@ class GlobalSocketManager {
             this.isConnected = true;
             console.log('✅ Socket连接成功:', {
                 socketId: this.socket.id,
+                userId: this.userId,
                 userName: this.userName
             });
         });
@@ -72,6 +102,28 @@ class GlobalSocketManager {
                 reason: reason,
                 socketId: this.socket?.id
             });
+        });
+
+        this.socket.on('reconnect', (attemptNumber) => {
+            this.isConnected = true;
+            console.log('🔄 Socket重连成功:', {
+                attemptNumber: attemptNumber,
+                socketId: this.socket.id,
+                userId: this.userId,
+                userName: this.userName
+            });
+        });
+
+        this.socket.on('reconnect_attempt', (attemptNumber) => {
+            console.log('🔄 尝试重连...', attemptNumber);
+        });
+
+        this.socket.on('reconnect_error', (error) => {
+            console.error('❌ 重连失败:', error);
+        });
+
+        this.socket.on('reconnect_failed', () => {
+            console.error('❌ 重连失败，已达最大尝试次数');
         });
 
         this.socket.on('error', (error) => {
@@ -135,15 +187,28 @@ class GlobalSocketManager {
     }
 
     /**
-     * 断开连接
+     * 断开连接（登出时调用）
      */
     disconnect() {
         if (this.socket) {
-            console.log('断开Socket连接');
+            console.log('🔌 断开Socket连接');
             this.socket.disconnect();
             this.socket = null;
             this.isConnected = false;
+            this.userName = null;
+            this.userId = null;
         }
+    }
+
+    /**
+     * 清除用户信息（登出时调用）
+     */
+    clearAuth() {
+        console.log('🗑️ 清除认证信息');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('lastGameSettlement');
+        this.disconnect();
     }
 
     /**

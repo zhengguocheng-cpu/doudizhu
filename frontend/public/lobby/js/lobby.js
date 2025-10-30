@@ -177,13 +177,8 @@ class LobbyController {
      * 处理登出（简化版）
      */
     handleLogout() {
-        // 注释掉认证状态清理
-        // this.socketManager.clearAuthentication();
-
-        // 清除localStorage中的用户信息
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('lastGameSettlement');
+        // 使用GlobalSocketManager的clearAuth方法清除所有认证信息
+        this.socketManager.clearAuth();
 
         this.messageManager.addInfo('已登出');
 

@@ -1292,14 +1292,25 @@ class DoudizhuRoomClient {
     enrichPlayersWithAvatars(players) {
         if (!players || !Array.isArray(players)) return [];
         
-        return players.map((player, index) => {
+        console.log('🎨 [enrichPlayersWithAvatars] 输入玩家列表:', players);
+        
+        const result = players.map((player, index) => {
+            console.log(`🎨 处理玩家 ${player.name}:`, {
+                hasAvatar: !!player.avatar,
+                avatar: player.avatar,
+                isCurrentPlayer: player.id === this.currentPlayerId || player.name === this.currentPlayer,
+                currentPlayerAvatar: this.playerAvatar
+            });
+            
             // 优先使用服务器返回的avatar（服务器基于玩家名称生成固定头像）
             if (player.avatar) {
+                console.log(`✅ 使用服务器avatar: ${player.avatar}`);
                 return player;
             }
             
             // 如果是当前玩家且有保存的头像，使用它
             if ((player.id === this.currentPlayerId || player.name === this.currentPlayer) && this.playerAvatar) {
+                console.log(`✅ 使用当前玩家avatar: ${this.playerAvatar}`);
                 return {
                     ...player,
                     avatar: this.playerAvatar
@@ -1312,6 +1323,7 @@ class DoudizhuRoomClient {
             );
             
             if (existingPlayer && existingPlayer.avatar) {
+                console.log(`✅ 使用旧玩家avatar: ${existingPlayer.avatar}`);
                 return {
                     ...player,
                     avatar: existingPlayer.avatar
@@ -1319,11 +1331,16 @@ class DoudizhuRoomClient {
             }
             
             // 最后才使用本地生成的avatar（作为后备方案）
+            const fallbackAvatar = this.getPlayerAvatar(index);
+            console.log(`⚠️ 使用后备avatar: ${fallbackAvatar}`);
             return {
                 ...player,
-                avatar: this.getPlayerAvatar(index)
+                avatar: fallbackAvatar
             };
         });
+        
+        console.log('🎨 [enrichPlayersWithAvatars] 输出玩家列表:', result);
+        return result;
     }
 
     /**

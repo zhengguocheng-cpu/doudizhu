@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { config } from './config';
@@ -119,7 +120,10 @@ export class Application {
     this.app.use(indexRoutes);
 
     // 4. 静态文件服务 - 最后作为fallback
-    this.app.use(express.static(__dirname + '/../../frontend/public'));
+    // 使用 process.cwd() 而不是 __dirname，因为编译后 __dirname 会指向 dist 目录
+    const frontendPath = path.join(process.cwd(), '..', 'frontend', 'public');
+    console.log('📁 静态文件路径:', frontendPath);
+    this.app.use(express.static(frontendPath));
   }
 
   private setupSocketIO(): void {

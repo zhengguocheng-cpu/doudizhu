@@ -42,7 +42,9 @@ router.get('/info', (req, res) => {
 
 // 登录页面路由
 router.get('/login/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../frontend/public/login/index.html'));
+  // 使用 process.cwd() 而不是 __dirname，因为编译后路径会变化
+  const loginPath = path.join(process.cwd(), '..', 'frontend', 'public', 'login', 'index.html');
+  res.sendFile(loginPath);
 });
 
 // 大厅页面路由

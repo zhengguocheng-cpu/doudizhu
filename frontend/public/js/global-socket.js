@@ -102,6 +102,22 @@ class GlobalSocketManager {
             });
         });
 
+        // 监听认证失败事件
+        this.socket.on('auth_failed', (data) => {
+            console.error('❌ 认证失败:', data.message);
+            this.isConnected = false;
+            this.authenticated = false;
+            
+            // 显示错误提示
+            alert(data.message || '用户名已被占用，请使用其他用户名');
+            
+            // 清除本地存储
+            this.clearAuth();
+            
+            // 跳转回登录页
+            window.location.href = '/';
+        });
+
         this.socket.on('disconnect', (reason) => {
             this.isConnected = false;
             console.log('❌ Socket断开连接:', {

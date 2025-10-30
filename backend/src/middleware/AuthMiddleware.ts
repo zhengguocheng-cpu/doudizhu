@@ -119,6 +119,14 @@ export class AuthMiddleware extends BaseService {
           socketId: socket.id,
           error: result.error
         });
+        
+        // 向客户端发送认证失败消息
+        socket.emit('auth_failed', {
+          message: result.error || '认证失败，请重试'
+        });
+        
+        // 断开连接
+        socket.disconnect(true);
       }
 
     } catch (error) {
@@ -157,21 +165,12 @@ export class AuthMiddleware extends BaseService {
 
   /**
    * 通过用户ID认证
+   * 如果用户在线，拒绝重复登录
    */
   private async authenticateByUserId(userId: string, socketId: string): Promise<AuthResult> {
     try {
-      // 查找用户
-      let user = this.userManager.getUserById(userId);
-
-      if (!user) {
-        // 如果用户不存在，自动创建新用户
-        user = this.userManager.createUser(userId);
-        console.log(`新用户自动注册: ${userId}, ID: ${userId}`);
-      } else {
-        // 更新用户连接状态
-        this.userManager.updateUserConnection(userId, socketId);
-        console.log(`用户重连: ${userId}, ID: ${userId}`);
-      }
+      // 使用authenticateUser方法，包含在线检查
+      const user = this.userManager.authenticateUser(userId, socketId);
 
       // 创建会话
       const sessionId = this.sessionManager.createUserSession(user, socketId);

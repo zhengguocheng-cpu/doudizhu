@@ -16,6 +16,10 @@ class UserManager {
             console.log(`新用户注册: ${trimmedUserName}, ID: ${trimmedUserName}`);
         }
         else {
+            if (user.isOnline) {
+                console.log(`⚠️ 用户 ${trimmedUserName} 已在线，拒绝重复登录`);
+                throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+            }
             this.updateUserConnection(trimmedUserName, socketId);
             console.log(`用户重连: ${trimmedUserName}, ID: ${trimmedUserName}`);
         }

@@ -71,6 +71,10 @@ class AuthMiddleware extends BaseService_1.BaseService {
                     socketId: socket.id,
                     error: result.error
                 });
+                socket.emit('auth_failed', {
+                    message: result.error || '认证失败，请重试'
+                });
+                socket.disconnect(true);
             }
         }
         catch (error) {
@@ -95,15 +99,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
     }
     async authenticateByUserId(userId, socketId) {
         try {
-            let user = this.userManager.getUserById(userId);
-            if (!user) {
-                user = this.userManager.createUser(userId);
-                console.log(`新用户自动注册: ${userId}, ID: ${userId}`);
-            }
-            else {
-                this.userManager.updateUserConnection(userId, socketId);
-                console.log(`用户重连: ${userId}, ID: ${userId}`);
-            }
+            const user = this.userManager.authenticateUser(userId, socketId);
             const sessionId = this.sessionManager.createUserSession(user, socketId);
             return { success: true, user, sessionId };
         }

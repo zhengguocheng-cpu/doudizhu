@@ -691,19 +691,36 @@ class CardHintHelper {
 
     /**
      * 查找王炸
+     * 支持字符串格式和对象格式
      */
     static findRocket(playerHand) {
-        const hasSmallJoker = playerHand.some(card => 
-            card.includes('小王') || card === '🃏小王'
-        );
-        const hasBigJoker = playerHand.some(card => 
-            card.includes('大王') || card === '🃏大王'
-        );
+        const hasSmallJoker = playerHand.some(card => {
+            if (typeof card === 'string') {
+                return card.includes('小王') || card === '🃏小王';
+            } else if (card && typeof card === 'object') {
+                return card.rank === '小王' || card.value === 16;
+            }
+            return false;
+        });
+        
+        const hasBigJoker = playerHand.some(card => {
+            if (typeof card === 'string') {
+                return card.includes('大王') || card === '🃏大王';
+            } else if (card && typeof card === 'object') {
+                return card.rank === '大王' || card.value === 17;
+            }
+            return false;
+        });
 
         if (hasSmallJoker && hasBigJoker) {
-            return playerHand.filter(card => 
-                card.includes('王') || card.includes('🃏')
-            );
+            return playerHand.filter(card => {
+                if (typeof card === 'string') {
+                    return card.includes('王') || card.includes('🃏');
+                } else if (card && typeof card === 'object') {
+                    return card.rank === '小王' || card.rank === '大王' || card.value === 16 || card.value === 17;
+                }
+                return false;
+            });
         }
 
         return null;
@@ -711,9 +728,21 @@ class CardHintHelper {
 
     /**
      * 获取牌的数值
+     * 支持字符串格式（'♠3'）和对象格式（{suit: '♠', rank: '3', value: 3}）
      */
     static getCardValue(card) {
-        return CardTypeDetector.getCardValue(card);
+        // 如果是对象格式，直接返回value
+        if (card && typeof card === 'object' && card.value !== undefined) {
+            return card.value;
+        }
+        
+        // 如果是字符串格式，使用CardTypeDetector
+        if (typeof card === 'string') {
+            return CardTypeDetector.getCardValue(card);
+        }
+        
+        console.error('❌ 无效的卡牌格式:', card);
+        return 0;
     }
 
     /**

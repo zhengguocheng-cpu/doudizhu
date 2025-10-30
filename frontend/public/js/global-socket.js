@@ -105,20 +105,27 @@ class GlobalSocketManager {
             });
         });
 
-        // 监听认证失败事件
+        // 监听认证失败事件（仅用于登录阶段）
         this.socket.on('auth_failed', (data) => {
-            console.error('❌ 认证失败:', data.message);
-            this.isConnected = false;
-            this.authenticated = false;
+            console.error('❌ [单连接] 认证失败:', data.message);
             
-            // 显示错误提示
-            alert(data.message || '用户名已被占用，请使用其他用户名');
-            
-            // 清除本地存储
-            this.clearAuth();
-            
-            // 跳转回登录页
-            window.location.href = '/';
+            // 只在登录页面才处理认证失败
+            if (window.location.pathname === '/' || window.location.pathname.includes('/login/')) {
+                this.isConnected = false;
+                this.authenticated = false;
+                
+                // 显示错误提示
+                alert(data.message || '用户名已被占用，请使用其他用户名');
+                
+                // 清除本地存储
+                this.clearAuth();
+                
+                // 跳转回登录页
+                window.location.href = '/';
+            } else {
+                // 其他页面只记录日志，不跳转
+                console.warn('⚠️ [单连接] 收到auth_failed但不在登录页，忽略');
+            }
         });
 
         this.socket.on('disconnect', (reason) => {

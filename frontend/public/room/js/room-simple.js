@@ -2489,7 +2489,25 @@ class DoudizhuRoomClient {
      */
     viewProfile() {
         console.log('👤 [查看战绩] 跳转到个人中心');
-        window.location.href = '/profile';
+        
+        // 从localStorage或当前玩家信息获取userId
+        const userId = localStorage.getItem('userId') || this.currentPlayerId;
+        const userName = localStorage.getItem('userName') || this.currentPlayerName;
+        const playerAvatar = localStorage.getItem('playerAvatar') || '👤';
+        
+        if (userId) {
+            // 通过URL参数传递用户信息，确保无痕窗口也能正确显示
+            const params = new URLSearchParams({
+                userId: userId,
+                userName: userName,
+                playerAvatar: playerAvatar
+            });
+            window.location.href = `/profile?${params.toString()}`;
+            console.log('👤 跳转参数:', { userId, userName, playerAvatar });
+        } else {
+            console.error('❌ 无法获取用户ID');
+            window.location.href = '/profile';
+        }
     }
 
     /**

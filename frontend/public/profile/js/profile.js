@@ -19,6 +19,9 @@ class ProfilePage {
     
     if (userIdFromUrl) {
       console.log('📋 从URL参数获取userId:', userIdFromUrl);
+      // 同时获取用户名和头像
+      this.userNameFromUrl = urlParams.get('userName');
+      this.playerAvatarFromUrl = urlParams.get('playerAvatar');
       return decodeURIComponent(userIdFromUrl);
     }
     
@@ -65,9 +68,12 @@ class ProfilePage {
         const data = result.data;
         
         // 更新玩家名称和头像
-        document.getElementById('playerName').textContent = data.username;
-        const avatar = localStorage.getItem('playerAvatar') || '👤';
-        document.getElementById('playerAvatar').textContent = avatar;
+        // 优先使用URL参数，其次使用API返回，最后使用localStorage
+        const userName = this.userNameFromUrl || data.username || localStorage.getItem('userName') || this.userId;
+        const avatar = this.playerAvatarFromUrl || localStorage.getItem('playerAvatar') || '👤';
+        
+        document.getElementById('playerName').textContent = decodeURIComponent(userName);
+        document.getElementById('playerAvatar').textContent = decodeURIComponent(avatar);
 
         // 更新统计数据
         document.getElementById('totalScore').textContent = data.totalScore.toLocaleString();

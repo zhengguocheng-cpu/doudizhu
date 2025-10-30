@@ -558,7 +558,8 @@ class CardHintHelper {
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length === 2) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     hints.push(cards.slice(0, 2));
                 }
@@ -569,7 +570,8 @@ class CardHintHelper {
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length === 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     hints.push(cards.slice(0, 2));
                 }
@@ -594,7 +596,8 @@ class CardHintHelper {
             const cards = cardGroups.get(rank);
             // 只有恰好3张或超过4张时才能出三张，不拆炸弹
             if (cards.length === 3 || cards.length > 4) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     hints.push(cards.slice(0, 3));
                 }
@@ -615,7 +618,8 @@ class CardHintHelper {
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     const triple = cards.slice(0, 3);
                     const remainingCards = playerHand.filter(c => !triple.includes(c));
@@ -642,7 +646,8 @@ class CardHintHelper {
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length >= 3) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     const triple = cards.slice(0, 3);
                     const remainingCards = playerHand.filter(c => !triple.includes(c));
@@ -674,7 +679,8 @@ class CardHintHelper {
         for (const rank of sortedRanks) {
             const cards = cardGroups.get(rank);
             if (cards.length === 4) {
-                const value = CardTypeDetector.RANK_VALUES[rank];
+                // rank可能是数字(value)或字符串，需要兼容处理
+                const value = typeof rank === 'number' ? rank : (CardTypeDetector.RANK_VALUES[rank] || 0);
                 if (value > minValue) {
                     hints.push(cards);
                 }

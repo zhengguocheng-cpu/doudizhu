@@ -2142,9 +2142,13 @@ class DoudizhuRoomClient {
             return;
         }
 
+        // 转换手牌格式：字符串 -> 对象
+        const playerHandObjects = this.convertCardsToObjects(this.playerHand);
+        console.log('💡 [提示] 转换后的手牌:', playerHandObjects);
+
         // 获取提示
         const hintCards = CardHintHelper.getHint(
-            this.playerHand,
+            playerHandObjects,
             this.lastPlayedCards,
             this.isFirstPlay
         );
@@ -2164,8 +2168,11 @@ class DoudizhuRoomClient {
 
         // 高亮推荐的牌
         hintCards.forEach(hintCard => {
+            // 将对象格式转回字符串格式用于匹配DOM
+            const cardString = typeof hintCard === 'string' ? hintCard : `${hintCard.suit}${hintCard.rank}`;
+            
             const cardElement = Array.from(allCards).find(el => 
-                el.dataset.card === hintCard
+                el.dataset.card === cardString
             );
             if (cardElement) {
                 cardElement.classList.add('selected');
@@ -2371,9 +2378,12 @@ class DoudizhuRoomClient {
             return;
         }
         
+        // 转换手牌格式
+        const playerHandObjects = this.convertCardsToObjects(this.playerHand);
+        
         // 获取提示
         const hintCards = CardHintHelper.getHint(
-            this.playerHand,
+            playerHandObjects,
             this.lastPlayedCards,
             this.isFirstPlay
         );
@@ -2396,8 +2406,11 @@ class DoudizhuRoomClient {
         
         // 选中推荐的牌
         hintCards.forEach(hintCard => {
+            // 将对象格式转回字符串格式用于匹配DOM
+            const cardString = typeof hintCard === 'string' ? hintCard : `${hintCard.suit}${hintCard.rank}`;
+            
             const cardElement = Array.from(allCards).find(el => 
-                el.dataset.card === hintCard
+                el.dataset.card === cardString
             );
             if (cardElement) {
                 cardElement.classList.add('selected');
@@ -2547,6 +2560,37 @@ class DoudizhuRoomClient {
             // 如果没有socket或房间信息，直接跳转
             window.location.href = '/lobby/index.html';
         }
+    }
+
+    /**
+     * 将字符串格式的牌转换为对象格式
+     * '♠3' -> {suit: '♠', rank: '3', value: 3}
+     */
+    convertCardsToObjects(cards) {
+        if (!cards || !Array.isArray(cards)) return [];
+        
+        return cards.map(card => {
+            // 如果已经是对象格式，直接返回
+            if (typeof card === 'object' && card.rank !== undefined) {
+                return card;
+            }
+            
+            // 字符串格式转对象
+            if (typeof card === 'string') {
+                const suit = card.charAt(0); // 花色
+                const rank = card.substring(1); // 点数
+                const value = CardTypeDetector.RANK_VALUES[rank] || 0;
+                
+                return {
+                    suit: suit,
+                    rank: rank,
+                    value: value
+                };
+            }
+            
+            console.error('❌ 无效的卡牌格式:', card);
+            return null;
+        }).filter(card => card !== null);
     }
 }
 

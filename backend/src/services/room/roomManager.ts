@@ -70,7 +70,7 @@ export class RoomManager {
     // 检查玩家是否已在房间中
     const existingPlayer = room.players.find(p => p.id === playerName || p.name === playerName);
     if (existingPlayer) {
-      console.log(`玩家 ${playerName} 已在房间 ${roomId} 中，返回现有玩家信息`);
+      console.log(`✅ 玩家 ${playerName} 重新连接房间 ${roomId}（玩家已存在，无需重新加入）`);
       return existingPlayer;
     }
 

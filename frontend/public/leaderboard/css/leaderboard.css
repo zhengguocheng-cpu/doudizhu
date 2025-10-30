@@ -47,19 +47,20 @@
     padding: 14px 40px;
     font-size: 18px;
     font-weight: 600;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: rgba(255, 255, 255, 0.9);
+    color: #2c3e50;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .tab-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    color: white;
+    background: white;
+    border-color: rgba(255, 255, 255, 1);
+    color: #1a252f;
     transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .tab-btn.active {
@@ -129,7 +130,20 @@
     position: relative;
 }
 
-/* 移除"我的排名"文字标签，只保留高亮效果 */
+/* 我的排名标签 - 只显示图标 */
+.leaderboard-item.my-rank::before {
+    content: '👤';
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
 
 .leaderboard-item.my-rank:hover {
     transform: translateX(5px) scale(1.02);

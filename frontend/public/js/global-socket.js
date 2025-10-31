@@ -77,7 +77,12 @@ class GlobalSocketManager {
         });
 
         // 连接时传递auth参数和页面跳转令牌
-        this.socket = io('http://localhost:3000', {
+        const SOCKET_BASE_URL = 
+            window.location.hostname === 'localhost' ? 
+            'http://localhost:3000':
+            '${window.location.protocol}//${window.location.host}';
+            console.log('Socket连接URL:', SOCKET_BASE_URL); 
+        this.socket = io(SOCKET_BASE_URL, {
             auth: {
                 userId: this.userId,
                 userName: this.userName,

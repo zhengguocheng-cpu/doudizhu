@@ -64,20 +64,39 @@ class DoudizhuRoomClient {
     initializeFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get('roomId');
-        const playerName = urlParams.get('playerName');
-        const playerAvatar = urlParams.get('playerAvatar'); // 获取头像参数
+        const rawPlayerName = urlParams.get('playerName');
+        const rawPlayerAvatar = urlParams.get('playerAvatar'); // 获取头像参数
         const alreadyJoined = urlParams.get('joined') === 'true'; // 检查是否已经在大厅加入
 
-        if (!roomId || !playerName) {
+        if (!roomId || !rawPlayerName) {
             alert('缺少房间或玩家信息，请从大厅进入房间');
             this.backToLobby();
             return;
         }
 
+        const normalize = (value, fallback = '') => {
+            if (!value) return fallback;
+            let result = value;
+            try {
+                result = decodeURIComponent(result);
+                result = decodeURIComponent(result);
+            } catch (error) {
+                try {
+                    result = decodeURIComponent(value);
+                } catch {
+                    result = value;
+                }
+            }
+            return result;
+        };
+
+        const playerName = normalize(rawPlayerName);
+        const playerAvatar = normalize(rawPlayerAvatar, '👑');
+
         // 用户名就是唯一标识
-        this.currentPlayer = decodeURIComponent(playerName);
-        this.currentPlayerId = decodeURIComponent(playerName);
-        this.playerAvatar = playerAvatar ? decodeURIComponent(playerAvatar) : '👑'; // 保存头像
+        this.currentPlayer = playerName;
+        this.currentPlayerId = playerName;
+        this.playerAvatar = playerAvatar;
         this.currentRoom = { id: roomId };
         this.alreadyJoined = alreadyJoined; // 保存是否已加入的状态
 
@@ -1100,6 +1119,7 @@ class DoudizhuRoomClient {
         
         const settlementData = {
             ...data,
+            roomId: this.roomId,
             currentUserId: currentUserId,
             currentUserName: currentUserName,
             currentUserAvatar: currentUserAvatar

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗地主游戏 - 大厅</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/lobby/css/lobby.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎮 斗地主游戏大厅</h1>
+            <div class="header-info">
+                <div class="connection-status" id="connectionStatus">未连接</div>
+                <div class="player-info">
+                    <span class="player-avatar" id="playerAvatar">👑</span>
+                    <span class="player-name" id="currentPlayerName">未登录</span>
+                    <button id="profileBtn" class="btn btn-primary" style="margin-right: 10px;">👤 个人中心</button>
+                    <button id="logoutBtn" class="btn btn-secondary">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 游戏大厅主要内容 -->
+        <section class="game-lobby">
+            <!-- 房间列表区域 -->
+            <div class="room-list-section">
+                <div class="section-header">
+                    <h3>房间列表</h3>
+                    <button id="refreshRoomsBtn" class="btn btn-secondary">刷新</button>
+                </div>
+                <div class="room-list" id="roomList">
+                    <div class="loading">正在获取房间列表...</div>
+                </div>
+            </div>
+
+            <!-- 快速操作区域 -->
+            <div class="quick-actions">
+                <div class="action-card">
+                    <h4>💡 快速开始</h4>
+                    <p>随机加入一个可用房间</p>
+                    <button id="quickJoinBtn" class="btn btn-success">快速加入</button>
+                </div>
+                <div class="action-card">
+                    <h4>🏠 我的房间</h4>
+                    <p>查看您创建的房间</p>
+                    <button id="myRoomsBtn" class="btn btn-primary">我的房间</button>
+                </div>
+                <div class="action-card">
+                    <h4>📝 用户反馈</h4>
+                    <p>提交问题或建议</p>
+                    <button id="feedbackBtn" class="btn btn-info">反馈意见</button>
+                </div>
+            </div>
+
+            <!-- 消息日志 -->
+            <div class="message-log">
+                <h3>消息日志</h3>
+                <div class="log-content" id="messageLog">
+                    <div class="log-item">欢迎进入游戏大厅！</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/global-socket.js"></script>
+    <!-- 依赖类必须在lobby.js之前引入 -->
+    <script src="/lobby/js/uiManager.js"></script>
+    <script src="/lobby/js/roomManager.js"></script>
+    <script src="/lobby/js/messageManager.js"></script>
+    <script src="/lobby/js/authManager.js"></script>
+    <script src="/lobby/js/client.js"></script>
+    <script src="/lobby/js/lobby.js"></script>
+    
+    <!-- 自动化测试脚本 - 最后加载 -->
+    <script src="/test/auto-test.js"></script>
+</body>
+</html>

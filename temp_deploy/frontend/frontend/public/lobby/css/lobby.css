@@ -1,0 +1,303 @@
+/* 大厅页面样式 */
+
+/* 主要容器 - 大厅页面使用不同的容器类名 */
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+}
+
+/* 顶部标题栏 - 大厅页面样式 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player-avatar {
+    font-size: 24px;
+}
+
+.player-name {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* 游戏大厅样式 */
+.game-lobby {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    flex: 1;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 房间列表样式 */
+.room-list-section {
+    flex: 1;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.room-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.room-item {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    padding: 15px;
+    transition: all 0.3s;
+}
+
+.room-item:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
+
+/* 房间已满样式 */
+.room-item.room-full {
+    background-color: #f5f5f5;
+    border-color: #dcdcdc;
+    opacity: 0.7;
+}
+
+.room-item.room-full:hover {
+    border-color: #dcdcdc;
+    transform: none;
+    cursor: not-allowed;
+}
+
+/* 游戏中样式 */
+.room-item.room-playing {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+}
+
+.room-item.room-playing:hover {
+    border-color: #ffc107;
+    transform: none;
+}
+
+/* 房间头部 */
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.room-item h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+/* 状态徽章 */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-full {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-playing {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.room-info {
+    margin-bottom: 15px;
+}
+
+.room-info p {
+    margin: 5px 0;
+    font-size: 18px;
+    color: #666;
+}
+
+.room-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* 快速操作区域 */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.action-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+}
+
+.action-card:hover {
+    border-color: #3498db;
+    transform: translateY(-2px);
+}
+
+.action-card h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+.action-card p {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 消息日志样式 */
+.message-log {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    padding: 20px;
+    border-radius: 6px;
+    min-height: 150px;
+}
+
+.message-log h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+}
+
+.log-content {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+}
+
+.log-item {
+    margin: 5px 0;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.log-item:last-child {
+    border-bottom: none;
+}
+
+.log-item.error {
+    color: #e74c3c;
+}
+
+.log-item.success {
+    color: #27ae60;
+}
+
+.log-item.info {
+    color: #3498db;
+}
+
+.log-item.warning {
+    color: #f39c12;
+}
+
+/* 加载状态 */
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        height: auto;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .header-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .game-lobby {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .room-list {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>单牌提示测试</title>
+</head>
+<body>
+    <h1>单牌提示测试</h1>
+    <div id="result"></div>
+
+    <script src="/room/js/CardTypeDetector.js"></script>
+    <script src="/room/js/CardValidator.js"></script>
+    <script src="/room/js/CardHintHelper.js"></script>
+
+    <script>
+        // 测试场景：上家出3，下家有单张4
+        const playerHand = [
+            { suit: '♠', rank: '4', value: 4 },
+            { suit: '♠', rank: '5', value: 5 },
+            { suit: '♥', rank: '5', value: 5 },
+            { suit: '♠', rank: '6', value: 6 },
+            { suit: '♥', rank: '6', value: 6 },
+            { suit: '♠', rank: '7', value: 7 }
+        ];
+
+        const lastPlay = {
+            type: 'single',
+            value: 3,  // 上家出的3
+            cards: [{ suit: '♠', rank: '3', value: 3 }]
+        };
+
+        console.log('=== 单牌提示测试 ===');
+        console.log('手牌:', playerHand.map(c => c.rank).join(','));
+        console.log('上家出牌: 3 (单张)');
+        console.log('');
+
+        // 测试 findAllBiggerSingles
+        const biggerSingles = CardHintHelper.findAllBiggerSingles(playerHand, 3);
+        console.log('findAllBiggerSingles 结果:');
+        console.log('数量:', biggerSingles.length);
+        biggerSingles.forEach((hint, i) => {
+            console.log(`${i + 1}. ${hint.map(c => c.rank).join(',')}`);
+        });
+        console.log('');
+
+        // 测试 getAllBeatingCards
+        const allHints = CardHintHelper.getAllBeatingCards(playerHand, lastPlay);
+        console.log('getAllBeatingCards 结果:');
+        console.log('数量:', allHints.length);
+        allHints.forEach((hint, i) => {
+            console.log(`${i + 1}. ${hint.map(c => c.rank).join(',')}`);
+        });
+        console.log('');
+
+        // 测试 getHint
+        CardHintHelper.resetHintIndex();
+        const hint1 = CardHintHelper.getHint(playerHand, lastPlay, false);
+        console.log('第1次提示:', hint1 ? hint1.map(c => c.rank).join(',') : 'null');
+
+        const hint2 = CardHintHelper.getHint(playerHand, lastPlay, false);
+        console.log('第2次提示:', hint2 ? hint2.map(c => c.rank).join(',') : 'null');
+
+        const hint3 = CardHintHelper.getHint(playerHand, lastPlay, false);
+        console.log('第3次提示:', hint3 ? hint3.map(c => c.rank).join(',') : 'null');
+
+        // 显示结果
+        const resultDiv = document.getElementById('result');
+        let html = '<h2>测试结果:</h2>';
+        html += `<p>手牌: ${playerHand.map(c => c.rank).join(', ')}</p>`;
+        html += `<p>上家出牌: 3 (单张)</p>`;
+        html += `<p>找到的提示数量: ${allHints.length}</p>`;
+        html += '<h3>所有提示:</h3><ol>';
+        allHints.forEach(hint => {
+            html += `<li>${hint.map(c => c.rank).join(', ')}</li>`;
+        });
+        html += '</ol>';
+        
+        if (allHints.length === 0) {
+            html += '<p style="color: red; font-weight: bold;">❌ 错误：没有找到任何提示！</p>';
+        } else {
+            html += '<p style="color: green; font-weight: bold;">✅ 找到提示</p>';
+        }
+        
+        resultDiv.innerHTML = html;
+    </script>
+</body>
+</html>

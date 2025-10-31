@@ -1,0 +1,23 @@
+{
+  "watch": [
+    "src/**/*",
+    "server.ts",
+    ".env"
+  ],
+  "ext": "ts,js,json",
+  "ignore": [
+    "node_modules/**/*",
+    "dist/**/*",
+    "test/**/*",
+    "*.test.ts",
+    "*.spec.ts"
+  ],
+  "exec": "ts-node --transpile-only --project ts-node.json server.ts",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 500,
+  "restartable": "rs",
+  "colours": true,
+  "verbose": true
+}

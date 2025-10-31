@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>游戏结算 - 斗地主</title>
+  <link rel="stylesheet" href="css/settlement.css">
+</head>
+<body>
+  <div class="settlement-container">
+    <!-- 结算卡片 -->
+    <div class="settlement-card">
+      <!-- 标题 -->
+      <div class="settlement-header">
+        <h1 id="settlementTitle">游戏结束</h1>
+        <p id="settlementSubtitle" class="subtitle">恭喜获胜！</p>
+      </div>
+
+      <!-- 获胜者信息 -->
+      <div class="winner-section">
+        <div class="winner-badge">🏆</div>
+        <div class="winner-info">
+          <div class="winner-avatar" id="winnerAvatar">👑</div>
+          <div class="winner-details">
+            <h2 class="winner-name" id="winnerName">玩家1</h2>
+            <p class="winner-role" id="winnerRole">地主</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 得分详情 -->
+      <div class="score-section">
+        <h3 class="section-title">📊 得分详情</h3>
+        <div class="score-breakdown">
+          <div class="score-item">
+            <span class="score-label">基础分</span>
+            <span class="score-value" id="baseScore">1</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">倍数</span>
+            <span class="score-value" id="multiplier">×1</span>
+          </div>
+          <div class="score-divider"></div>
+          <div class="score-item total">
+            <span class="score-label">总得分</span>
+            <span class="score-value large" id="totalScore">+1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 玩家得分列表 -->
+      <div class="players-section">
+        <h3 class="section-title">👥 玩家得分</h3>
+        <div class="players-list">
+          <div class="player-score-item" id="player1Score">
+            <div class="player-info">
+              <span class="player-avatar">👤</span>
+              <span class="player-name">玩家1</span>
+              <span class="player-role">地主</span>
+            </div>
+            <span class="player-score">+2</span>
+          </div>
+          <div class="player-score-item" id="player2Score">
+            <div class="player-info">
+              <span class="player-avatar">👤</span>
+              <span class="player-name">玩家2</span>
+              <span class="player-role">农民</span>
+            </div>
+            <span class="player-score">-1</span>
+          </div>
+          <div class="player-score-item" id="player3Score">
+            <div class="player-info">
+              <span class="player-avatar">👤</span>
+              <span class="player-name">玩家3</span>
+              <span class="player-role">农民</span>
+            </div>
+            <span class="player-score">-1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 成就提示（如果有） -->
+      <div class="achievements-section" id="achievementsSection" style="display: none;">
+        <h3 class="section-title">🏆 解锁成就</h3>
+        <div class="achievements-list" id="achievementsList"></div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="settlement-footer">
+        <button id="viewProfileBtn" class="btn btn-success">
+          <span class="btn-icon">👤</span>
+          <span class="btn-text">查看战绩</span>
+        </button>
+        <button id="playAgainBtn" class="btn btn-primary">
+          <span class="btn-icon">🎮</span>
+          <span class="btn-text">再来一局</span>
+        </button>
+        <button id="backToLobbyBtn" class="btn btn-secondary">
+          <span class="btn-icon">🏠</span>
+          <span class="btn-text">返回大厅</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socket.IO客户端库 -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- 全局Socket管理器 -->
+  <script src="/js/global-socket.js"></script>
+  <!-- 结算页面逻辑 -->
+  <script src="js/settlement.js"></script>
+</body>
+</html>

@@ -80,7 +80,7 @@ class GlobalSocketManager {
         const SOCKET_BASE_URL = 
             window.location.hostname === 'localhost' ? 
             'http://localhost:3000':
-            '${window.location.protocol}//${window.location.host}';
+            window.location.origin;
             console.log('Socket连接URL:', SOCKET_BASE_URL); 
         this.socket = io(SOCKET_BASE_URL, {
             auth: {

@@ -69,7 +69,7 @@ class LoginController {
 
             // 连接Socket并传递用户名进行认证
             this.socketManager = window.GlobalSocketManager.getInstance();
-            this.socketManager.connect(playerName, playerName);
+            this.socketManager.connect(playerName, playerName,'login');
 
             console.log('✅ Socket连接已建立，准备跳转到大厅');
 

@@ -32,7 +32,7 @@ class GlobalSocketManager {
      * @param {string} userName - 用户名（可选）
      * @param {string} userId - 用户ID（可选）
      */
-    connect(userName, userId) {
+    connect(userName, userId,htmlName) {
         // 确定用户信息
         if (userName && userId) {
             this.userName = userName;
@@ -73,6 +73,7 @@ class GlobalSocketManager {
         console.log('🔔 [MPA] 建立新Socket连接:', { 
             userId: this.userId, 
             userName: this.userName,
+            htmlName: htmlName,
             hasToken: !!pageNavigationToken
         });
 
@@ -86,6 +87,7 @@ class GlobalSocketManager {
             auth: {
                 userId: this.userId,
                 userName: this.userName,
+                htmlName: htmlName,
                 pageNavigationToken: pageNavigationToken // 页面跳转令牌
             },
             reconnection: true,

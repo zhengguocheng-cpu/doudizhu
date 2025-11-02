@@ -21,7 +21,7 @@ export class ErrorMiddleware extends BaseService {
   }
 
   protected async onInitialize(): Promise<void> {
-    this.log(LogLevel.INFO, 'ErrorMiddleware initialized');
+    this.log(LogLevel.INFO, 'class ErrorMiddleware initialized');
   }
 
   protected async onDestroy(): Promise<void> {

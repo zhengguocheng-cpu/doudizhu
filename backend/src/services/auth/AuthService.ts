@@ -35,7 +35,7 @@ export class AuthService extends BaseService {
     // 设置事件处理器
     this.setupEventHandlers();
 
-    this.log(LogLevel.INFO, 'AuthService initialized');
+    this.log(LogLevel.INFO, 'class AuthService initialized');
   }
 
   protected async onDestroy(): Promise<void> {

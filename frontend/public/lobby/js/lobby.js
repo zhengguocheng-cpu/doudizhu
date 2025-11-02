@@ -123,7 +123,8 @@ class LobbyController {
      */
     initializeSocket() {
         // 建立新的Socket连接
-        const socket = this.socketManager.connect();
+        const socket = this.socketManager.connect(this.currentPlayer, 
+            this.currentPlayer,'lobby');
         if (!socket) {
             console.error('❌ 无法建立Socket连接');
             return;

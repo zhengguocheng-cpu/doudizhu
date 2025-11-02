@@ -95,26 +95,26 @@ export class AuthService extends BaseService {
       const user = this.userManager.authenticateUser(userName, '');
 
       // 创建会话
-      const sessionId = this.sessionManager.createUserSession(user, '');
+      //const sessionId = this.sessionManager.createUserSession(user, '');
 
-      this.log(LogLevel.INFO, 'User authenticated successfully', {
+      this.log(LogLevel.INFO, ' User authenticated successfully', {
         userId: user.id,
         userName: user.name,
-        sessionId
+        sessionId: ''
       });
 
       // 发布认证成功事件
       this.eventBus.emit('user:authenticated', {
         userId: user.id,
         userName: user.name,
-        sessionId
+        sessionId: ''
       });
 
       return {
         success: true,
         userId: user.id,
         userName: user.name,
-        sessionId
+        sessionId: ''
       };
 
     } catch (error) {

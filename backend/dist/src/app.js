@@ -55,6 +55,7 @@ class Application {
             next();
         });
         this.app.use((req, res, next) => {
+            console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
             next();
         });
     }
@@ -95,6 +96,10 @@ class Application {
         });
         this.eventHandler = SocketEventHandler_1.socketEventHandler;
         this.eventHandler.initialize(this.io);
+        this.setupSocketConnection();
+        this.setupDisconnectionHandler();
+    }
+    setupSocketConnection() {
         this.io.on('connection', (socket) => {
             console.log(`用户连接: ${socket.id}`);
             if (this.authMiddleware) {
@@ -103,15 +108,13 @@ class Application {
                         console.error('认证中间件错误:', err);
                         return;
                     }
-                    this.setupSocketEventHandlers(socket);
                 });
             }
             else {
                 console.warn('认证中间件未初始化，直接设置Socket事件处理器');
-                this.setupSocketEventHandlers(socket);
             }
+            this.setupSocketEventHandlers(socket);
         });
-        this.setupDisconnectionHandler();
     }
     setupDisconnectionHandler() {
         try {

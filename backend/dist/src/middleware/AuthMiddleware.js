@@ -10,7 +10,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
     async onInitialize() {
         this.userManager = this.getService('UserManager');
         this.sessionManager = this.getService('SessionManager');
-        this.log(types_1.LogLevel.INFO, 'AuthMiddleware initialized');
+        this.log(types_1.LogLevel.INFO, 'class AuthMiddleware initialized');
     }
     async onDestroy() {
         this.log(types_1.LogLevel.INFO, 'AuthMiddleware destroyed');
@@ -18,7 +18,9 @@ class AuthMiddleware extends BaseService_1.BaseService {
     authenticateSocket(socket, next) {
         try {
             if (socket.handshake.auth && (socket.handshake.auth.userName || socket.handshake.auth.userId)) {
-                this.handleAuthFromConnection(socket, socket.handshake.auth);
+                if (socket.handshake.auth.htmlName === 'login') {
+                    this.handleAuthFromConnection(socket, socket.handshake.auth);
+                }
             }
             socket.on('error', (error) => {
                 this.handleSocketError(socket, error);
@@ -39,7 +41,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
     }
     async handleAuthFromConnection(socket, auth) {
         try {
-            this.log(types_1.LogLevel.INFO, 'Processing auth from connection', {
+            this.log(types_1.LogLevel.INFO, '（1）- Processing auth from connection', {
                 socketId: socket.id,
                 authData: auth
             });
@@ -58,13 +60,11 @@ class AuthMiddleware extends BaseService_1.BaseService {
                 socket.authenticated = true;
                 socket.user = result.user;
                 await this.userManager.updateUserConnection(result.user.name, socket.id);
-                this.log(types_1.LogLevel.INFO, 'User authenticated from connection successfully', {
+                this.log(types_1.LogLevel.INFO, '(3) - User authenticated from connection successfully', {
                     userId: result.user.name,
                     socketId: socket.id
                 });
-                if (result.sessionId) {
-                    this.emitUserAuthenticatedEvent(result.user, result.sessionId, socket);
-                }
+                this.emitUserAuthenticatedEvent(result.user, result.sessionId, socket);
             }
             else {
                 this.log(types_1.LogLevel.WARN, 'Authentication from connection failed', {
@@ -94,12 +94,6 @@ class AuthMiddleware extends BaseService_1.BaseService {
             this.log(types_1.LogLevel.INFO, 'User set offline', {
                 userId: socket.userId
             });
-            if (socket.sessionId) {
-                this.sessionManager.setOnlineStatus(socket.sessionId, false);
-                this.log(types_1.LogLevel.INFO, 'Session set offline', {
-                    sessionId: socket.sessionId
-                });
-            }
             this.emitUserDisconnectedEvent(socket.userId, socket.sessionId);
         }
     }
@@ -113,8 +107,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
     async authenticateByUserId(userId, socketId, pageNavigationToken) {
         try {
             const user = this.userManager.authenticateUser(userId, socketId, pageNavigationToken);
-            const sessionId = this.sessionManager.createUserSession(user, socketId);
-            return { success: true, user, sessionId };
+            return { success: true, user };
         }
         catch (error) {
             return {

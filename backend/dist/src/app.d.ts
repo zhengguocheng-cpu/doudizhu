@@ -16,6 +16,7 @@ export declare class Application {
     private setupMiddleware;
     private setupRoutes;
     private setupSocketIO;
+    private setupSocketConnection;
     private setupDisconnectionHandler;
     private setupSocketEventHandlers;
     private handleStartGame;

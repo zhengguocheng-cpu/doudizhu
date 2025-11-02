@@ -18,7 +18,7 @@ export class PlayerManager extends BaseService {
 
   protected async onInitialize(): Promise<void> {
     this.playerSession = this.getService('SessionManager');
-    this.log(LogLevel.INFO, 'PlayerManager initialized');
+    this.log(LogLevel.INFO, 'class PlayerManager initialized');
   }
 
   protected async onDestroy(): Promise<void> {

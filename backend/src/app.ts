@@ -83,7 +83,7 @@ export class Application {
 
     // 请求日志中间件
     this.app.use((req, res, next) => {
-      //console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+      console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
       next();
     });
   }
@@ -139,31 +139,50 @@ export class Application {
     this.eventHandler = socketEventHandler;
     this.eventHandler.initialize(this.io);
 
-    this.io.on('connection', (socket) => {
-      console.log(`用户连接: ${socket.id}`);
+    // this.io.on('connection', (socket) => {
+    //   console.log(`用户连接: ${socket.id}`);
 
-      // 使用认证中间件处理认证（如果可用）
-      if (this.authMiddleware) {
-        this.authMiddleware.authenticateSocket(socket, (err?: any) => {
-          if (err) {
-            console.error('认证中间件错误:', err);
-            return;
-          }
-
-          // 设置Socket事件处理器
-          this.setupSocketEventHandlers(socket);
-        });
-      } else {
-        console.warn('认证中间件未初始化，直接设置Socket事件处理器');
-        // 直接设置Socket事件处理器
-        this.setupSocketEventHandlers(socket);
-      }
-    });
+    //   // 使用认证中间件处理认证（如果可用）
+    //   if (this.authMiddleware) {
+    //     this.authMiddleware.authenticateSocket(socket, (err?: any) => {
+    //       if (err) {
+    //         console.error('认证中间件错误:', err);
+    //         return;
+    //       }
+    //     });
+    //   } else {
+    //     console.warn('认证中间件未初始化，直接设置Socket事件处理器');
+    //   }
+    //   // 设置Socket事件处理器
+    //   this.setupSocketEventHandlers(socket);
+    // });
     
+    this.setupSocketConnection();
+
     // 监听用户断开连接事件，清理房间状态
     this.setupDisconnectionHandler();
   }
   
+  private setupSocketConnection():void {
+
+    this.io.on('connection', (socket) => {
+      console.log(`用户连接: ${socket.id}`);
+
+    // 使用认证中间件处理认证（如果可用）
+    if (this.authMiddleware) {
+      this.authMiddleware.authenticateSocket(socket, (err?: any) => {
+        if (err) {
+          console.error('认证中间件错误:', err);
+          return;
+        }
+      });
+    } else {
+      console.warn('认证中间件未初始化，直接设置Socket事件处理器');
+    }
+    this.setupSocketEventHandlers(socket);
+    });
+  }
+
   /**
    * 设置断开连接处理器
    * 当用户断开连接时，自动从所有房间中移除该玩家

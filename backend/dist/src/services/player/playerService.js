@@ -11,7 +11,7 @@ class PlayerService extends BaseService_1.BaseService {
     }
     async onInitialize() {
         this.playerManager = this.getService('PlayerManager');
-        this.log(types_1.LogLevel.INFO, 'PlayerService initialized');
+        this.log(types_1.LogLevel.INFO, 'classPlayerService initialized');
     }
     async onDestroy() {
         this.log(types_1.LogLevel.INFO, 'PlayerService destroyed');

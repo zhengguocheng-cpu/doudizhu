@@ -21,53 +21,64 @@ export class UserManager {
   public authenticateUser(userName: string, socketId: string, pageNavigationToken?: string): Player {
     const trimmedUserName = userName.trim();
 
-    // 1. 查找是否已有该用户
+    let result;
     let user = this.findUserByName(trimmedUserName);
 
     if (!user) {
       // 2. 创建新用户
+      // console.log(`✅ [MPA] 新用户注册: ${trimmedUserName}`);
       user = this.createUser(trimmedUserName);
-      console.log(`✅ [MPA] 新用户注册: ${trimmedUserName}`);
+      if(!user)
+      {
+        console.log(`❌ [MPA] 创建新用户失败: ${trimmedUserName}`);
+        throw new Error(`❌ [MPA] 创建新用户失败: ${trimmedUserName}`);
+      }
+      
     } else {
-      // 3. 用户已存在，检查是否在线
+      // 3. 用户已存在，并且在线，检查是否是同一socketId
       if (user.isOnline && user.socketId !== socketId) {
-        console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
-        console.log(`   旧socketId: ${user.socketId}`);
-        console.log(`   新socketId: ${socketId}`);
-        console.log(`   页面跳转令牌: ${pageNavigationToken ? '有' : '无'}`);
+        //用户在线，并且是新的连接，拒绝连接
+        // console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
+        // console.log(`   旧socketId: ${user.socketId}`);
+        // console.log(`   新socketId: ${socketId}`);
+        // console.log(`   页面跳转令牌: ${pageNavigationToken ? '有' : '无'}`);
         
-        // 检查是否有页面跳转令牌
-        if (pageNavigationToken) {
-          // 有令牌，说明是页面跳转，强制断开旧会话
-          console.log(`✅ [MPA] 检测到页面跳转令牌，允许新连接`);
+        console.log(`(2) - ❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
+        // console.log(`   活跃会话ID: ${session.sessionId}`);
+        console.log('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+        throw new Error(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
+        // // 检查是否有页面跳转令牌
+        // if (pageNavigationToken) {
+        //   // 有令牌，说明是页面跳转，强制断开旧会话
+        //   console.log(`✅ [MPA] 检测到页面跳转令牌，允许新连接`);
           
-          // 强制断开旧会话
-          const session = this.sessionManager.findSessionByUserId(trimmedUserName);
-          if (session) {
-            this.sessionManager.setOnlineStatus(session.sessionId, false);
-            console.log(`   已断开旧会话: ${session.sessionId}`);
-          }
+        //   // 强制断开旧会话
+        //   const session = this.sessionManager.findSessionByUserId(trimmedUserName);
+        //   if (session) {
+        //     this.sessionManager.setOnlineStatus(session.sessionId, false);
+        //     console.log(`   已断开旧会话: ${session.sessionId}`);
+        //   }
           
-          this.updateUserConnection(trimmedUserName, socketId);
-        } else {
-          // 没有令牌，检查是否有活跃会话
-          const session = this.sessionManager.findSessionByUserId(trimmedUserName);
+        //   this.updateUserConnection(trimmedUserName, socketId);
+        // } else {
+        //   // 没有令牌，检查是否有活跃会话
+        //   const session = this.sessionManager.findSessionByUserId(trimmedUserName);
           
-          if (session && session.sessionId) {
-            // 有活跃会话且没有令牌，这是真正的重复登录
-            console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
-            console.log(`   活跃会话ID: ${session.sessionId}`);
-            throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
-          } else {
-            // 没有活跃会话，允许登录
-            console.log(`✅ [MPA] 旧连接已断开，允许新连接`);
-            this.updateUserConnection(trimmedUserName, socketId);
-          }
-        }
+        //   if (session && session.sessionId) {
+        //     // 有活跃会话且没有令牌，这是真正的重复登录
+        //     console.log(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
+        //     console.log(`   活跃会话ID: ${session.sessionId}`);
+        //     throw new Error('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
+        //   } else {
+        //     // 没有活跃会话，允许登录
+        //     console.log(`✅ [MPA] 旧连接已断开，允许新连接`);
+        //     this.updateUserConnection(trimmedUserName, socketId);
+        //   }
+        // }
       } else {
         // 用户离线或同一socketId，允许登录
+        console.log(`(2) - ✅ [MPA] 用户登录: ${trimmedUserName}`);
         this.updateUserConnection(trimmedUserName, socketId);
-        console.log(`✅ [MPA] 用户登录: ${trimmedUserName}`);
       }
     }
 
@@ -78,12 +89,15 @@ export class UserManager {
    * 创建新用户（使用用户名作为ID）
    */
   public createUser(userName: string): Player {
+
     // 验证用户名
     if (!userName || userName.trim().length === 0) {
+      console.log('用户名不能为空');
       throw new Error('用户名不能为空');
     }
 
     if (userName.length > 20) {
+      console.log('用户名不能超过20个字符');
       throw new Error('用户名不能超过20个字符');
     }
 
@@ -92,6 +106,7 @@ export class UserManager {
     // 检查用户名是否重复
     const existingUser = this.findUserByName(trimmedUserName);
     if (existingUser) {
+      console.log('用户名已存在');
       throw new Error('用户名已存在');
     }
 

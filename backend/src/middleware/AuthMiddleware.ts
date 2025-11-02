@@ -34,7 +34,7 @@ export class AuthMiddleware extends BaseService {
   protected async onInitialize(): Promise<void> {
     this.userManager = this.getService('UserManager');
     this.sessionManager = this.getService('SessionManager');
-    this.log(LogLevel.INFO, 'AuthMiddleware initialized');
+    this.log(LogLevel.INFO, 'class AuthMiddleware initialized');
   }
 
   protected async onDestroy(): Promise<void> {
@@ -48,7 +48,9 @@ export class AuthMiddleware extends BaseService {
     try {
       // 处理连接时的auth参数
       if (socket.handshake.auth && (socket.handshake.auth.userName || socket.handshake.auth.userId)) {
-        this.handleAuthFromConnection(socket, socket.handshake.auth);
+        if(socket.handshake.auth.htmlName === 'login'){
+          this.handleAuthFromConnection(socket, socket.handshake.auth);
+        }
       }
 
       // 设置错误处理器
@@ -78,7 +80,7 @@ export class AuthMiddleware extends BaseService {
    */
   private async handleAuthFromConnection(socket: AuthenticatedSocket, auth: any): Promise<void> {
     try {
-      this.log(LogLevel.INFO, 'Processing auth from connection', {
+      this.log(LogLevel.INFO, '（1）- Processing auth from connection', {
         socketId: socket.id,
         authData: auth
       });
@@ -104,15 +106,15 @@ export class AuthMiddleware extends BaseService {
         // 更新用户状态
         await this.userManager.updateUserConnection(result.user.name, socket.id);
 
-        this.log(LogLevel.INFO, 'User authenticated from connection successfully', {
+        this.log(LogLevel.INFO, '(3) - User authenticated from connection successfully', {
           userId: result.user.name,
           socketId: socket.id
         });
 
-        // 发布认证成功事件
-        if (result.sessionId) {
-          this.emitUserAuthenticatedEvent(result.user, result.sessionId, socket);
-        }
+        // // 发布认证成功事件
+        // if (result.sessionId) {
+          this.emitUserAuthenticatedEvent(result.user, result.sessionId!, socket);
+        // }
 
       } else {
         this.log(LogLevel.WARN, 'Authentication from connection failed', {
@@ -155,13 +157,13 @@ export class AuthMiddleware extends BaseService {
         userId: socket.userId
       });
       
-      // 同时更新会话状态为离线
-      if (socket.sessionId) {
-        this.sessionManager.setOnlineStatus(socket.sessionId, false);
-        this.log(LogLevel.INFO, 'Session set offline', {
-          sessionId: socket.sessionId
-        });
-      }
+      // // 同时更新会话状态为离线
+      // if (socket.sessionId) {
+      //   this.sessionManager.setOnlineStatus(socket.sessionId, false);
+      //   this.log(LogLevel.INFO, 'Session set offline', {
+      //     sessionId: socket.sessionId
+      //   });
+      // }
       
       // 发布断开连接事件
       this.emitUserDisconnectedEvent(socket.userId, socket.sessionId);
@@ -191,10 +193,8 @@ export class AuthMiddleware extends BaseService {
       // 使用authenticateUser方法，包含在线检查，传递页面跳转令牌
       const user = this.userManager.authenticateUser(userId, socketId, pageNavigationToken);
 
-      // 创建会话
-      const sessionId = this.sessionManager.createUserSession(user, socketId);
-
-      return { success: true, user, sessionId };
+      return { success: true, user };
+      
     } catch (error) {
       return {
         success: false,

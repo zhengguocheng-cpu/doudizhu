@@ -257,7 +257,20 @@ class LoginController {
         console.log('🔄 准备跳转到大厅页面，参数:', params.toString());
         console.log('🏠 页面跳转地址:', `/lobby/index.html?${params.toString()}`);
 
-        window.location.href = `/lobby/index.html?${params.toString()}`;
+        // window.location.href = `/lobby/index.html?${params.toString()}`;
+        // this.socketManager.disconnect();
+        const lobbyUrl = `/lobby/index.html?${params.toString()}`;
+
+        const goLobby = () => { window.location.href = lobbyUrl; };
+
+        const socket = this.socketManager?.socket;
+        if (socket?.connected) {
+            socket.once('disconnect', goLobby);
+            this.socketManager.disconnect();
+            setTimeout(goLobby, 200); // 防止断开失败或过久未回调
+        } else {
+            goLobby();
+        }
     }
 }
 

@@ -1119,7 +1119,7 @@ class DoudizhuRoomClient {
         
         const settlementData = {
             ...data,
-            roomId: this.roomId,
+            roomId: this.currentRoomId.id,
             currentUserId: currentUserId,
             currentUserName: currentUserName,
             currentUserAvatar: currentUserAvatar
@@ -1129,6 +1129,7 @@ class DoudizhuRoomClient {
         localStorage.setItem('lastGameSettlement', JSON.stringify(settlementData));
         
         console.log('🎊 [结算] 当前玩家信息:', {
+            roomId:this.currentRoom.id,
             userId: currentUserId,
             userName: currentUserName,
             avatar: currentUserAvatar

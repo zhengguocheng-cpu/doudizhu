@@ -14,7 +14,8 @@
         <h1>🎮 斗地主</h1>
       </div>
       <div class="nav-right">
-        <a href="/lobby/index.html" class="nav-link">返回大厅</a>
+        <!-- <a href="/lobby/index.html" class="nav-link">返回大厅</a> -->
+        <button id="backToLobbyBtn" class="btn btn-primary">返回大厅</button>
       </div>
     </nav>
 
@@ -96,12 +97,20 @@
 
     <!-- 排行榜链接 -->
     <div class="leaderboard-link">
-      <a href="/leaderboard" class="btn-leaderboard">
+      <!-- <a href="/leaderboard" class="btn-leaderboard">
         🏆 查看排行榜
-      </a>
+      </a> -->
+      <button id="leaderboardBtn" class="btn btn-leaderboard">
+          <span class="btn-icon">🏆</span>
+          <span class="btn-text">查看排行榜</span>
+      </button>
     </div>
   </div>
 
+  <!-- Socket.IO客户端库 -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- 全局Socket管理器 -->
+  <script src="/js/global-socket.js"></script>
   <script src="js/profile.js"></script>
 </body>
 </html>

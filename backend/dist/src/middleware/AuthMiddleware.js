@@ -18,9 +18,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
     authenticateSocket(socket, next) {
         try {
             if (socket.handshake.auth && (socket.handshake.auth.userName || socket.handshake.auth.userId)) {
-                if (socket.handshake.auth.htmlName === 'login') {
-                    this.handleAuthFromConnection(socket, socket.handshake.auth);
-                }
+                this.handleAuthFromConnection(socket, socket.handshake.auth);
             }
             socket.on('error', (error) => {
                 this.handleSocketError(socket, error);
@@ -47,7 +45,7 @@ class AuthMiddleware extends BaseService_1.BaseService {
             });
             let result;
             if (auth.userId) {
-                result = await this.authenticateByUserId(auth.userId, socket.id, auth.pageNavigationToken);
+                result = await this.authenticateByUserId(auth.userId, socket.id, auth.htmlName);
             }
             else {
                 this.log(types_1.LogLevel.WARN, 'No valid auth data in connection', { socketId: socket.id });
@@ -104,9 +102,9 @@ class AuthMiddleware extends BaseService_1.BaseService {
             userId: socket.userId
         });
     }
-    async authenticateByUserId(userId, socketId, pageNavigationToken) {
+    async authenticateByUserId(userId, socketId, htmlName) {
         try {
-            const user = this.userManager.authenticateUser(userId, socketId, pageNavigationToken);
+            const user = this.userManager.authenticateUser(userId, socketId, htmlName);
             return { success: true, user };
         }
         catch (error) {

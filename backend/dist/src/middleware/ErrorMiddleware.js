@@ -8,7 +8,7 @@ class ErrorMiddleware extends BaseService_1.BaseService {
         super();
     }
     async onInitialize() {
-        this.log(types_1.LogLevel.INFO, 'ErrorMiddleware initialized');
+        this.log(types_1.LogLevel.INFO, 'class ErrorMiddleware initialized');
     }
     async onDestroy() {
         this.log(types_1.LogLevel.INFO, 'ErrorMiddleware destroyed');

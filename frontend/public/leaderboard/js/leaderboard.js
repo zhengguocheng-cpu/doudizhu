@@ -7,7 +7,51 @@ class LeaderboardPage {
     this.currentType = 'score'; // 当前排行榜类型：score 或 winRate
     this.leaderboardData = [];
     this.myRank = null;
+    this.userId = null;
+    this.userName = null;
+    this.playerAvatar = null;
+    this.roomId = null;
     this.init();
+  }
+
+/**
+   * 获取用户信息
+   * 优先从URL参数获取
+   */
+  getUserInfo() {
+    // 优先从URL参数获取（支持查看其他玩家的个人中心）
+    const urlParams = new URLSearchParams(window.location.search);
+    const userIdFromUrl = urlParams.get('userId');
+    const userNameFromUrl = urlParams.get('userName');
+    const playerAvatarFromUrl = urlParams.get('playerAvatar');
+    const roomIdFromUrl = urlParams.get('roomId');
+    console.log('📋 从URL参数获取userId:', userIdFromUrl);
+    console.log('📋 从URL参数获取userName:', userNameFromUrl);
+    console.log('📋 从URL参数获取playerAvatar:', playerAvatarFromUrl);
+    console.log('📋 从URL参数获取roomId:', roomIdFromUrl);
+    if (userIdFromUrl) {
+      // 同时获取用户名和头像
+      this.userId = decodeURIComponent(userIdFromUrl);
+    }
+    
+    if(userNameFromUrl) {
+      this.userName = decodeURIComponent(userNameFromUrl);
+    }
+    
+    if(playerAvatarFromUrl) {
+      this.playerAvatar = decodeURIComponent(playerAvatarFromUrl);
+    }
+
+    if(roomIdFromUrl) {
+      this.roomId = decodeURIComponent(roomIdFromUrl);
+    }
+
+    if(!this.userId && !this.userName && !this.playerAvatar){
+    // 都没有，提示登录
+    alert('无用户信息，请先登录');
+    window.location.href = '/';
+  }
+    
   }
 
   /**
@@ -15,6 +59,8 @@ class LeaderboardPage {
    */
   init() {
     console.log('🏆 排行榜页面初始化');
+
+    this.getUserInfo();    
 
     // 绑定事件
     this.bindEvents();
@@ -28,12 +74,14 @@ class LeaderboardPage {
    */
   bindEvents() {
     // 返回按钮
-    const backBtn = document.getElementById('backBtn');
-    if (backBtn) {
-      backBtn.addEventListener('click', () => {
-        window.location.href = '/lobby/index.html';
-      });
-    }
+    // const backBtn = document.getElementById('backBtn');
+    // if (backBtn) {
+    //   backBtn.addEventListener('click', () => {
+    //     window.location.href = '/lobby/index.html';
+    //   });
+    // }
+    document.getElementById('backToLobbyBtn').addEventListener('click', this.handleBackToLobby.bind(this));
+
 
     // 排行榜类型切换
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -43,6 +91,79 @@ class LeaderboardPage {
         this.switchTab(type);
       });
     });
+  }
+
+
+   /**
+   * 返回大厅
+   */
+  handleBackToLobby() {
+    console.log('🏠 返回大厅');
+
+    // 先通知后端离开房间
+    const roomId = this.roomId;
+    if (roomId) {
+      try {
+        //this.showStatus('正在连接服务器...', 'success');
+        const socketManager = window.GlobalSocketManager.getInstance();
+        console.log('connect:', this.userId, this.userName, this.playerAvatar)
+        socketManager.connect(this.userId, this.userName, 'settlement');
+        console.log('✅ Socket连接已建立，准备跳转到大厅');
+
+        //alert('Socket连接已建立，准备跳转到大厅');
+        console.log('📤 发送离开房间请求:', roomId);
+        console.log('socket信息:', socketManager.socket)
+        socketManager.socket.emit('leave_game', {
+          roomId: roomId,
+          userId: this.userId
+        });
+        //alert('离开房间请求已发送');
+
+      } catch (error) {
+        //alert('离开房间失败', error);
+        console.error('离开房间失败:', error);
+      }
+    }
+
+    // 清除结算数据
+    localStorage.removeItem('lastGameSettlement');
+
+    // 延迟跳转，确保离开房间请求发送成功
+    setTimeout(() => {
+      //alert('user name:'+this.userName);
+      this.redirectToLobby(this.userName, this.playerAvatar);
+    }, 1000);
+  }
+
+
+  /**
+     * 跳转到大厅页面（简化版）
+     */
+  redirectToLobby(playerName, playerAvatar) {
+    // 传递登录信息到大厅页面
+    const params = new URLSearchParams({
+      playerName: encodeURIComponent(playerName),
+      playerAvatar: encodeURIComponent(playerAvatar),
+      loginTime: Date.now()
+    });
+
+    console.log('🔄 准备跳转到大厅页面，参数:', params.toString());
+    console.log('🏠 页面跳转地址:', `/lobby/index.html?${params.toString()}`);
+
+    // window.location.href = `/lobby/index.html?${params.toString()}`;
+    // this.socketManager.disconnect();
+    const lobbyUrl = `/lobby/index.html?${params.toString()}`;
+
+    const goLobby = () => { window.location.href = lobbyUrl; };
+
+    const socket = this.socketManager?.socket;
+    if (socket?.connected) {
+      socket.once('disconnect', goLobby);
+      this.socketManager.disconnect();
+      setTimeout(goLobby, 200); // 防止断开失败或过久未回调
+    } else {
+      goLobby();
+    }
   }
 
   /**
@@ -106,7 +227,7 @@ class LeaderboardPage {
    */
   async loadMyRank(type) {
     try {
-      const userId = localStorage.getItem('userId');
+      const userId = this.userId;
       if (!userId) {
         console.warn('未找到用户ID');
         return;
@@ -147,7 +268,7 @@ class LeaderboardPage {
     }
 
     // 获取当前用户ID
-    const currentUserId = localStorage.getItem('userId');
+    const currentUserId = this.userId;
 
     // 生成排行榜列表
     const html = this.leaderboardData.map((player, index) => {

@@ -24,10 +24,13 @@ class LobbyController {
         const urlParams = new URLSearchParams(window.location.search);
         const playerName = urlParams.get('playerName');
         const playerAvatar = urlParams.get('playerAvatar');
+        console.log('从URL参数获取playerName:', playerName);
+        console.log('从URL参数获取playerAvatar:', playerAvatar);
 
         if (playerName) {
             this.currentPlayer = decodeURIComponent(playerName);
             this.uiManager.setCurrentPlayerName(this.currentPlayer);
+            console.log('[decodeURIComponent]从URL参数获取playerName:', this.currentPlayer);
         }
 
         if (playerAvatar) {
@@ -123,8 +126,8 @@ class LobbyController {
      */
     initializeSocket() {
         // 建立新的Socket连接
-        const socket = this.socketManager.connect(this.currentPlayer, 
-            this.currentPlayer,'lobby');
+        const socket = this.socketManager.connect(this.currentPlayer,
+            this.currentPlayer, 'lobby');
         if (!socket) {
             console.error('❌ 无法建立Socket连接');
             return;
@@ -189,7 +192,7 @@ class LobbyController {
 
         this.uiManager.setRoomJoinHandler((roomId) => this.handleJoinRoom(roomId));
     }
-    
+
     /**
      * 处理反馈
      */
@@ -203,7 +206,32 @@ class LobbyController {
      */
     handleProfile() {
         console.log('👤 进入个人中心');
-        window.location.href = '/profile';
+        // const userId = this.currentPlayer;
+        // console.log('👤 进入个人中心', userId);
+        // window.location.href = 
+        // '/profile/index.html?userId=' +
+        // '${encodeURIComponent(userId)}';
+        // 通过URL参数传递完整的用户信息，确保查看的是当前玩家的个人中心
+        const params = new URLSearchParams({
+            userId: encodeURIComponent(this.currentPlayer),
+            userName: encodeURIComponent(this.currentPlayer),
+            playerAvatar: encodeURIComponent(this.playerAvatar)
+        });
+
+        //window.location.href = `/profile?${params.toString()}`;
+
+        const profileUrl = `/profile/index.html?${params.toString()}`;
+
+        const goprofile = () => { window.location.href = profileUrl; };
+
+        const socket = this.socketManager?.socket;
+        if (socket?.connected) {
+            socket.once('disconnect', goprofile);
+            this.socketManager.disconnect();
+            setTimeout(goprofile, 200); // 防止断开失败或过久未回调
+        } else {
+            goprofile();
+        }
     }
 
     /**
@@ -257,16 +285,16 @@ class LobbyController {
     async handleJoinRoom(roomId) {
         try {
             console.log('🚀 [大厅] 准备跳转到房间:', roomId);
-            
+
             // 生成页面跳转令牌，用于后端识别合法的页面跳转
             const pageNavigationToken = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            
+
             // 保存到localStorage，供房间页面使用
             localStorage.setItem('pageNavigationToken', pageNavigationToken);
             localStorage.setItem('pageNavigationTime', Date.now().toString());
-            
+
             console.log('🎫 [大厅] 生成页面跳转令牌:', pageNavigationToken);
-            
+
             // 直接跳转到房间页面，不在大厅发送join_game
             // 房间页面会建立新的Socket连接并发送join_game请求
             const params = new URLSearchParams({
@@ -275,7 +303,17 @@ class LobbyController {
                 playerAvatar: encodeURIComponent(this.playerAvatar)
             });
             
-            window.location.href = `/room/room.html?${params.toString()}`;
+            const roomUrl = `/room/room.html?${params.toString()}`;
+            const goRoom = () => { window.location.href = roomUrl; };
+
+            const socket = this.socketManager?.socket;
+            if (socket?.connected) {
+                socket.once('disconnect', goRoom);
+                this.socketManager.disconnect();
+                setTimeout(goRoom, 200); // 防止断开失败或过久未回调
+            } else {
+                goRoom();
+            }
         } catch (error) {
             this.messageManager.addError(`跳转失败: ${error.message}`);
         }

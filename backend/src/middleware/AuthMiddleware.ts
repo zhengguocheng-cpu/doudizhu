@@ -48,9 +48,8 @@ export class AuthMiddleware extends BaseService {
     try {
       // 处理连接时的auth参数
       if (socket.handshake.auth && (socket.handshake.auth.userName || socket.handshake.auth.userId)) {
-        if(socket.handshake.auth.htmlName === 'login'){
-          this.handleAuthFromConnection(socket, socket.handshake.auth);
-        }
+        this.handleAuthFromConnection(socket, socket.handshake.auth);
+
       }
 
       // 设置错误处理器
@@ -89,7 +88,7 @@ export class AuthMiddleware extends BaseService {
 
       if (auth.userId) {
         // 通过用户ID认证，传递页面跳转令牌
-        result = await this.authenticateByUserId(auth.userId, socket.id, auth.pageNavigationToken);
+        result = await this.authenticateByUserId(auth.userId, socket.id, auth.htmlName);
       } else {
         this.log(LogLevel.WARN, 'No valid auth data in connection', { socketId: socket.id });
         return;
@@ -188,10 +187,10 @@ export class AuthMiddleware extends BaseService {
    * 通过用户ID认证
    * 如果用户在线，拒绝重复登录
    */
-  private async authenticateByUserId(userId: string, socketId: string, pageNavigationToken?: string): Promise<AuthResult> {
+  private async authenticateByUserId(userId: string, socketId: string, htmlName?: string): Promise<AuthResult> {
     try {
       // 使用authenticateUser方法，包含在线检查，传递页面跳转令牌
-      const user = this.userManager.authenticateUser(userId, socketId, pageNavigationToken);
+      const user = this.userManager.authenticateUser(userId, socketId, htmlName);
 
       return { success: true, user };
       

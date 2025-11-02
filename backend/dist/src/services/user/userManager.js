@@ -8,7 +8,7 @@ class UserManager {
         this.users = new Map();
         this.sessionManager = sessionManager;
     }
-    authenticateUser(userName, socketId, pageNavigationToken) {
+    authenticateUser(userName, socketId, htmlName) {
         const trimmedUserName = userName.trim();
         let result;
         let user = this.findUserByName(trimmedUserName);
@@ -20,7 +20,7 @@ class UserManager {
             }
         }
         else {
-            if (user.isOnline && user.socketId !== socketId) {
+            if (user.isOnline && user.socketId !== socketId && htmlName === 'login') {
                 console.log(`(2) - ❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);
                 console.log('用户名已被占用，该用户正在游戏中。请使用其他用户名或稍后再试。');
                 throw new Error(`❌ [MPA] 拒绝重复登录: ${trimmedUserName} 已在其他地方在线`);

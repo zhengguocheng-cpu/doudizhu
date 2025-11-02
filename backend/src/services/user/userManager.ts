@@ -18,7 +18,7 @@ export class UserManager {
    * 创建或查找用户（使用用户名作为唯一标识）
    * 多页面架构：使用页面跳转令牌区分页面跳转和重复登录
    */
-  public authenticateUser(userName: string, socketId: string, pageNavigationToken?: string): Player {
+  public authenticateUser(userName: string, socketId: string, htmlName?: string): Player {
     const trimmedUserName = userName.trim();
 
     let result;
@@ -36,7 +36,8 @@ export class UserManager {
       
     } else {
       // 3. 用户已存在，并且在线，检查是否是同一socketId
-      if (user.isOnline && user.socketId !== socketId) {
+      
+      if (user.isOnline && user.socketId !== socketId && htmlName==='login') {
         //用户在线，并且是新的连接，拒绝连接
         // console.log(`⚠️ [MPA] 用户 ${trimmedUserName} 尝试新连接`);
         // console.log(`   旧socketId: ${user.socketId}`);

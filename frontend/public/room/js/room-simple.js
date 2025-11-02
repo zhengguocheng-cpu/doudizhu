@@ -151,7 +151,8 @@ class DoudizhuRoomClient {
      */
     connectToServer() {
         // 建立新的Socket连接
-        this.socket = this.socketManager.connect();
+        this.socket = this.socketManager.connect(
+            this.currentPlayer, this.currentPlayerId, 'room');
         
         if (!this.socket) {
             console.error('❌ 无法建立Socket连接');
@@ -1119,7 +1120,7 @@ class DoudizhuRoomClient {
         
         const settlementData = {
             ...data,
-            roomId: this.currentRoomId.id,
+            roomId: this.currentRoom.id,
             currentUserId: currentUserId,
             currentUserName: currentUserName,
             currentUserAvatar: currentUserAvatar

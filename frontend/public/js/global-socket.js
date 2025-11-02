@@ -60,14 +60,14 @@ class GlobalSocketManager {
             localStorage.setItem('pageNavigationTime', Date.now().toString());
             this.socket.disconnect();
             this.socket = null;
-        } else {
-            // 检查是否有有效的页面跳转令牌（5秒内有效）
-            const savedToken = localStorage.getItem('pageNavigationToken');
-            const savedTime = parseInt(localStorage.getItem('pageNavigationTime') || '0');
-            if (savedToken && (Date.now() - savedTime) < 5000) {
-                pageNavigationToken = savedToken;
-                console.log('🔄 [MPA] 使用已有页面跳转令牌');
-            }
+        // } else {
+        //     // 检查是否有有效的页面跳转令牌（5秒内有效）
+        //     const savedToken = localStorage.getItem('pageNavigationToken');
+        //     const savedTime = parseInt(localStorage.getItem('pageNavigationTime') || '0');
+        //     if (savedToken && (Date.now() - savedTime) < 5000) {
+        //         pageNavigationToken = savedToken;
+        //         console.log('🔄 [MPA] 使用已有页面跳转令牌');
+        //     }
         }
 
         console.log('🔔 [MPA] 建立新Socket连接:', { 

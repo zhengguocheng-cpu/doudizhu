@@ -5,6 +5,9 @@
 class SettlementPage {
   constructor() {
     this.settlementData = null;
+    this.userId = null;
+    this.userName = null;
+    this.playerAvatar = null;
     this.init();
   }
 
@@ -41,7 +44,13 @@ class SettlementPage {
     if (dataParam) {
       try {
         this.settlementData = JSON.parse(decodeURIComponent(dataParam));
+        this.userId = this.settlementData.currentUserId;
+        this.userName = this.settlementData.currentUserName;
+        this.playerAvatar = this.settlementData.currentUserAvatar;
         console.log('📊 从URL加载结算数据:', this.settlementData);
+        console.log('📊 从URL加载用户ID:', this.userId);
+        console.log('📊 从URL加载用户名称:', this.userName);
+        console.log('📊 从URL加载用户头像:', this.playerAvatar);
         return;
       } catch (error) {
         console.error('解析URL数据失败:', error);
@@ -304,37 +313,40 @@ class SettlementPage {
    */
   viewProfile() {
     console.log('👤 跳转到个人中心');
-    
+
     // 从结算数据中获取当前玩家信息
     if (!this.settlementData) {
       console.error('❌ 无法获取结算数据');
       alert('无法获取玩家信息');
       return;
     }
-    
+
     const currentUserId = this.settlementData.currentUserId;
     const currentUserName = this.settlementData.currentUserName || currentUserId;
     const currentUserAvatar = this.settlementData.currentUserAvatar || '👤';
-    
+    const currentRoomId = this.settlementData.roomId;
+
     if (!currentUserId) {
       console.error('❌ 无法获取当前玩家ID');
       alert('无法获取玩家信息');
       return;
     }
-    
+
     console.log('👤 跳转参数:', {
       userId: currentUserId,
       userName: currentUserName,
-      avatar: currentUserAvatar
+      avatar: currentUserAvatar,
+      roomId: currentRoomId
     });
-    
+
     // 通过URL参数传递完整的用户信息，确保查看的是当前玩家的个人中心
     const params = new URLSearchParams({
       userId: encodeURIComponent(currentUserId),
       userName: encodeURIComponent(currentUserName),
-      playerAvatar: encodeURIComponent(currentUserAvatar)
+      playerAvatar: encodeURIComponent(currentUserAvatar),
+      roomId: encodeURIComponent(currentRoomId)
     });
-    
+
     window.location.href = `/profile?${params.toString()}`;
   }
 
@@ -343,20 +355,24 @@ class SettlementPage {
    */
   playAgain() {
     console.log('🎮 再来一局');
-    
+
     // 获取房间和玩家信息（优先使用结算数据，避免缓存污染）
     const roomId = this.settlementData?.roomId;
     const currentUserId = this.settlementData.currentUserId;
     const currentUserName = this.settlementData.currentUserName || currentUserId;
     const currentUserAvatar = this.settlementData.currentUserAvatar || '👤';
- 
+
+    //alert(this.settlementData);
+
     if (!roomId) {
+      //alert('无法获取房间ID');
       console.error('❌ 无法获取房间ID');
       window.location.href = '/lobby/index.html';
       return;
     }
 
     if (!currentUserName) {
+      //alert('无法获取玩家信息');
       console.error('❌ 无法获取玩家信息');
       window.location.href = '/lobby/index.html';
       return;
@@ -388,22 +404,22 @@ class SettlementPage {
       playerName: normalizedPlayerName,
       playerAvatar: normalizedPlayerAvatar
     });
-    
+
     // 清除结算数据
     localStorage.removeItem('lastGameSettlement');
-    
+
     // 生成页面跳转令牌
     const pageNavigationToken = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem('pageNavigationToken', pageNavigationToken);
     localStorage.setItem('pageNavigationTime', Date.now().toString());
-    
+
     // 返回房间，带上完整的玩家信息
     const params = new URLSearchParams({
       roomId: roomId,
       playerName: encodeURIComponent(normalizedPlayerName),
       playerAvatar: encodeURIComponent(normalizedPlayerAvatar)
     });
-    
+
     window.location.href = `/room/room.html?${params.toString()}`;
   }
 
@@ -412,29 +428,93 @@ class SettlementPage {
    */
   backToLobby() {
     console.log('🏠 返回大厅');
-    
+
     // 先通知后端离开房间
     const roomId = this.settlementData?.roomId;
+    console.log('🏠 返回大厅，房间ID:', roomId);
     if (roomId) {
       try {
-        const socketManager = window.GlobalSocketManager?.getInstance();
-        if (socketManager && socketManager.socket) {
-          console.log('📤 发送离开房间请求:', roomId);
-          socketManager.socket.emit('leave_room', { roomId });
-        }
+        //this.showStatus('正在连接服务器...', 'success');
+        const socketManager = window.GlobalSocketManager.getInstance();
+        console.log('connect:', this.userId, this.userName, this.playerAvatar)
+        socketManager.connect(this.userId, this.userName, 'settlement');
+        console.log('✅ Socket连接已建立，准备跳转到大厅');
+
+        //alert('Socket连接已建立，准备跳转到大厅');
+        console.log('📤 发送离开房间请求:', roomId);
+        console.log('socket信息:', socketManager.socket)
+        socketManager.socket.emit('leave_game', {
+          roomId: roomId,
+          userId: this.userId
+        });
+        //alert('离开房间请求已发送');
+
       } catch (error) {
+        //alert('离开房间失败', error);
         console.error('离开房间失败:', error);
       }
     }
-    
+
     // 清除结算数据
     localStorage.removeItem('lastGameSettlement');
-    
+
     // 延迟跳转，确保离开房间请求发送成功
     setTimeout(() => {
-      window.location.href = '/lobby/index.html';
-    }, 100);
+      //alert('user name:'+this.userName);
+      this.redirectToLobby(this.userName, this.playerAvatar);
+    }, 1000);
   }
+
+
+  /**
+     * 跳转到大厅页面（简化版）
+     */
+  redirectToLobby(playerName, playerAvatar) {
+    // 传递登录信息到大厅页面
+    const params = new URLSearchParams({
+      playerName: encodeURIComponent(playerName),
+      playerAvatar: encodeURIComponent(playerAvatar),
+      loginTime: Date.now()
+    });
+
+    console.log('🔄 准备跳转到大厅页面，参数:', params.toString());
+    console.log('🏠 页面跳转地址:', `/lobby/index.html?${params.toString()}`);
+
+    // window.location.href = `/lobby/index.html?${params.toString()}`;
+    // this.socketManager.disconnect();
+    const lobbyUrl = `/lobby/index.html?${params.toString()}`;
+
+    const goLobby = () => { window.location.href = lobbyUrl; };
+
+    const socket = this.socketManager?.socket;
+    if (socket?.connected) {
+      socket.once('disconnect', goLobby);
+      this.socketManager.disconnect();
+      setTimeout(goLobby, 200); // 防止断开失败或过久未回调
+    } else {
+      goLobby();
+    }
+  }
+
+
+  // connectToServer() {
+  //   try {
+  //     this.showStatus('正在连接服务器...', 'success');
+  //     const socketManager = window.GlobalSocketManager.getInstance();
+  //     socketManager.connect(this.userId, this.userName, 'settlement');
+  //     console.log('✅ Socket连接已建立，准备跳转到大厅');
+
+  //     // 等待连接建立后跳转
+  //     setTimeout(() => {
+  //       this.redirectToLobby(playerName, playerAvatar);
+  //     }, 800);
+
+  //   } catch (error) {
+  //     console.error('❌ 登录过程出错:', error);
+  //     this.showStatus('登录过程出错，请重试', 'error');
+  //     this.setFormEnabled(true);
+  //   }
+  // }
 
   /**
    * 显示错误

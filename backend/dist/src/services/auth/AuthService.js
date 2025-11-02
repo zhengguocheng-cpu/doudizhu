@@ -21,7 +21,7 @@ class AuthService extends BaseService_1.BaseService {
         this.userManager = (0, userManager_1.createUserManager)(this.sessionManager);
         this.eventBus = EventBus_1.EventBus.getInstance();
         this.setupEventHandlers();
-        this.log(types_1.LogLevel.INFO, 'AuthService initialized');
+        this.log(types_1.LogLevel.INFO, 'class AuthService initialized');
     }
     async onDestroy() {
         this.log(types_1.LogLevel.INFO, 'AuthService destroyed');

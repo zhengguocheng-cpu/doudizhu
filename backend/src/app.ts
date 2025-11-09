@@ -129,6 +129,7 @@ export class Application {
   private setupSocketIO(): void {
     this.server = createServer(this.app);
     this.io = new SocketIOServer(this.server, {
+      path: '/api/socket.io',
       cors: {
         origin: config.legacy.cors.origin,
         methods: ["GET", "POST"]

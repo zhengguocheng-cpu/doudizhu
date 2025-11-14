@@ -362,7 +362,7 @@ export class SocketEventHandler {
         return;
       }
 
-      cardPlayHandler.handlePlayCards(roomId, userId, cards);
+      cardPlayHandler.handlePlayCards(roomId, userId, cards, socket.id);
 
     } catch (error) {
       console.error('出牌错误:', error);
@@ -388,7 +388,7 @@ export class SocketEventHandler {
         return;
       }
 
-      cardPlayHandler.handlePass(roomId, userId);
+      cardPlayHandler.handlePass(roomId, userId, socket.id);
 
     } catch (error) {
       console.error('不出错误:', error);

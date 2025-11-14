@@ -18,7 +18,7 @@ export class CardPlayHandler {
   /**
    * 处理玩家出牌
    */
-  public handlePlayCards(roomId: string, userId: string, cards: string[]): void {
+  public handlePlayCards(roomId: string, userId: string, cards: string[], requestSocketId?: string): void {
     console.log(`🎴 玩家 ${userId} 尝试出牌:`, cards);
 
     try {
@@ -38,7 +38,7 @@ export class CardPlayHandler {
       // 检查是否轮到该玩家
       if (room.gameState.currentPlayerId !== userId) {
         console.error(`❌ 不是玩家 ${userId} 的回合`);
-        this.io.to(this.findSocketIdByUserId(userId)).emit('play_cards_failed', {
+        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
           error: '还没轮到你出牌'
         });
         return;
@@ -61,7 +61,7 @@ export class CardPlayHandler {
 
       if (!validation.valid) {
         console.error(`❌ 出牌验证失败: ${validation.error}`);
-        this.io.to(this.findSocketIdByUserId(userId)).emit('play_cards_failed', {
+        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
           error: validation.error
         });
         return;
@@ -144,7 +144,7 @@ export class CardPlayHandler {
   /**
    * 处理玩家不出（跟牌）
    */
-  public handlePass(roomId: string, userId: string): void {
+  public handlePass(roomId: string, userId: string, requestSocketId?: string): void {
     console.log(`🚫 玩家 ${userId} 选择不出`);
 
     try {
@@ -169,7 +169,7 @@ export class CardPlayHandler {
 
       // 不能在新一轮的首次出牌时选择不出
       if (room.gameState.isNewRound) {
-        this.io.to(this.findSocketIdByUserId(userId)).emit('play_cards_failed', {
+        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
           error: '新一轮必须出牌'
         });
         return;
@@ -408,5 +408,19 @@ export class CardPlayHandler {
       }
     }
     return '';
+  }
+
+  private emitToPlayer(userId: string, requestSocketId: string | undefined, event: string, payload: any): void {
+    if (requestSocketId) {
+      this.io.to(requestSocketId).emit(event, payload);
+      return;
+    }
+
+    const targetSocketId = this.findSocketIdByUserId(userId);
+    if (targetSocketId) {
+      this.io.to(targetSocketId).emit(event, payload);
+    } else {
+      console.warn(`⚠️ 未找到玩家 ${userId} 的 Socket，事件 ${event} 未能发送`);
+    }
   }
 }

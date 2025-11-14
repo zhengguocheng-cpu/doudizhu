@@ -89,6 +89,9 @@ export class GameFlowHandler {
         players: room.players.map((player: any, index: number) => ({
           playerId: player.id,
           playerName: player.name,
+          playerAvatar: player.avatar,
+          playerReady: player.ready,
+          position: player.position,
           cards: dealResult.playerCards[index],
           cardCount: dealResult.playerCards[index].length
         })),
@@ -302,7 +305,8 @@ export class GameFlowHandler {
         this.io.to(`room_${roomId}`).emit('turn_to_play', {
           playerId: landlordId,
           playerName: landlord.name,
-          isFirst: true
+          isFirst: true,
+          lastPattern: null
         });
       }, 2000);
 

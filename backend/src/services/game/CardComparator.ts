@@ -17,10 +17,10 @@ export class CardComparator {
     }
 
     // 王炸最大
-    if (pattern1.type === CardType.ROCKET) {
-      return pattern2.type === CardType.ROCKET ? 0 : 1;
+    if (pattern1.type === CardType.ROCKET) {//第一个牌型是王炸
+      return pattern2.type === CardType.ROCKET ? 0 : 1;//第二个牌型是王炸，就返回0
     }
-    if (pattern2.type === CardType.ROCKET) {
+    if (pattern2.type === CardType.ROCKET) {//第二个牌型是王炸
       return -1;
     }
 

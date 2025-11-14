@@ -33,6 +33,68 @@ router.get('/rooms', (req, res) => {
   }
 });
 
+// 查找可重连房间
+router.get('/reconnect-target', (req, res): void => {
+  try {
+    const userId = (req.query.userId as string) || '';
+
+    if (!userId) {
+      const response: ApiResponse = {
+        success: false,
+        error: '缺少 userId 参数',
+      };
+      res.status(400).json(response);
+      return;
+    }
+
+    const allRooms = roomService.getAllRooms();
+    console.log('🔍 [重连检测] 当前房间数量:', allRooms.length);
+
+    let targetRoomId: string | null = null;
+
+    for (const room of allRooms) {
+      const gameState = roomService.getGameState(room.id);
+      if (!gameState) {
+        // 没有保存的游戏状态，说明这一局已经结束或尚未开始
+        continue;
+      }
+
+      // 优先从持久化的 gameState.players 中判断该用户是否在本局游戏中
+      const inGameState = Array.isArray(gameState.players) &&
+        gameState.players.some((p: any) => p.id === userId || p.name === userId);
+      if (!inGameState) {
+        continue;
+      }
+
+      if (room.status === 'finished') {
+        // 已结束的房间不允许重连
+        continue;
+      }
+
+      console.log('✅ [重连检测] 找到可重连房间:', {
+        roomId: room.id,
+        roomName: room.name,
+        status: room.status,
+      });
+      targetRoomId = room.id;
+      break;
+    }
+
+    const response: ApiResponse<{ roomId: string | null }> = {
+      success: true,
+      data: { roomId: targetRoomId },
+    };
+    res.json(response);
+  } catch (error) {
+    console.error('❌ [重连检测] 获取重连房间失败:', error);
+    const response: ApiResponse = {
+      success: false,
+      error: '获取重连房间失败',
+    };
+    res.status(500).json(response);
+  }
+});
+
 // 创建游戏房间
 router.post('/rooms', (req, res): void => {
   try {

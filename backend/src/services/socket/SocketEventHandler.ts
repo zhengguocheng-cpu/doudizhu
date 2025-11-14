@@ -153,6 +153,14 @@ export class SocketEventHandler {
         return;
       }
 
+      // 更新房间内该玩家的 socketId，保证断线重连后使用最新连接
+      const joinedPlayer = room.players?.find((p: any) => p.id === userId || p.name === userId);
+      if (joinedPlayer) {
+        joinedPlayer.socketId = socket.id;
+        joinedPlayer.isOnline = true;
+        console.log(`🔗 [房间玩家更新] 玩家 ${userId} 在房间 ${roomId} 的 socketId 已更新为 ${socket.id}`);
+      }
+
       // 加入Socket房间（异步操作）
       await socket.join(`room_${roomId}`);
       console.log(`✅ Socket ${socket.id} 已加入房间 room_${roomId}`);

@@ -99,6 +99,13 @@ export class CardPlayHandler {
       room.gameState.lastPlayedCards = validation.pattern;
       room.gameState.lastPlayerId = userId;
       room.gameState.lastPattern = validation.pattern;  // 🔧 修复：同时更新lastPattern
+      // 记录最近一手出牌（用于断线重连恢复桌面牌）
+      room.gameState.lastPlay = {
+        playerId: userId,
+        playerName: player.name,
+        cards,
+        type: validation.pattern?.type || undefined,
+      };
 
       // 记录出牌历史（用于计分）
       if (!room.gameState.playHistory) {
@@ -142,6 +149,7 @@ export class CardPlayHandler {
         lastPlayerId: userId,
         lastPlayedCards: validation.pattern,
         lastPattern: validation.pattern,
+        lastPlay: room.gameState.lastPlay,
         isNewRound: false,
         passCount: 0,
         players: room.players.map((p: any) => ({
@@ -213,13 +221,29 @@ export class CardPlayHandler {
 
       console.log(`✅ 玩家 ${userId} 不出，连续不出: ${room.gameState.passCount}`);
 
-      // 保存游戏状态（用于玩家重连）
+      // 广播不出消息
+      this.io.to(`room_${roomId}`).emit('player_passed', {
+        playerId: userId,
+        playerName: player.name
+      });
+
+      // 如果连续2个玩家不出，开始新一轮；否则切换到下一个玩家
+      if (room.gameState.passCount >= 2) {
+        console.log(`🔄 连续2人不出，开始新一轮，由 ${room.gameState.lastPlayerId} 先出`);
+        this.startNewRound(roomId, room.gameState.lastPlayerId);
+      } else {
+        // 切换到下一个玩家
+        this.nextPlayer(roomId);
+      }
+
+      // 在更新完当前回合玩家和轮次后，再保存游戏状态（用于玩家重连）
       roomService.saveGameState(roomId, {
         phase: room.gameState.phase || 'playing',
         currentPlayerId: room.gameState.currentPlayerId,
         lastPlayerId: room.gameState.lastPlayerId,
         lastPlayedCards: room.gameState.lastPlayedCards,
         lastPattern: room.gameState.lastPattern,
+        lastPlay: room.gameState.lastPlay,
         isNewRound: room.gameState.isNewRound,
         passCount: room.gameState.passCount,
         players: room.players.map((p: any) => ({
@@ -232,21 +256,6 @@ export class CardPlayHandler {
         landlordId: room.gameState.landlordId,
         bottomCards: room.gameState.bottomCards
       });
-
-      // 广播不出消息
-      this.io.to(`room_${roomId}`).emit('player_passed', {
-        playerId: userId,
-        playerName: player.name
-      });
-
-      // 如果连续2个玩家不出，开始新一轮
-      if (room.gameState.passCount >= 2) {
-        console.log(`🔄 连续2人不出，开始新一轮，由 ${room.gameState.lastPlayerId} 先出`);
-        this.startNewRound(roomId, room.gameState.lastPlayerId);
-      } else {
-        // 切换到下一个玩家
-        this.nextPlayer(roomId);
-      }
 
     } catch (error) {
       console.error('不出处理错误:', error);
@@ -342,6 +351,15 @@ export class CardPlayHandler {
     // 重置房间状态为waiting，允许再来一局
     room.status = 'waiting';
     room.gameState = null;
+
+    // 同步清除持久化的游戏状态，避免下一次进入房间被误判为断线重连
+    // 否则 join_game 时会读取旧的 gameState，触发 game_state_restored，导致上一局手牌被恢复
+    try {
+      roomService.clearGameState(roomId);
+      console.log(`🗑️ 清除房间 ${roomId} 的持久化游戏状态（游戏结束）`);
+    } catch (error) {
+      console.warn(`⚠️ 清除房间 ${roomId} 游戏状态失败，不影响当前房间重置:`, error);
+    }
     
     // 重置所有玩家的准备状态
     room.players.forEach((p: any) => {

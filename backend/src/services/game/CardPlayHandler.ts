@@ -38,9 +38,16 @@ export class CardPlayHandler {
       // 检查是否轮到该玩家
       if (room.gameState.currentPlayerId !== userId) {
         console.error(`❌ 不是玩家 ${userId} 的回合`);
-        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
-          error: '还没轮到你出牌'
-        });
+        // 修复：使用 Socket ID 直接发送，确保消息能到达
+        if (requestSocketId) {
+          this.io.to(requestSocketId).emit('play_cards_failed', {
+            error: '还没轮到你出牌'
+          });
+        } else {
+          this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
+            error: '还没轮到你出牌'
+          });
+        }
         return;
       }
 
@@ -61,9 +68,16 @@ export class CardPlayHandler {
 
       if (!validation.valid) {
         console.error(`❌ 出牌验证失败: ${validation.error}`);
-        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
-          error: validation.error
-        });
+        // 修复：使用 Socket ID 直接发送，确保消息能到达
+        if (requestSocketId) {
+          this.io.to(requestSocketId).emit('play_cards_failed', {
+            error: validation.error
+          });
+        } else {
+          this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
+            error: validation.error
+          });
+        }
         return;
       }
 
@@ -169,9 +183,16 @@ export class CardPlayHandler {
 
       // 不能在新一轮的首次出牌时选择不出
       if (room.gameState.isNewRound) {
-        this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
-          error: '新一轮必须出牌'
-        });
+        // 修复：使用 Socket ID 直接发送，确保消息能到达
+        if (requestSocketId) {
+          this.io.to(requestSocketId).emit('play_cards_failed', {
+            error: '新一轮必须出牌'
+          });
+        } else {
+          this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
+            error: '新一轮必须出牌'
+          });
+        }
         return;
       }
 

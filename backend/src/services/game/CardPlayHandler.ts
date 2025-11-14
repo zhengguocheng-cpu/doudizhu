@@ -68,12 +68,17 @@ export class CardPlayHandler {
 
       if (!validation.valid) {
         console.error(`❌ 出牌验证失败: ${validation.error}`);
+        console.log(`🔍 [调试] requestSocketId: ${requestSocketId}, userId: ${userId}`);
+        
         // 修复：使用 Socket ID 直接发送，确保消息能到达
         if (requestSocketId) {
+          console.log(`📤 [调试] 向 Socket ${requestSocketId} 发送 play_cards_failed 事件`);
           this.io.to(requestSocketId).emit('play_cards_failed', {
             error: validation.error
           });
+          console.log(`✅ [调试] play_cards_failed 事件已发送`);
         } else {
+          console.log(`📤 [调试] 通过 emitToPlayer 发送 play_cards_failed 事件`);
           this.emitToPlayer(userId, requestSocketId, 'play_cards_failed', {
             error: validation.error
           });

@@ -32,16 +32,16 @@ export class GameService {
     return this.gameEngine.handleGrabLandlord(roomId, playerId, isGrab);
   }
 
-  /**
-   * 处理出牌
-   */
-  public handlePlayCards(
-    roomId: string,
-    playerId: string,
-    cards: string[]
-  ): { success: boolean; error?: string; nextPlayer?: Player } {
-    return this.gameEngine.handlePlayCards(roomId, playerId, cards);
-  }
+  // /**
+  //  * 处理出牌
+  //  */
+  // public handlePlayCards(
+  //   roomId: string,
+  //   playerId: string,
+  //   cards: string[]
+  // ): { success: boolean; error?: string; nextPlayer?: Player } {
+  //   return this.gameEngine.handlePlayCards(roomId, playerId, cards);
+  // }
 
   /**
    * 处理跳过回合
@@ -74,40 +74,40 @@ export class GameService {
     return this.gameEngine.getGameState(roomId);
   }
 
-  /**
-   * 处理游戏事件
-   */
-  public handleGameEvent(
-    roomId: string,
-    event: string,
-    playerId: string,
-    data: any = {}
-  ): { success: boolean; error?: string; result?: any } {
-    return this.gameEngine.handleGameEvent(roomId, event, playerId, data);
-  }
+  // /**
+  //  * 处理游戏事件
+  //  */
+  // public handleGameEvent(
+  //   roomId: string,
+  //   event: string,
+  //   playerId: string,
+  //   data: any = {}
+  // ): { success: boolean; error?: string; result?: any } {
+  //   return this.gameEngine.handleGameEvent(roomId, event, playerId, data);
+  // }
 
-  /**
-   * 验证游戏规则
-   */
-  public validateGameOperation(
-    room: GameRoom,
-    operation: string,
-    playerId?: string,
-    data?: any
-  ): { valid: boolean; error?: string } {
-    switch (operation) {
-      case 'start':
-        return GameRules.validateGameStartConditions(room);
-      case 'grab_landlord':
-        return playerId ? GameRules.validateGrabLandlord(room, playerId, data?.isGrab || false) : { valid: false, error: '缺少玩家ID' };
-      case 'play_cards':
-        return playerId && data?.cards ? GameRules.validatePlayCards(room, playerId, data.cards) : { valid: false, error: '缺少参数' };
-      case 'pass_turn':
-        return playerId ? GameRules.validatePassTurn(room, playerId) : { valid: false, error: '缺少玩家ID' };
-      default:
-        return { valid: false, error: '未知操作' };
-    }
-  }
+  // /**
+  //  * 验证游戏规则
+  //  */
+  // public validateGameOperation(
+  //   room: GameRoom,
+  //   operation: string,
+  //   playerId?: string,
+  //   data?: any
+  // ): { valid: boolean; error?: string } {
+  //   switch (operation) {
+  //     case 'start':
+  //       return GameRules.validateGameStartConditions(room);
+  //     case 'grab_landlord':
+  //       return playerId ? GameRules.validateGrabLandlord(room, playerId, data?.isGrab || false) : { valid: false, error: '缺少玩家ID' };
+  //     case 'play_cards':
+  //       return playerId && data?.cards ? GameRules.validatePlayCards(room, playerId, data.cards) : { valid: false, error: '缺少参数' };
+  //     case 'pass_turn':
+  //       return playerId ? GameRules.validatePassTurn(room, playerId) : { valid: false, error: '缺少玩家ID' };
+  //     default:
+  //       return { valid: false, error: '未知操作' };
+  //   }
+  // }
 
   /**
    * 检查游戏是否结束

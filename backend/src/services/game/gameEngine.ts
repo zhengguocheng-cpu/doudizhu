@@ -308,44 +308,44 @@ export class GameEngine {
     }
   }
 
-  /**
-   * 处理游戏事件
-   */
-  public handleGameEvent(
-    roomId: string,
-    event: string,
-    playerId: string,
-    data: any = {}
-  ): { success: boolean; error?: string; result?: any } {
-    try {
-      switch (event) {
-        case 'start_game':
-          return {
-            success: this.startGame(roomId).success,
-            error: this.startGame(roomId).error
-          };
+  // /**
+  //  * 处理游戏事件
+  //  */
+  // public handleGameEvent(
+  //   roomId: string,
+  //   event: string,
+  //   playerId: string,
+  //   data: any = {}
+  // ): { success: boolean; error?: string; result?: any } {
+  //   try {
+  //     switch (event) {
+  //       case 'start_game':
+  //         return {
+  //           success: this.startGame(roomId).success,
+  //           error: this.startGame(roomId).error
+  //         };
 
-        case 'grab_landlord':
-          return this.handleGrabLandlord(roomId, playerId, data.isGrab || false);
+  //       case 'grab_landlord':
+  //         return this.handleGrabLandlord(roomId, playerId, data.isGrab || false);
 
-        case 'play_cards':
-          return this.handlePlayCards(roomId, playerId, data.cards || []);
+  //       case 'play_cards':
+  //         return this.handlePlayCards(roomId, playerId, data.cards || []);
 
-        case 'pass_turn':
-          return this.handlePassTurn(roomId, playerId);
+  //       case 'pass_turn':
+  //         return this.handlePassTurn(roomId, playerId);
 
-        case 'end_game':
-          return this.endGame(roomId, data.winner, data.reason);
+  //       case 'end_game':
+  //         return this.endGame(roomId, data.winner, data.reason);
 
-        case 'restart_game':
-          return this.restartGame(roomId);
+  //       case 'restart_game':
+  //         return this.restartGame(roomId);
 
-        default:
-          return { success: false, error: '未知的游戏事件' };
-      }
-    } catch (error) {
-      console.error('处理游戏事件失败:', error);
-      return { success: false, error: '处理游戏事件失败' };
-    }
-  }
+  //       default:
+  //         return { success: false, error: '未知的游戏事件' };
+  //     }
+  //   } catch (error) {
+  //     console.error('处理游戏事件失败:', error);
+  //     return { success: false, error: '处理游戏事件失败' };
+  //   }
+  // }
 }

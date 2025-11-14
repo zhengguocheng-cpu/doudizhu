@@ -58,46 +58,46 @@ export class GameFacade {
     return result;
   }
 
-  /**
-   * 执行游戏操作（通用接口）
-   */
-  public executeGameAction(
-    roomId: string,
-    action: string,
-    playerId: string,
-    data: any = {}
-  ): { success: boolean; error?: string; result?: any } {
-    try {
-      switch (action) {
-        case 'join':
-          return this.quickJoinGame(roomId, data.playerName);
+  // /**
+  //  * 执行游戏操作（通用接口）
+  //  */
+  // public executeGameAction(
+  //   roomId: string,
+  //   action: string,
+  //   playerId: string,
+  //   data: any = {}
+  // ): { success: boolean; error?: string; result?: any } {
+  //   try {
+  //     switch (action) {
+  //       case 'join':
+  //         return this.quickJoinGame(roomId, data.playerName);
 
-        case 'ready':
-          const readyResult = roomService.togglePlayerReady(roomId, playerId);
-          return { success: readyResult };
+  //       case 'ready':
+  //         const readyResult = roomService.togglePlayerReady(roomId, playerId);
+  //         return { success: readyResult };
 
-        case 'start':
-          return this.quickStartGame(roomId);
+  //       case 'start':
+  //         return this.quickStartGame(roomId);
 
-        case 'grab_landlord':
-          return getGameService().handleGrabLandlord(roomId, playerId, data.isGrab || false);
+  //       case 'grab_landlord':
+  //         return getGameService().handleGrabLandlord(roomId, playerId, data.isGrab || false);
 
-        case 'play_cards':
-          return getGameService().handlePlayCards(roomId, playerId, data.cards || []);
+  //       case 'play_cards':
+  //         return getGameService().handlePlayCards(roomId, playerId, data.cards || []);
 
-        case 'pass_turn':
-          return getGameService().handlePassTurn(roomId, playerId);
+  //       case 'pass_turn':
+  //         return getGameService().handlePassTurn(roomId, playerId);
 
-        case 'restart':
-          return getGameService().restartGame(roomId);
+  //       case 'restart':
+  //         return getGameService().restartGame(roomId);
 
-        default:
-          return { success: false, error: `未知操作: ${action}` };
-      }
-    } catch (error) {
-      return { success: false, error: (error as Error).message };
-    }
-  }
+  //       default:
+  //         return { success: false, error: `未知操作: ${action}` };
+  //     }
+  //   } catch (error) {
+  //     return { success: false, error: (error as Error).message };
+  //   }
+  // }
 
   /**
    * 获取完整的游戏快照

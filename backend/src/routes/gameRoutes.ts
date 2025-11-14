@@ -164,49 +164,49 @@ router.post('/rooms/:roomId/ready', (req, res): void => {
   }
 });
 
-// 出牌验证
-router.post('/rooms/:roomId/validate-play', (req, res): void => {
-  try {
-    const { roomId } = req.params;
-    const { playerId, cards } = req.body;
+// // 出牌验证
+// router.post('/rooms/:roomId/validate-play', (req, res): void => {
+//   try {
+//     const { roomId } = req.params;
+//     const { playerId, cards } = req.body;
 
-    if (!playerId || !cards) {
-      const response: ApiResponse = {
-        success: false,
-        error: '玩家ID和出牌信息不能为空'
-      };
-      res.status(400).json(response);
-      return;
-    }
+//     if (!playerId || !cards) {
+//       const response: ApiResponse = {
+//         success: false,
+//         error: '玩家ID和出牌信息不能为空'
+//       };
+//       res.status(400).json(response);
+//       return;
+//     }
 
-    const room = roomService.getRoom(roomId);
-    if (!room) {
-      const response: ApiResponse = {
-        success: false,
-        error: '房间不存在'
-      };
-      res.status(404).json(response);
-      return;
-    }
+//     const room = roomService.getRoom(roomId);
+//     if (!room) {
+//       const response: ApiResponse = {
+//         success: false,
+//         error: '房间不存在'
+//       };
+//       res.status(404).json(response);
+//       return;
+//     }
 
-    // 使用getGameService()验证出牌
-    const validation = getGameService().validateGameOperation(room, 'play_cards', playerId, { cards });
-    const isValid = validation.valid;
+//     // 使用getGameService()验证出牌
+//     const validation = getGameService().validateGameOperation(room, 'play_cards', playerId, { cards });
+//     const isValid = validation.valid;
 
-    const response: ApiResponse = {
-      success: isValid,
-      message: isValid ? '出牌有效' : '出牌无效',
-      error: isValid ? undefined : validation.error
-    };
-    res.json(response);
-  } catch (error) {
-    const response: ApiResponse = {
-      success: false,
-      error: '出牌验证失败'
-    };
-    res.status(500).json(response);
-  }
-});
+//     const response: ApiResponse = {
+//       success: isValid,
+//       message: isValid ? '出牌有效' : '出牌无效',
+//       error: isValid ? undefined : validation.error
+//     };
+//     res.json(response);
+//   } catch (error) {
+//     const response: ApiResponse = {
+//       success: false,
+//       error: '出牌验证失败'
+//     };
+//     res.status(500).json(response);
+//   }
+// });
 
 // 获取玩家状态
 router.get('/rooms/:roomId/players/:playerId/status', (req, res): void => {
@@ -409,60 +409,60 @@ router.post('/rooms/:roomId/grab-landlord', (req, res): void => {
   }
 });
 
-// 出牌
-router.post('/rooms/:roomId/play-cards', (req, res): void => {
-  try {
-    const { roomId } = req.params;
-    const { playerId, cards } = req.body;
+// // 出牌
+// router.post('/rooms/:roomId/play-cards', (req, res): void => {
+//   try {
+//     const { roomId } = req.params;
+//     const { playerId, cards } = req.body;
 
-    if (!playerId || !cards) {
-      const response: ApiResponse = {
-        success: false,
-        error: '玩家ID和出牌信息不能为空'
-      };
-      res.status(400).json(response);
-      return;
-    }
+//     if (!playerId || !cards) {
+//       const response: ApiResponse = {
+//         success: false,
+//         error: '玩家ID和出牌信息不能为空'
+//       };
+//       res.status(400).json(response);
+//       return;
+//     }
 
-    const result = getGameService().handlePlayCards(roomId, playerId, cards);
+//     const result = getGameService().handlePlayCards(roomId, playerId, cards);
 
-    const response: ApiResponse = {
-      success: result.success,
-      message: result.success ? '出牌成功' : '出牌失败',
-      error: result.error,
-      data: result.nextPlayer ? { nextPlayer: result.nextPlayer } : undefined
-    };
+//     const response: ApiResponse = {
+//       success: result.success,
+//       message: result.success ? '出牌成功' : '出牌失败',
+//       error: result.error,
+//       data: result.nextPlayer ? { nextPlayer: result.nextPlayer } : undefined
+//     };
 
-    if (result.success) {
-      // 检查游戏是否结束
-      const room = roomService.getRoom(roomId);
-      if (room && room.status === 'finished') {
-        // 广播游戏结束事件
-        socketEventHandler.broadcastRoomsUpdate('game_ended', roomId, {
-          playerId: playerId,
-          cards: cards,
-          gameFinished: true
-        });
-      } else {
-        // 广播出牌结果给所有客户端
-        socketEventHandler.broadcastRoomsUpdate('play_cards', roomId, {
-          playerId: playerId,
-          cards: cards
-        });
-      }
+//     if (result.success) {
+//       // 检查游戏是否结束
+//       const room = roomService.getRoom(roomId);
+//       if (room && room.status === 'finished') {
+//         // 广播游戏结束事件
+//         socketEventHandler.broadcastRoomsUpdate('game_ended', roomId, {
+//           playerId: playerId,
+//           cards: cards,
+//           gameFinished: true
+//         });
+//       } else {
+//         // 广播出牌结果给所有客户端
+//         socketEventHandler.broadcastRoomsUpdate('play_cards', roomId, {
+//           playerId: playerId,
+//           cards: cards
+//         });
+//       }
 
-      res.status(200).json(response);
-    } else {
-      res.status(400).json(response);
-    }
-  } catch (error) {
-    const response: ApiResponse = {
-      success: false,
-      error: '出牌失败'
-    };
-    res.status(500).json(response);
-  }
-});
+//       res.status(200).json(response);
+//     } else {
+//       res.status(400).json(response);
+//     }
+//   } catch (error) {
+//     const response: ApiResponse = {
+//       success: false,
+//       error: '出牌失败'
+//     };
+//     res.status(500).json(response);
+//   }
+// });
 
 // 跳过回合
 router.post('/rooms/:roomId/pass-turn', (req, res): void => {
@@ -573,60 +573,60 @@ router.get('/rooms/:roomId/snapshot', (req, res): void => {
   }
 });
 
-// 通用游戏操作接口
-router.post('/rooms/:roomId/action', (req, res): void => {
-  try {
-    const { roomId } = req.params;
-    const { action, playerId, data } = req.body;
+// // 通用游戏操作接口
+// router.post('/rooms/:roomId/action', (req, res): void => {
+//   try {
+//     const { roomId } = req.params;
+//     const { action, playerId, data } = req.body;
 
-    if (!action || !playerId) {
-      const response: ApiResponse = {
-        success: false,
-        error: '操作类型和玩家ID不能为空'
-      };
-      res.status(400).json(response);
-      return;
-    }
+//     if (!action || !playerId) {
+//       const response: ApiResponse = {
+//         success: false,
+//         error: '操作类型和玩家ID不能为空'
+//       };
+//       res.status(400).json(response);
+//       return;
+//     }
 
-    const result = gameFacade.executeGameAction(roomId, action, playerId, data || {});
+//     const result = gameFacade.executeGameAction(roomId, action, playerId, data || {});
 
-    const response: ApiResponse = {
-      success: result.success,
-      message: result.success ? '操作执行成功' : '操作执行失败',
-      error: result.error,
-      data: result.result
-    };
+//     const response: ApiResponse = {
+//       success: result.success,
+//       message: result.success ? '操作执行成功' : '操作执行失败',
+//       error: result.error,
+//       data: result.result
+//     };
 
-    if (result.success) {
-      // 检查游戏是否结束
-      const room = roomService.getRoom(roomId);
-      if (room && room.status === 'finished') {
-        // 广播游戏结束事件
-        socketEventHandler.broadcastRoomsUpdate('game_ended', roomId, {
-          action: action,
-          playerId: playerId,
-          gameFinished: true
-        });
-      } else {
-        // 广播游戏操作结果给所有客户端
-        socketEventHandler.broadcastRoomsUpdate(`action_${action}`, roomId, {
-          action: action,
-          playerId: playerId,
-          data: data
-        });
-      }
+//     if (result.success) {
+//       // 检查游戏是否结束
+//       const room = roomService.getRoom(roomId);
+//       if (room && room.status === 'finished') {
+//         // 广播游戏结束事件
+//         socketEventHandler.broadcastRoomsUpdate('game_ended', roomId, {
+//           action: action,
+//           playerId: playerId,
+//           gameFinished: true
+//         });
+//       } else {
+//         // 广播游戏操作结果给所有客户端
+//         socketEventHandler.broadcastRoomsUpdate(`action_${action}`, roomId, {
+//           action: action,
+//           playerId: playerId,
+//           data: data
+//         });
+//       }
 
-      res.status(200).json(response);
-    } else {
-      res.status(400).json(response);
-    }
-  } catch (error) {
-    const response: ApiResponse = {
-      success: false,
-      error: '执行操作失败'
-    };
-    res.status(500).json(response);
-  }
-});
+//       res.status(200).json(response);
+//     } else {
+//       res.status(400).json(response);
+//     }
+//   } catch (error) {
+//     const response: ApiResponse = {
+//       success: false,
+//       error: '执行操作失败'
+//     };
+//     res.status(500).json(response);
+//   }
+// });
 
 export default router;

@@ -56,3 +56,4 @@ coverage/
 # Compiled files
 *.js.map
 *.css.map
+backend/dist

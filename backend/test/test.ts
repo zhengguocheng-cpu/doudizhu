@@ -1,14 +1,24 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { Player, GamePlayer, Room, GameState } from '../src/types';
+import { Player, GamePlayer, GameState } from '../src/types';
+
+// 为测试脚本定义本地房间类型，避免与业务代码中的 Room 类型产生冲突
+interface TestRoom {
+  id: string;
+  name: string;
+  maxPlayers: number;
+  players: any[];
+  status: string;
+  createdAt: Date;
+}
 
 const app = express();
 const server = createServer(app);
 const io = new SocketIOServer(server);
 
 // 房间数据存储
-const rooms = new Map<string, Room>();
+const rooms = new Map<string, TestRoom>();
 
 // 游戏房间状态存储
 const gameRooms = new Map<string, GameState>();

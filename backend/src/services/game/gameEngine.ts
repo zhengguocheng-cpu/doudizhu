@@ -102,63 +102,63 @@ export class GameEngine {
     }
   }
 
-  /**
-   * 处理出牌操作
-   */
-  public handlePlayCards(
-    roomId: string,
-    playerId: string,
-    cards: string[]
-  ): { success: boolean; error?: string; nextPlayer?: Player } {
-    const room = roomService.getRoom(roomId);
-    if (!room) {
-      return { success: false, error: '房间不存在' };
-    }
+  // /**
+  //  * 处理出牌操作
+  //  */
+  // public handlePlayCards(
+  //   roomId: string,
+  //   playerId: string,
+  //   cards: string[]
+  // ): { success: boolean; error?: string; nextPlayer?: Player } {
+  //   const room = roomService.getRoom(roomId);
+  //   if (!room) {
+  //     return { success: false, error: '房间不存在' };
+  //   }
 
-    // 验证出牌操作
-    const validation = GameRules.validatePlayCards(room, playerId, cards);
-    if (!validation.valid) {
-      return { success: false, error: validation.error };
-    }
+  //   // 验证出牌操作
+  //   const validation = GameRules.validatePlayCards(room, playerId, cards);
+  //   if (!validation.valid) {
+  //     return { success: false, error: validation.error };
+  //   }
 
-    try {
-      const player = this.playerService.getPlayer(room, playerId);
-      if (!player) {
-        return { success: false, error: '玩家不存在' };
-      }
+  //   try {
+  //     const player = this.playerService.getPlayer(room, playerId);
+  //     if (!player) {
+  //       return { success: false, error: '玩家不存在' };
+  //     }
 
-      // 从玩家手牌中移除出的牌
-      const remainingCards = (player.cards || []).filter((card: string) => !cards.includes(card));
-      this.playerService.updatePlayerCards(player, remainingCards);
+  //     // 从玩家手牌中移除出的牌
+  //     const remainingCards = (player.cards || []).filter((card: string) => !cards.includes(card));
+  //     this.playerService.updatePlayerCards(player, remainingCards);
 
-      // 记录出牌
-      room.cards.played.push([...cards]);
+  //     // 记录出牌
+  //     room.cards.played.push([...cards]);
 
-      // 检查游戏是否结束
-      const gameFinishedCheck = GameStateManager.isGameFinished(room);
-      if (gameFinishedCheck.finished) {
-        this.endGame(roomId, gameFinishedCheck.winner, gameFinishedCheck.reason);
-        return {
-          success: true,
-          nextPlayer: gameFinishedCheck.winner
-        };
-      }
+  //     // 检查游戏是否结束
+  //     const gameFinishedCheck = GameStateManager.isGameFinished(room);
+  //     if (gameFinishedCheck.finished) {
+  //       this.endGame(roomId, gameFinishedCheck.winner, gameFinishedCheck.reason);
+  //       return {
+  //         success: true,
+  //         nextPlayer: gameFinishedCheck.winner
+  //       };
+  //     }
 
-      // 切换到下一个玩家
-      GameStateManager.switchToNextPlayer(room);
+  //     // 切换到下一个玩家
+  //     GameStateManager.switchToNextPlayer(room);
 
-      const nextPlayer = GameStateManager.getCurrentPlayer(room);
-      console.log(`🎯 玩家 ${player.name} 出牌成功，下一位玩家: ${nextPlayer?.name || '未知'}`);
+  //     const nextPlayer = GameStateManager.getCurrentPlayer(room);
+  //     console.log(`🎯 玩家 ${player.name} 出牌成功，下一位玩家: ${nextPlayer?.name || '未知'}`);
 
-      return {
-        success: true,
-        nextPlayer
-      };
-    } catch (error) {
-      console.error('出牌处理失败:', error);
-      return { success: false, error: '出牌处理失败' };
-    }
-  }
+  //     return {
+  //       success: true,
+  //       nextPlayer
+  //     };
+  //   } catch (error) {
+  //     console.error('出牌处理失败:', error);
+  //     return { success: false, error: '出牌处理失败' };
+  //   }
+  // }
 
   /**
    * 处理跳过操作

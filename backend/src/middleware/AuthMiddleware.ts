@@ -86,8 +86,11 @@ export class AuthMiddleware extends BaseService {
 
       let result: AuthResult;
 
-      if (auth.userId) {
-        // 通过用户ID认证，传递页面跳转令牌
+      if (auth.userName) {
+        // 优先使用 userName 进行认证
+        result = await this.authenticateByUserId(auth.userName, socket.id, auth.htmlName);
+      } else if (auth.userId) {
+        // 兼容旧版本，使用 userId
         result = await this.authenticateByUserId(auth.userId, socket.id, auth.htmlName);
       } else {
         this.log(LogLevel.WARN, 'No valid auth data in connection', { socketId: socket.id });

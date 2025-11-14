@@ -99,6 +99,23 @@ export class CardPlayHandler {
       console.log(`✅ 玩家 ${userId} 出牌成功:`, cards);
       console.log(`   牌型: ${validation.pattern?.type}, 剩余: ${player.cardCount}张`);
 
+      // 广播出牌结果
+      this.io.to(`room_${roomId}`).emit('cards_played', {
+        playerId: userId,
+        playerName: player.name,
+        cards: cards,
+        cardType: validation.pattern,  // 前端期望cardType字段
+        remainingCards: player.cardCount
+      });
+
+      // 检查游戏是否结束
+      if (this.checkGameOver(roomId, userId)) {
+        return;
+      }
+
+      // 切换到下一个玩家
+      this.nextPlayer(roomId);
+
       // 保存游戏状态（用于玩家重连）
       roomService.saveGameState(roomId, {
         phase: room.gameState.phase || 'playing',
@@ -118,23 +135,6 @@ export class CardPlayHandler {
         landlordId: room.gameState.landlordId,
         bottomCards: room.gameState.bottomCards
       });
-
-      // 广播出牌结果
-      this.io.to(`room_${roomId}`).emit('cards_played', {
-        playerId: userId,
-        playerName: player.name,
-        cards: cards,
-        cardType: validation.pattern,  // 前端期望cardType字段
-        remainingCards: player.cardCount
-      });
-
-      // 检查游戏是否结束
-      if (this.checkGameOver(roomId, userId)) {
-        return;
-      }
-
-      // 切换到下一个玩家
-      this.nextPlayer(roomId);
 
     } catch (error) {
       console.error('出牌处理错误:', error);

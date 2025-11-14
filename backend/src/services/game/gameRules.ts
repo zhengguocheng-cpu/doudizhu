@@ -72,64 +72,64 @@ export class GameRules {
     return { valid: true };
   }
 
-  /**
-   * 验证出牌操作
-   */
-  public static validatePlayCards(
-    room: GameRoom,
-    playerId: string,
-    cards: string[]
-  ): { valid: boolean; error?: string; cardType?: string } {
-    // 检查房间状态
-    if (room.status !== 'playing') {
-      return { valid: false, error: '游戏状态不正确' };
-    }
+  // /**
+  //  * 验证出牌操作
+  //  */
+  // public static validatePlayCards(
+  //   room: GameRoom,
+  //   playerId: string,
+  //   cards: string[]
+  // ): { valid: boolean; error?: string; cardType?: string } {
+  //   // 检查房间状态
+  //   if (room.status !== 'playing') {
+  //     return { valid: false, error: '游戏状态不正确' };
+  //   }
 
-    // 检查是否有地主
-    if (!room.landlord) {
-      return { valid: false, error: '地主未确定' };
-    }
+  //   // 检查是否有地主
+  //   if (!room.landlord) {
+  //     return { valid: false, error: '地主未确定' };
+  //   }
 
-    // 检查是否轮到该玩家
-    if (!this.isPlayerTurn(room, playerId)) {
-      return { valid: false, error: '还没轮到你出牌' };
-    }
+  //   // 检查是否轮到该玩家
+  //   if (!this.isPlayerTurn(room, playerId)) {
+  //     return { valid: false, error: '还没轮到你出牌' };
+  //   }
 
-    // 检查玩家手牌
-    const player = room.players.find(p => p.id === playerId);
-    if (!player || !player.cards) {
-      return { valid: false, error: '玩家信息不完整' };
-    }
+  //   // 检查玩家手牌
+  //   const player = room.players.find(p => p.id === playerId);
+  //   if (!player || !player.cards) {
+  //     return { valid: false, error: '玩家信息不完整' };
+  //   }
 
-    // 验证玩家是否有这些牌
-    for (const card of cards) {
-      if (!player.cards.includes(card)) {
-        return { valid: false, error: '玩家没有这张牌' };
-      }
-    }
+  //   // 验证玩家是否有这些牌
+  //   for (const card of cards) {
+  //     if (!player.cards.includes(card)) {
+  //       return { valid: false, error: '玩家没有这张牌' };
+  //     }
+  //   }
 
-    // 验证牌型
-    const cardTypeValidation = this.validateCardCombination(cards);
-    if (!cardTypeValidation.valid) {
-      return { valid: false, error: cardTypeValidation.error };
-    }
+  //   // 验证牌型
+  //   const cardTypeValidation = this.validateCardCombination(cards);
+  //   if (!cardTypeValidation.valid) {
+  //     return { valid: false, error: cardTypeValidation.error };
+  //   }
 
-    // 如果不是第一轮出牌，需要比较牌型
-    if (room.cards.played.length > 0) {
-      const lastPlayedCards = room.cards.played[room.cards.played.length - 1];
-      if (lastPlayedCards.length > 0) {
-        const comparison = this.compareCardCombinations(cards, lastPlayedCards);
-        if (comparison === 'smaller') {
-          return { valid: false, error: '牌型比上家小' };
-        }
-      }
-    }
+  //   // 如果不是第一轮出牌，需要比较牌型
+  //   if (room.cards.played.length > 0) {
+  //     const lastPlayedCards = room.cards.played[room.cards.played.length - 1];
+  //     if (lastPlayedCards.length > 0) {
+  //       const comparison = this.compareCardCombinations(cards, lastPlayedCards);
+  //       if (comparison === 'smaller') {
+  //         return { valid: false, error: '牌型比上家小' };
+  //       }
+  //     }
+  //   }
 
-    return {
-      valid: true,
-      cardType: cardTypeValidation.cardType
-    };
-  }
+  //   return {
+  //     valid: true,
+  //     cardType: cardTypeValidation.cardType
+  //   };
+  // }
 
   /**
    * 验证跳过操作

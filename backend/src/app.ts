@@ -27,7 +27,7 @@ export class Application {
   private sessionManager!: PlayerSession;
   private stateRecovery!: StateRecoveryService;
   private authMiddleware!: AuthMiddleware;
-  private eventHandler: any;
+  private eventHandler = socketEventHandler;
   private container: DependencyContainer;
   private initialized: boolean = false;
 
@@ -129,6 +129,7 @@ export class Application {
   private setupSocketIO(): void {
     this.server = createServer(this.app);
     this.io = new SocketIOServer(this.server, {
+      path: '/api/socket.io',
       cors: {
         origin: config.legacy.cors.origin,
         methods: ["GET", "POST"]
@@ -234,6 +235,17 @@ export class Application {
       this.eventHandler.handlePlayerReady(socket, data);
     });
 
+    
+    // 添加开始游戏事件
+    socket.on('start_game', (data: any) => {
+      this.handleStartGame(socket, data);
+    });
+
+    // 添加抢地主事件
+    socket.on('bid', (data: any) => {
+      console.log('🎲 [Socket] 收到bid事件:', data);
+      this.eventHandler.handleBidLandlord(socket, data);
+    });
     socket.on('play_cards', (data: any) => {
       this.eventHandler.handlePlayCards(socket, data);
     });
@@ -256,26 +268,16 @@ export class Application {
       this.eventHandler.handleGetRoomState(socket, data);
     });
 
-    // 添加开始游戏事件
-    socket.on('start_game', (data: any) => {
-      this.handleStartGame(socket, data);
-    });
 
-    // 添加抢地主事件
-    socket.on('bid', (data: any) => {
-      console.log('🎲 [Socket] 收到bid事件:', data);
-      this.eventHandler.handleBidLandlord(socket, data);
-    });
+    // // 添加出牌事件
+    // socket.on('play_cards', (data: any) => {
+    //   this.eventHandler.handlePlayCards(socket, data);
+    // });
 
-    // 添加出牌事件
-    socket.on('play_cards', (data: any) => {
-      this.eventHandler.handlePlayCards(socket, data);
-    });
-
-    // 添加不出事件
-    socket.on('pass_turn', (data: any) => {
-      this.eventHandler.handlePassTurn(socket, data);
-    });
+    // // 添加不出事件
+    // socket.on('pass_turn', (data: any) => {
+    //   this.eventHandler.handlePassTurn(socket, data);
+    // });
   }
 
   /**

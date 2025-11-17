@@ -550,6 +550,49 @@ export class Application {
         console.error('清理任务执行失败:', error);
       }
     }, 5 * 60 * 1000); // 5分钟
+    
+    // 每2分钟清理一次长时间未准备的僵尸玩家
+    setInterval(() => {
+      try {
+        const rooms = roomService.getAllRooms();
+        const now = Date.now();
+        const MAX_WAIT_MS = 5 * 60 * 1000; // 5分钟未准备就踢出
+        let kickedCount = 0;
+        
+        rooms.forEach(room => {
+          if (room.status === 'waiting') {
+            // 找出进房超过5分钟仍未准备的玩家
+            const playersToKick = room.players.filter((p: any) => {
+              if (p.ready) return false; // 已准备的不踢
+              // 检查玩家进房时间（如果有）
+              const joinTime = (p as any).joinedAt ? new Date((p as any).joinedAt).getTime() : now;
+              return (now - joinTime) > MAX_WAIT_MS;
+            });
+            
+            playersToKick.forEach((p: any) => {
+              console.log(`🧹 [僵尸玩家] 踢出超时未准备玩家: ${p.name} (房间: ${room.id})`);
+              roomService.leaveRoom(room.id, p.id);
+              kickedCount++;
+              
+              // 通知房间内其他玩家
+              this.io.to(`room_${room.id}`).emit('player_left', {
+                playerId: p.id,
+                playerName: p.name,
+                roomId: room.id,
+                reason: 'timeout',
+                currentPlayers: room.players.length
+              });
+            });
+          }
+        });
+        
+        if (kickedCount > 0) {
+          console.log(`🧹 [僵尸玩家] 本次清理: ${kickedCount} 个超时未准备玩家`);
+        }
+      } catch (error) {
+        console.error('清理僵尸玩家任务失败:', error);
+      }
+    }, 2 * 60 * 1000); // 2分钟
 
     // 每小时输出系统状态
     setInterval(() => {

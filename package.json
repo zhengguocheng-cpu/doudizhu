@@ -21,7 +21,8 @@
     "demo:di": "node di-demo.js",
     "lint": "tsc --noEmit",
     "lint:fix": "tsc --noEmit --skipLibCheck",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:frontend": "node scripts/update-frontend-version.cjs && cd frontend-spa && npm run build && scp -r ./dist/* root@43.153.37.62:/var/www/doudizhu/frontend-spa/dist/"
   },
   "dependencies": {
     "cors": "^2.8.5",

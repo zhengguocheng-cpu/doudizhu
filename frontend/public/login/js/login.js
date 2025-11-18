@@ -67,9 +67,20 @@ class LoginController {
             this.showStatus('正在连接服务器...', 'success');
             this.setFormEnabled(false);
 
-            // 连接Socket并传递用户名进行认证
+            // 为旧版前端生成或复用一个稳定的 userId（8位数字）
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = String(Math.floor(10000000 + Math.random() * 90000000));
+            }
+
+            // 统一身份：userId 作为唯一标识，playerName 仅用于展示
+            localStorage.setItem('userId', userId);
+            localStorage.setItem('userName', playerName);
+            localStorage.setItem('playerAvatar', playerAvatar);
+
+            // 连接Socket并传递 userId + 昵称
             this.socketManager = window.GlobalSocketManager.getInstance();
-            this.socketManager.connect(playerName, playerName,'login');
+            this.socketManager.connect(playerName, userId,'login');
 
             console.log('✅ Socket连接已建立，准备跳转到大厅');
 

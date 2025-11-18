@@ -91,18 +91,28 @@ class DoudizhuRoomClient {
         };
 
         const playerName = normalize(rawPlayerName);
-        const playerAvatar = normalize(rawPlayerAvatar, '👑');
+        const playerAvatar = normalize(rawPlayerAvatar, '\uD83D\uDC51');
+        // 旧版前端：优先使用本地 userId 作为唯一标识，没有则回退到玩家昵称
+        let storedUserId = localStorage.getItem('userId');
+        if (!storedUserId) {
+            storedUserId = playerName;
+        }
+        const userId = storedUserId;
 
-        // 用户名就是唯一标识
         this.currentPlayer = playerName;
-        this.currentPlayerId = playerName;
+        this.currentPlayerId = userId;
         this.playerAvatar = playerAvatar;
         this.currentRoom = { id: roomId };
         this.alreadyJoined = alreadyJoined; // 保存是否已加入的状态
 
+        // 将当前身份写回本地，保证后续页面也能复用同一个 userId
+        localStorage.setItem('userId', this.currentPlayerId);
+        localStorage.setItem('userName', this.currentPlayer);
+        localStorage.setItem('playerAvatar', this.playerAvatar);
+
         // 设置全局状态
         this.socketManager.userName = this.currentPlayer;
-        this.socketManager.userId = this.currentPlayer;
+        this.socketManager.userId = this.currentPlayerId;
         this.socketManager.authenticated = true;
 
         // 更新页面显示当前玩家信息
@@ -150,9 +160,9 @@ class DoudizhuRoomClient {
      * 连接到服务器（多页面架构）
      */
     connectToServer() {
-        // 建立新的Socket连接
+        // 建立新的Socket连接（使用之前保存的userId/userName）
         this.socket = this.socketManager.connect(
-            this.currentPlayer, this.currentPlayerId, 'room');
+            null, null, 'room');
         
         if (!this.socket) {
             console.error('❌ 无法建立Socket连接');

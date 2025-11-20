@@ -216,8 +216,8 @@ export class Application {
             return;
           }
 
-          // 如果游戏还在进行中，标记玩家离线，保留其座位，供后续重连
-          if (room.status === 'bidding' || room.status === 'playing') {
+          // 如果游戏还在进行中（包括抢地主阶段），标记玩家离线，保留其座位，供后续重连
+          if (room.status === 'playing') {
             console.log(`   房间 ${room.id} 游戏进行中，仅标记玩家 ${userId} 为离线`);
             player.isOnline = false;
             room.updatedAt = new Date();

@@ -278,10 +278,33 @@ export class GameFlowHandler {
         lastPlayerId: null,
         lastPattern: null,  // 上家牌型
         passCount: 0,       // pass计数
-        isNewRound: true    // 地主第一次出牌，可以出任意牌型
+        isNewRound: true,   // 地主第一次出牌，可以出任意牌型
+        phase: 'playing',   // 进入出牌阶段
+        bottomCards: room.bottomCards,
       };
 
       console.log(`👑 确定地主: ${landlord.name}`);
+
+      // 在地主确定后保存当前游戏状态，供断线重连使用
+      this.saveGameState(roomId, {
+        phase: 'playing',
+        landlordId: landlordId,
+        currentPlayerId: landlordId,
+        lastPlayedCards: null,
+        lastPlayerId: null,
+        lastPattern: null,
+        isNewRound: true,
+        passCount: 0,
+        players: room.players.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          avatar: p.avatar,
+          cards: p.cards,
+          cardCount: Array.isArray(p.cards) ? p.cards.length : (p.cardCount ?? 0),
+          role: p.role,
+        })),
+        bottomCards: room.bottomCards,
+      });
 
       // 通知所有玩家地主确定（包含地主的新手牌）
       console.log(`📢 向房间 room_${roomId} 广播地主确定事件`);

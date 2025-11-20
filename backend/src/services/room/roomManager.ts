@@ -133,6 +133,8 @@ export class RoomManager {
     const existingPlayer = room.players.find(p => p.id === playerName || p.userId === playerName);
     if (existingPlayer) {
       console.log(`✅ 玩家 ${playerName} 重新连接房间 ${roomId}（玩家已存在，无需重新加入）`);
+      // 标记玩家重新在线
+      existingPlayer.isOnline = true;
       // 如果提供了新头像，更新头像
       if (playerAvatar && existingPlayer.avatar !== playerAvatar) {
         existingPlayer.avatar = playerAvatar;
@@ -165,7 +167,8 @@ export class RoomManager {
       avatar: avatar, // 使用用户选择的头像或自动分配的头像
       ready: false,
       cards: [],
-      cardCount: 0
+      cardCount: 0,
+      isOnline: true,
     };
 
     // 添加玩家到房间
@@ -240,6 +243,24 @@ export class RoomManager {
     }
 
     return true;
+  }
+
+  /**
+   * 标记玩家离线（不断开房间座位，仅用于断线重连场景）
+   */
+  public markPlayerOffline(roomId: string, playerId: string): void {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      return;
+    }
+
+    const player = room.players.find(p => p.id === playerId || p.userId === playerId);
+    if (!player) {
+      return;
+    }
+
+    player.isOnline = false;
+    room.updatedAt = new Date();
   }
 
   /**

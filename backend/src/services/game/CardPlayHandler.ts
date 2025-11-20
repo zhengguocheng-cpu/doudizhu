@@ -447,7 +447,7 @@ export class CardPlayHandler {
     const sockets = Array.from(this.io.sockets.sockets.values());
     for (const socket of sockets) {
       const authData = (socket as any).handshake?.auth;
-      if (authData?.userId === userId || authData?.userName === userId) {
+      if (authData?.userId === userId) {
         return socket.id;
       }
     }

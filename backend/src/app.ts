@@ -194,25 +194,54 @@ export class Application {
       const { EventBus } = require('./core/EventBus');
       const eventBus = EventBus.getInstance();
       eventBus.subscribe('user:disconnected', (event: any) => {
-        const { userId } = event;
+        const userId = event?.userId || event?.data?.userId;
+
+        console.log('🛰 [EventBus] 收到 user:disconnected 事件:', {
+          rawUserId: event?.userId,
+          dataUserId: event?.data?.userId,
+        });
+
+        if (!userId) {
+          console.warn('⚠️ user:disconnected 事件中缺少 userId，跳过房间清理');
+          return;
+        }
+
         console.log(`🔄 [清理] 用户断开连接，清理房间状态: ${userId}`);
-        
-        // 遍历所有房间，移除该玩家
+
+        // 遍历所有房间，处理该玩家的断线
         const rooms = roomService.getAllRooms();
         rooms.forEach(room => {
-          const player = room.players.find(p => p.name === userId || p.id === userId);
-          if (player) {
-            console.log(`   从房间 ${room.id} 移除玩家 ${userId}`);
-            roomService.leaveRoom(room.id, userId);
-            
-            // 通知房间内其他玩家
-            this.io.to(`room_${room.id}`).emit('player_left', {
-              playerId: userId,
-              playerName: userId,
-              roomId: room.id,
-              currentPlayers: room.players.length
-            });
+          const player = room.players.find(p => p.id === userId || p.userId === userId);
+          if (!player) {
+            return;
           }
+
+          // 如果游戏还在进行中，标记玩家离线，保留其座位，供后续重连
+          if (room.status === 'bidding' || room.status === 'playing') {
+            console.log(`   房间 ${room.id} 游戏进行中，仅标记玩家 ${userId} 为离线`);
+            player.isOnline = false;
+            room.updatedAt = new Date();
+            return;
+          }
+
+          // 否则（未开始或已结束），执行原有离开逻辑
+          console.log(`   从房间 ${room.id} 移除玩家 ${userId}`);
+          roomService.leaveRoom(room.id, userId);
+          
+          // 通知房间内其他玩家
+          this.io.to(`room_${room.id}`).emit('player_left', {
+            playerId: userId,
+            playerName: userId,
+            roomId: room.id,
+            currentPlayers: room.players.length,
+            players: room.players || []
+          });
+
+          // 同步广播房间列表更新（供大厅房间列表使用）
+          // 这样旧版大厅页面监听的 rooms_updated 事件也能实时看到人数变化
+          this.broadcastRoomsUpdate('player_left', room.id, {
+            playerId: userId
+          });
         });
       });
       console.log('✅ 断开连接处理器已设置');

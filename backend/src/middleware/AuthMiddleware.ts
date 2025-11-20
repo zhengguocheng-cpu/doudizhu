@@ -86,30 +86,33 @@ export class AuthMiddleware extends BaseService {
 
       let result: AuthResult;
 
-      if (auth.userName) {
-        // 优先使用 userName 进行认证
-        result = await this.authenticateByUserId(auth.userName, socket.id, auth.htmlName);
-      } else if (auth.userId) {
-        // 兼容旧版本，使用 userId
-        result = await this.authenticateByUserId(auth.userId, socket.id, auth.htmlName);
-      } else {
+      // 统一入口：优先使用 userId 作为唯一身份标识，兼容旧版只传 userName 的情况
+      const identifier: string | undefined = auth.userId || auth.userName;
+
+      if (!identifier) {
         this.log(LogLevel.WARN, 'No valid auth data in connection', { socketId: socket.id });
         return;
       }
 
+      result = await this.authenticateByUserId(identifier, socket.id, auth.htmlName);
+
       if (result.success && result.user) {
+        // 从用户对象中解析真正的 userId 和展示名
+        const resolvedUserId: string = result.user.id || result.user.userId || identifier;
+        const resolvedUserName: string = result.user.name || auth.userName || resolvedUserId;
+
         // 绑定用户信息到Socket
-        socket.userId = result.user.name;
-        socket.userName = result.user.name;
+        socket.userId = resolvedUserId;
+        socket.userName = resolvedUserName;
         socket.sessionId = result.sessionId;
         socket.authenticated = true;
         socket.user = result.user;
 
-        // 更新用户状态
-        await this.userManager.updateUserConnection(result.user.name, socket.id);
+        // 更新用户状态（以 userId 为键）
+        await this.userManager.updateUserConnection(resolvedUserId, socket.id);
 
         this.log(LogLevel.INFO, '(3) - User authenticated from connection successfully', {
-          userId: result.user.name,
+          userId: resolvedUserId,
           socketId: socket.id
         });
 
@@ -224,7 +227,7 @@ export class AuthMiddleware extends BaseService {
       // EventBus是单例，直接获取实例
       const { EventBus } = require('../core/EventBus');
       const eventBus = EventBus.getInstance();
-      eventBus.publish('user:disconnected', {
+      eventBus.emit('user:disconnected', {
         userId,
         sessionId,
         timestamp: new Date()

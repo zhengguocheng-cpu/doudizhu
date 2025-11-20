@@ -125,9 +125,9 @@ class LobbyController {
      * 初始化Socket事件监听（多页面架构）
      */
     initializeSocket() {
-        // 建立新的Socket连接
-        const socket = this.socketManager.connect(this.currentPlayer,
-            this.currentPlayer, 'lobby');
+        // 建立新的Socket连接（身份从 localStorage 中恢复，userId 作为唯一标识）
+        const socket = this.socketManager.connect(null,
+            null, 'lobby');
         if (!socket) {
             console.error('❌ 无法建立Socket连接');
             return;

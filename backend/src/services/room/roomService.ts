@@ -37,6 +37,14 @@ export class RoomService {
   }
 
   /**
+   * 确保指定ID的房间存在（不存在则创建）
+   * 主要用于业务层快速创建固定编号房间（如 K01~K06）
+   */
+  public ensureRoom(roomId: string, name: string, maxPlayers?: number): GameRoom {
+    return this.roomManager.ensureRoom(roomId, name, maxPlayers);
+  }
+
+  /**
    * 玩家加入房间
    */
   public joinRoom(roomId: string, playerName: string, playerAvatar?: string): Player {

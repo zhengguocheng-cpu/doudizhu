@@ -61,7 +61,7 @@ router.get('/reconnect-target', (req, res): void => {
 
       // 优先从持久化的 gameState.players 中判断该用户是否在本局游戏中
       const inGameState = Array.isArray(gameState.players) &&
-        gameState.players.some((p: any) => p.id === userId || p.name === userId);
+        gameState.players.some((p: any) => p.id === userId);
       if (!inGameState) {
         continue;
       }

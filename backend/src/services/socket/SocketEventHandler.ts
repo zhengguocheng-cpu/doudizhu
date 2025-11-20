@@ -50,6 +50,9 @@ export class SocketEventHandler {
    */
   public async handleGetRoomsList(socket: AuthenticatedSocket, data: any): Promise<void> {
     try {
+      // 确保快速游戏区房间（K01~K06 等）已就绪
+      this.ensureQuickRooms();
+
       // 从roomService获取房间数据（统一数据源）
       const rooms = roomService.getAllRooms();
 
@@ -154,7 +157,7 @@ export class SocketEventHandler {
       }
 
       // 更新房间内该玩家的 socketId，保证断线重连后使用最新连接
-      const joinedPlayer = room.players?.find((p: any) => p.id === userId || p.name === userId);
+      const joinedPlayer = room.players?.find((p: any) => p.id === userId || p.userId === userId);
       if (joinedPlayer) {
         joinedPlayer.socketId = socket.id;
         joinedPlayer.isOnline = true;
@@ -484,6 +487,64 @@ export class SocketEventHandler {
 
     const nextIndex = (currentIndex + 1) % room.players.length;
     return room.players[nextIndex].id;
+  }
+
+  /**
+   * 确保快速游戏区房间存在，并在全部占用时按顺序创建新的 Kxx 房间
+   */
+  private ensureQuickRooms(): void {
+    const QUICK_PREFIX = 'K';
+    const BASE_QUICK_COUNT = 6;
+
+    // 1. 确保 K01~K06 存在
+    for (let i = 1; i <= BASE_QUICK_COUNT; i++) {
+      const roomId = `${QUICK_PREFIX}${String(i).padStart(2, '0')}`;
+      const existing = roomService.getRoom(roomId);
+      if (!existing) {
+        const name = `快速房间 ${roomId}`;
+        roomService.ensureRoom(roomId, name);
+        console.log(`✅ 初始化快速游戏区房间: ${roomId}`);
+      }
+    }
+
+    const allRooms = roomService.getAllRooms();
+    const quickRooms = allRooms.filter((room: any) =>
+      typeof room.id === 'string' && String(room.id).startsWith(QUICK_PREFIX)
+    );
+
+    if (quickRooms.length === 0) {
+      return;
+    }
+
+    const quickWaitingRooms = quickRooms.filter((room: any) => {
+      const status = (room as any).status as string | undefined;
+      const waiting = !status || status === 'waiting';
+      const players = Array.isArray(room.players) ? room.players.length : 0;
+      const maxPlayers = typeof room.maxPlayers === 'number' ? room.maxPlayers : 3;
+      return waiting && players < maxPlayers;
+    });
+
+    // 如果所有快速房间都已满或不在等待状态，则创建一个新的 Kxx 房间（K07 及以后）
+    if (quickWaitingRooms.length === 0) {
+      const indices = quickRooms
+        .map((room: any) => {
+          const id = String(room.id);
+          const numStr = id.slice(1);
+          const n = parseInt(numStr, 10);
+          return Number.isNaN(n) ? null : n;
+        })
+        .filter((n: number | null): n is number => n !== null);
+
+      const maxIndex = indices.length > 0 ? Math.max(...indices) : BASE_QUICK_COUNT;
+      const nextIndex = Math.max(maxIndex + 1, BASE_QUICK_COUNT + 1);
+      const nextRoomId = `${QUICK_PREFIX}${String(nextIndex).padStart(2, '0')}`;
+
+      if (!roomService.getRoom(nextRoomId)) {
+        const name = `快速房间 ${nextRoomId}`;
+        roomService.ensureRoom(nextRoomId, name);
+        console.log(`✅ 自动创建额外快速游戏区房间: ${nextRoomId}`);
+      }
+    }
   }
 
   /**

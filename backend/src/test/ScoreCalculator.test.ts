@@ -121,7 +121,7 @@ describe('ScoreCalculator - 计分系统测试', () => {
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
-      expect(score.baseScore).toBe(1);
+      expect(score.baseScore).toBe(5000);
       expect(score.bombCount).toBe(0);
       expect(score.rocketCount).toBe(0);
       expect(score.isSpring).toBe(false);
@@ -136,9 +136,9 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const landlord = score.playerScores.find(p => p.role === 'landlord');
       const farmers = score.playerScores.filter(p => p.role === 'farmer');
       
-      expect(landlord?.finalScore).toBe(2);  // 地主 +2
-      expect(farmers[0]?.finalScore).toBe(-1);  // 农民 -1
-      expect(farmers[1]?.finalScore).toBe(-1);  // 农民 -1
+      expect(landlord?.finalScore).toBe(10000);  // 地主 +2
+      expect(farmers[0]?.finalScore).toBe(-5000);  // 农民 -1
+      expect(farmers[1]?.finalScore).toBe(-5000);  // 农民 -1
     });
 
     test('农民获胜 - 基础得分', () => {
@@ -157,15 +157,15 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const landlord = score.playerScores.find(p => p.role === 'landlord');
       const farmers = score.playerScores.filter(p => p.role === 'farmer');
       
-      expect(landlord?.finalScore).toBe(-2);  // 地主 -2
-      expect(farmers[0]?.finalScore).toBe(1);  // 农民 +1
-      expect(farmers[1]?.finalScore).toBe(1);  // 农民 +1
+      expect(landlord?.finalScore).toBe(-10000);  // 地主 -2
+      expect(farmers[0]?.finalScore).toBe(5000);  // 农民 +1
+      expect(farmers[1]?.finalScore).toBe(5000);  // 农民 +1
     });
   });
 
   // 场景2：单个炸弹
   describe('场景2：单个炸弹', () => {
-    test('1个炸弹 - 倍数×2', () => {
+    test('1个炸弹 - 倍数×3', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(1, 0);
       // 添加农民出牌，避免春天
@@ -176,17 +176,17 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
       expect(score.bombCount).toBe(1);
-      expect(score.playerScores[0].multipliers.bomb).toBe(2);
-      expect(score.playerScores[0].multipliers.total).toBe(2);
+      expect(score.playerScores[0].multipliers.bomb).toBe(3);
+      expect(score.playerScores[0].multipliers.total).toBe(3);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(4);  // 1 × 2 × 2 = 4
+      expect(landlord?.finalScore).toBe(30000);  // 1 × 3 × 2 = 6
     });
   });
 
   // 场景3：多个炸弹
   describe('场景3：多个炸弹', () => {
-    test('2个炸弹 - 倍数×4', () => {
+    test('2个炸弹 - 倍数×9', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(2, 0);
       // 添加农民出牌，避免春天
@@ -197,14 +197,14 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
       expect(score.bombCount).toBe(2);
-      expect(score.playerScores[0].multipliers.bomb).toBe(4);  // 2^2 = 4
-      expect(score.playerScores[0].multipliers.total).toBe(4);
+      expect(score.playerScores[0].multipliers.bomb).toBe(9);  // 3^2 = 9
+      expect(score.playerScores[0].multipliers.total).toBe(9);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(8);  // 1 × 4 × 2 = 8
+      expect(landlord?.finalScore).toBe(90000);  // 1 × 9 × 2 = 18
     });
 
-    test('3个炸弹 - 倍数×8', () => {
+    test('3个炸弹 - 倍数×27', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(3, 0);
       // 添加农民出牌，避免春天
@@ -215,17 +215,17 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
       expect(score.bombCount).toBe(3);
-      expect(score.playerScores[0].multipliers.bomb).toBe(8);  // 2^3 = 8
-      expect(score.playerScores[0].multipliers.total).toBe(8);
+      expect(score.playerScores[0].multipliers.bomb).toBe(27);  // 3^3 = 27
+      expect(score.playerScores[0].multipliers.total).toBe(27);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(16);  // 1 × 8 × 2 = 16
+      expect(landlord?.finalScore).toBe(270000);  // 1 × 27 × 2 = 54
     });
   });
 
   // 场景4：王炸
   describe('场景4：王炸', () => {
-    test('1个王炸 - 倍数×4', () => {
+    test('1个王炸 - 倍数×8', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(0, 1);
       // 添加农民出牌，避免春天
@@ -236,14 +236,14 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
       expect(score.rocketCount).toBe(1);
-      expect(score.playerScores[0].multipliers.rocket).toBe(4);
-      expect(score.playerScores[0].multipliers.total).toBe(4);
+      expect(score.playerScores[0].multipliers.rocket).toBe(8);
+      expect(score.playerScores[0].multipliers.total).toBe(8);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(8);  // 1 × 4 × 2 = 8
+      expect(landlord?.finalScore).toBe(80000);  // 1 × 8 × 2 = 16
     });
 
-    test('2个王炸 - 倍数×16', () => {
+    test('2个王炸 - 倍数×64', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(0, 2);
       // 添加农民出牌，避免春天
@@ -254,17 +254,17 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
       expect(score.rocketCount).toBe(2);
-      expect(score.playerScores[0].multipliers.rocket).toBe(16);  // 4^2 = 16
-      expect(score.playerScores[0].multipliers.total).toBe(16);
+      expect(score.playerScores[0].multipliers.rocket).toBe(64);  // 8^2 = 64
+      expect(score.playerScores[0].multipliers.total).toBe(64);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(32);  // 1 × 16 × 2 = 32
+      expect(landlord?.finalScore).toBe(640000);  // 1 × 64 × 2 = 128
     });
   });
 
   // 场景5：炸弹+王炸
   describe('场景5：炸弹+王炸组合', () => {
-    test('1炸弹+1王炸 - 倍数×8', () => {
+    test('1炸弹+1王炸 - 倍数×24', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(1, 1);
       // 添加农民出牌，避免春天
@@ -276,15 +276,15 @@ describe('ScoreCalculator - 计分系统测试', () => {
       
       expect(score.bombCount).toBe(1);
       expect(score.rocketCount).toBe(1);
-      expect(score.playerScores[0].multipliers.bomb).toBe(2);
-      expect(score.playerScores[0].multipliers.rocket).toBe(4);
-      expect(score.playerScores[0].multipliers.total).toBe(8);  // 2 × 4 = 8
+      expect(score.playerScores[0].multipliers.bomb).toBe(3);
+      expect(score.playerScores[0].multipliers.rocket).toBe(8);
+      expect(score.playerScores[0].multipliers.total).toBe(24);  // 3 × 8 = 24
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(16);  // 1 × 8 × 2 = 16
+      expect(landlord?.finalScore).toBe(240000);  // 1 × 24 × 2 = 48
     });
 
-    test('2炸弹+1王炸 - 倍数×16', () => {
+    test('2炸弹+1王炸 - 倍数×72', () => {
       const players = TestHelper.createPlayers('player1');
       let history = TestHelper.createPlayHistory(2, 1);
       // 添加农民出牌，避免春天
@@ -294,10 +294,10 @@ describe('ScoreCalculator - 计分系统测试', () => {
       
       const score = ScoreCalculator.calculateGameScore(players, 'player1', history);
       
-      expect(score.playerScores[0].multipliers.total).toBe(16);  // 4 × 4 = 16
+      expect(score.playerScores[0].multipliers.total).toBe(72);  // 9 × 8 = 72
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(32);  // 1 × 16 × 2 = 32
+      expect(landlord?.finalScore).toBe(720000);  // 1 × 72 × 2 = 144
     });
   });
 
@@ -317,11 +317,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
       
       expect(score.isSpring).toBe(true);
       expect(score.isAntiSpring).toBe(false);
-      expect(score.playerScores[0].multipliers.spring).toBe(2);
-      expect(score.playerScores[0].multipliers.total).toBe(2);
+      expect(score.playerScores[0].multipliers.spring).toBe(16);
+      expect(score.playerScores[0].multipliers.total).toBe(16);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(4);  // 1 × 2 × 2 = 4
+      expect(landlord?.finalScore).toBe(160000);  // 1 × 16 × 2 = 32
     });
 
     test('非春天 - 农民出过牌', () => {
@@ -356,11 +356,11 @@ describe('ScoreCalculator - 计分系统测试', () => {
       
       expect(score.isSpring).toBe(false);
       expect(score.isAntiSpring).toBe(true);
-      expect(score.playerScores[0].multipliers.antiSpring).toBe(2);
-      expect(score.playerScores[0].multipliers.total).toBe(2);
+      expect(score.playerScores[0].multipliers.antiSpring).toBe(16);
+      expect(score.playerScores[0].multipliers.total).toBe(16);
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(-4);  // -(1 × 2 × 2) = -4
+      expect(landlord?.finalScore).toBe(-160000);  // -(1 × 16 × 2) = -32
     });
 
     test('非反春 - 地主出过牌', () => {
@@ -398,13 +398,13 @@ describe('ScoreCalculator - 计分系统测试', () => {
       expect(score.isSpring).toBe(true);
       
       const multipliers = score.playerScores[0].multipliers;
-      expect(multipliers.bomb).toBe(4);    // 2^2
-      expect(multipliers.rocket).toBe(4);  // 4^1
-      expect(multipliers.spring).toBe(2);
-      expect(multipliers.total).toBe(32);  // 4 × 4 × 2 = 32
+      expect(multipliers.bomb).toBe(9);    // 2^2
+      expect(multipliers.rocket).toBe(8);  // 4^1
+      expect(multipliers.spring).toBe(16);
+      expect(multipliers.total).toBe(1152);  // 4 × 4 × 2 = 32
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(64);  // 1 × 32 × 2 = 64
+      expect(landlord?.finalScore).toBe(11520000);  // 1 × 32 × 2 = 64
     });
 
     test('3炸弹+2王炸+反春 - 倍数×256', () => {
@@ -419,13 +419,13 @@ describe('ScoreCalculator - 计分系统测试', () => {
       const score = ScoreCalculator.calculateGameScore(players, 'player2', history);
       
       const multipliers = score.playerScores[0].multipliers;
-      expect(multipliers.bomb).toBe(8);     // 2^3
-      expect(multipliers.rocket).toBe(16);  // 4^2
-      expect(multipliers.antiSpring).toBe(2);
-      expect(multipliers.total).toBe(256);  // 8 × 16 × 2 = 256
+      expect(multipliers.bomb).toBe(27);     // 2^3
+      expect(multipliers.rocket).toBe(64);  // 4^2
+      expect(multipliers.antiSpring).toBe(16);
+      expect(multipliers.total).toBe(27648);  // 8 × 16 × 2 = 256
       
       const landlord = score.playerScores.find(p => p.role === 'landlord');
-      expect(landlord?.finalScore).toBe(-512);  // -(1 × 256 × 2) = -512
+      expect(landlord?.finalScore).toBe(-276480000);  // -(1 × 256 × 2) = -512
     });
   });
 

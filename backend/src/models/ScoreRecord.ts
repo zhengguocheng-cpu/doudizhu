@@ -378,15 +378,15 @@ export function createInitialPlayerRecord(userId: string, username: string): Pla
   return {
     userId,
     username,
-    totalScore: 1000, // 初始积分
+    totalScore: 500000, // 初始积分：50万
     gamesPlayed: 0,
     gamesWon: 0,
     gamesLost: 0,
     winRate: 0,
     maxStreak: 0,
     currentStreak: 0,
-    maxScore: 1000,
-    minScore: 1000,
+    maxScore: 500000,
+    minScore: 500000,
     landlordGames: 0,
     landlordWins: 0,
     farmerGames: 0,

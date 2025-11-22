@@ -12,6 +12,7 @@ export interface Player {
   createdAt?: Date;     // 用户创建时间
   lastLoginAt?: Date;   // 最后登录时间
   isOnline?: boolean;   // 在线状态
+  isBot?: boolean;      // 是否为机器人玩家
 }
 
 // 兼容现有代码的GamePlayer接口

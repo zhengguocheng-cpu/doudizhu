@@ -110,6 +110,31 @@ export class Application {
       });
     });
 
+    // 调试接口：实时查看某个房间当前的提示历史（包含发给 LLM 的 prompt 和返回）
+    this.app.get('/api/debug/hints/:roomId', (req, res) => {
+      const roomId = req.params.roomId;
+      const room = roomService.getRoom(roomId as string) as any;
+
+      if (!room || !room.gameState) {
+        res.status(404).json({
+          success: false,
+          message: '房间不存在或游戏状态为空',
+          roomId,
+        });
+        return;
+      }
+
+      const gameState = room.gameState || {};
+      const hintHistory = Array.isArray(gameState.hintHistory) ? gameState.hintHistory : [];
+
+      res.json({
+        success: true,
+        roomId,
+        hintCount: hintHistory.length,
+        hintHistory,
+      });
+    });
+
     // 2. 积分API路由 - 前缀匹配 /api/score/*
     this.app.use('/api/score', scoreRoutes);
 
@@ -285,6 +310,11 @@ export class Application {
 
     socket.on('send_message', (data: any) => {
       this.eventHandler.handleSendMessage(socket, data);
+    });
+
+    // 出牌提示（大模型）
+    socket.on('request_hint', (data: any) => {
+      this.eventHandler.handleRequestHint(socket, data);
     });
 
     // 添加房间列表相关事件

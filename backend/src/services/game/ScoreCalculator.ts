@@ -34,7 +34,7 @@ export interface GameScore {
 }
 
 export class ScoreCalculator {
-  private static readonly BASE_SCORE = 1;  // 基础分
+  private static readonly BASE_SCORE = 5000;  // 基础分
 
   /**
    * 计算游戏得分
@@ -115,11 +115,13 @@ export class ScoreCalculator {
     const farmers = players.filter(p => p.role === 'farmer');
     if (farmers.length === 0) return false;
 
-    // 检查游戏历史中是否有农民出过牌
+    // 检查游戏历史中是否有农民真正出过牌（PASS 不算）
     const farmerIds = farmers.map(f => f.id);
-    const farmerPlayed = gameHistory.some(play => farmerIds.includes(play.playerId));
+    const farmerPlayed = gameHistory.some(play =>
+      farmerIds.includes(play.playerId) && Array.isArray(play.cards) && play.cards.length > 0
+    );
     
-    return !farmerPlayed;  // 农民没出过牌就是春天
+    return !farmerPlayed;  // 农民没出过任何牌就是春天
   }
 
   /**
@@ -132,10 +134,12 @@ export class ScoreCalculator {
     const landlord = players.find(p => p.role === 'landlord');
     if (!landlord) return false;
 
-    // 检查游戏历史中地主是否出过牌
-    const landlordPlayed = gameHistory.some(play => play.playerId === landlord.id);
+    // 检查游戏历史中地主是否真正出过牌（PASS 不算）
+    const landlordPlayed = gameHistory.some(play =>
+      play.playerId === landlord.id && Array.isArray(play.cards) && play.cards.length > 0
+    );
     
-    return !landlordPlayed;  // 地主没出过牌就是反春
+    return !landlordPlayed;  // 地主没出过任何牌就是反春
   }
 
   /**
@@ -153,24 +157,24 @@ export class ScoreCalculator {
     let spring = 1;
     let antiSpring = 1;
 
-    // 炸弹倍数：每个炸弹×2
+    // 炸弹倍数：每个炸弹×3
     if (bombCount > 0) {
-      bomb = Math.pow(2, bombCount);
+      bomb = Math.pow(3, bombCount);
     }
 
-    // 王炸倍数：每个王炸×4
+    // 王炸倍数：每个王炸×8
     if (rocketCount > 0) {
-      rocket = Math.pow(4, rocketCount);
+      rocket = Math.pow(8, rocketCount);
     }
 
-    // 春天倍数：×2
+    // 春天倍数：×16
     if (isSpring) {
-      spring = 2;
+      spring = 16;
     }
 
-    // 反春倍数：×2
+    // 反春倍数：×16
     if (isAntiSpring) {
-      antiSpring = 2;
+      antiSpring = 16;
     }
 
     // 总倍数 = 基础 × 炸弹 × 王炸 × 春天 × 反春

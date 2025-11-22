@@ -7,6 +7,26 @@ import { RoomValidator } from './roomValidator';
  * 房间管理器服务
  * 负责房间的完整生命周期管理
  */
+// 预设的机器人池，每个机器人有固定的 ID、名字和头像
+interface BotProfile {
+  id: string
+  name: string
+  avatar: string
+}
+
+const BOT_POOL: BotProfile[] = [
+  { id: 'bot_001', name: '小爱同学', avatar: '🤖' },
+  { id: 'bot_002', name: '小明同学', avatar: '👾' },
+  { id: 'bot_003', name: '小红同学', avatar: '🤗' },
+  { id: 'bot_004', name: '小强同学', avatar: '👽' },
+  { id: 'bot_005', name: '小芳同学', avatar: '🤓' },
+  { id: 'bot_006', name: '小军同学', avatar: '👨‍💻' },
+  { id: 'bot_007', name: '小花同学', avatar: '👩‍💻' },
+  { id: 'bot_008', name: '小天同学', avatar: '🧑‍🚀' },
+  { id: 'bot_009', name: '小雨同学', avatar: '🧑‍🎨' },
+  { id: 'bot_010', name: '小雪同学', avatar: '🧑‍🏫' },
+]
+
 export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
   private gameStates: Map<string, any> = new Map(); // 保存游戏状态
@@ -442,6 +462,67 @@ export class RoomManager {
     });
 
     return stats;
+  }
+
+  /**
+   * 从机器人池中选择一个未在当前房间的机器人
+   */
+  private selectAvailableBot(room: GameRoom): BotProfile | null {
+    // 获取当前房间已有的机器人 ID
+    const existingBotIds = new Set(
+      room.players
+        .filter((p: Player) => p.isBot)
+        .map((p: Player) => p.id)
+    )
+
+    // 找到第一个未在房间的机器人
+    for (const bot of BOT_POOL) {
+      if (!existingBotIds.has(bot.id)) {
+        return bot
+      }
+    }
+
+    // 如果所有机器人都已在房间，返回 null
+    return null
+  }
+
+  /**
+   * 向房间添加一个机器人玩家（使用固定的机器人池）
+   */
+  public addBotPlayer(roomId: string): Player {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      throw new Error('房间不存在');
+    }
+
+    if (room.players.length >= room.maxPlayers) {
+      throw new Error('房间人数已满，无法添加机器人');
+    }
+
+    // 从机器人池中选择一个可用的机器人
+    const botProfile = this.selectAvailableBot(room);
+    if (!botProfile) {
+      throw new Error('没有可用的机器人，机器人池已用尽');
+    }
+
+    const bot: Player = {
+      id: botProfile.id,
+      name: botProfile.name,
+      userId: botProfile.id,
+      avatar: botProfile.avatar,
+      ready: true,
+      cards: [],
+      cardCount: 0,
+      isOnline: true,
+      isBot: true,
+    };
+
+    room.players.push(bot);
+    room.updatedAt = new Date();
+
+    console.log(`🤖 添加机器人玩家 ${botProfile.name} (${botProfile.id}) 到房间 ${roomId}，当前人数: ${room.players.length}/${room.maxPlayers}`);
+
+    return bot;
   }
 
   /**

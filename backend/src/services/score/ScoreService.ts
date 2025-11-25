@@ -190,6 +190,39 @@ export class ScoreService {
   }
 
   /**
+   * 更新玩家资料（昵称 / 头像）
+   * 如果玩家记录不存在，则创建一条初始记录
+   */
+  updatePlayerProfile(
+    userId: string,
+    params: { username?: string; avatar?: string }
+  ): PlayerScoreRecord {
+    const safeName = typeof params.username === 'string'
+      ? params.username.trim()
+      : undefined;
+
+    // 确保存在积分记录
+    const record = scoreDAO.getOrCreatePlayerRecord(userId, safeName || userId);
+
+    const updates: Partial<PlayerScoreRecord> = {};
+
+    if (safeName) {
+      updates.username = safeName;
+    }
+
+    if (params.avatar !== undefined) {
+      updates.avatar = params.avatar;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      scoreDAO.updatePlayerRecord(userId, updates);
+    }
+
+    const latest = scoreDAO.getPlayerRecord(userId) as PlayerScoreRecord | null;
+    return latest || record;
+  }
+
+  /**
    * 获取玩家积分记录
    */
   getPlayerScore(userId: string): PlayerScoreRecord | null {

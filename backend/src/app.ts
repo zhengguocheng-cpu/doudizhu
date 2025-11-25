@@ -7,6 +7,7 @@ import { config } from './config';
 import indexRoutes from './routes';
 import gameRoutes from './routes/gameRoutes';
 import scoreRoutes from './routes/scoreRoutes';
+import userRoutes from './routes/userRoutes';
 import { createUserManager, UserManager } from './services/user/userManager';
 import { PlayerSession } from './services/player/playerSession';
 import { StateRecoveryService } from './services/state/stateRecovery';
@@ -110,11 +111,39 @@ export class Application {
       });
     });
 
+    // 调试接口：实时查看某个房间当前的提示历史（包含发给 LLM 的 prompt 和返回）
+    this.app.get('/api/debug/hints/:roomId', (req, res) => {
+      const roomId = req.params.roomId;
+      const room = roomService.getRoom(roomId as string) as any;
+
+      if (!room || !room.gameState) {
+        res.status(404).json({
+          success: false,
+          message: '房间不存在或游戏状态为空',
+          roomId,
+        });
+        return;
+      }
+
+      const gameState = room.gameState || {};
+      const hintHistory = Array.isArray(gameState.hintHistory) ? gameState.hintHistory : [];
+
+      res.json({
+        success: true,
+        roomId,
+        hintCount: hintHistory.length,
+        hintHistory,
+      });
+    });
+
     // 2. 积分API路由 - 前缀匹配 /api/score/*
     this.app.use('/api/score', scoreRoutes);
 
     // 3. 游戏API路由 - 前缀匹配 /api/games/*
     this.app.use('/api/games', gameRoutes);
+
+    // 4. 用户API路由 - 前缀匹配 /api/user/*
+    this.app.use('/api/user', userRoutes);
 
     // 3. 页面路由 - 直接挂载，不使用前缀
     this.app.use(indexRoutes);
@@ -285,6 +314,11 @@ export class Application {
 
     socket.on('send_message', (data: any) => {
       this.eventHandler.handleSendMessage(socket, data);
+    });
+
+    // 出牌提示（大模型）
+    socket.on('request_hint', (data: any) => {
+      this.eventHandler.handleRequestHint(socket, data);
     });
 
     // 添加房间列表相关事件

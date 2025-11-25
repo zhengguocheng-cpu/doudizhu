@@ -134,6 +134,13 @@ export class RoomService {
   }
 
   /**
+   * 向房间添加机器人玩家
+   */
+  public addBotPlayer(roomId: string): Player {
+    return this.roomManager.addBotPlayer(roomId);
+  }
+
+  /**
    * 检查是否为默认房间
    */
   public isDefaultRoom(roomId: string): boolean {

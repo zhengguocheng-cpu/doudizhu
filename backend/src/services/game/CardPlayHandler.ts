@@ -4,13 +4,14 @@
  */
 
 import { Server } from 'socket.io';
-import { CardTypeDetector, CardPattern } from './CardTypeDetector';
+import { CardTypeDetector, CardPattern, CardType } from './CardTypeDetector';
 import { CardPlayValidator } from './CardPlayValidator';
 import { roomService } from '../room/roomService';
 import { ScoreCalculator } from './ScoreCalculator';
 import { scoreService } from '../score/ScoreService';
 import { GameRecord } from '../../models/ScoreRecord';
 import { v4 as uuidv4 } from 'uuid';
+import { playHintService } from '../llm/PlayHintService';
 
 export class CardPlayHandler {
   constructor(private io: Server) {}
@@ -219,6 +220,18 @@ export class CardPlayHandler {
       // 增加不出计数
       room.gameState.passCount++;
 
+      // 将“不出(PASS)”也记录到出牌历史中，便于后续 AI 分析和计分
+      if (!room.gameState.playHistory) {
+        room.gameState.playHistory = [];
+      }
+      room.gameState.playHistory.push({
+        playerId: userId,
+        playerName: player.name,
+        cards: [],
+        cardType: null,
+        timestamp: new Date(),
+      });
+
       console.log(`✅ 玩家 ${userId} 不出，连续不出: ${room.gameState.passCount}`);
 
       // 广播不出消息
@@ -288,6 +301,17 @@ export class CardPlayHandler {
 
     console.log('💰 游戏得分:', gameScore);
 
+    // 在清空手牌之前，记录所有玩家剩余手牌，用于前端在结算时展示
+    const remainingHands: { [playerId: string]: { playerId: string; playerName: string; cards: string[] } } = {};
+    for (const p of room.players) {
+      const handCards: string[] = Array.isArray(p.cards) ? [...p.cards] : [];
+      remainingHands[p.id] = {
+        playerId: p.id,
+        playerName: p.name,
+        cards: handCards,
+      };
+    }
+
     // 记录每个玩家的积分变化
     const gameId = uuidv4();
     const gameTimestamp = new Date();
@@ -338,14 +362,16 @@ export class CardPlayHandler {
       }
     }
 
-    // 广播游戏结束（包含得分信息和成就）
+    // 广播游戏结束（包含得分信息、成就、每个玩家的剩余手牌以及本局 AI 提示历史）
     this.io.to(`room_${roomId}`).emit('game_over', {
       winnerId: winner.id,
       winnerName: winner.name,
       winnerRole: winner.role,
       landlordWin: landlordWin,
       score: gameScore,  // 添加得分信息
-      achievements  // 添加成就信息
+      achievements,      // 添加成就信息
+      remainingHands,    // 各玩家剩余手牌
+      hintHistory: room.gameState?.hintHistory || [], // 本局所有提示请求与 DeepSeek 返回
     });
 
     // 重置房间状态为waiting，允许再来一局
@@ -399,13 +425,14 @@ export class CardPlayHandler {
 
     console.log(`➡️ 轮到下一个玩家: ${nextPlayer.name}`);
 
-    // 通知所有玩家
     this.io.to(`room_${roomId}`).emit('turn_to_play', {
       playerId: nextPlayer.id,
       playerName: nextPlayer.name,
       isFirstPlay: room.gameState.isNewRound,
       lastPattern: room.gameState.lastPattern
     });
+
+    this.scheduleBotAction(roomId);
   }
 
   /**
@@ -438,6 +465,307 @@ export class CardPlayHandler {
       isFirstPlay: true,
       lastPattern: null
     });
+
+    this.scheduleBotAction(roomId);
+  }
+
+  public triggerBotAction(roomId: string): void {
+    this.scheduleBotAction(roomId);
+  }
+
+  private scheduleBotAction(roomId: string): void {
+    const room = roomService.getRoom(roomId) as any;
+    if (!room || !room.gameState) return;
+
+    const currentPlayerId = room.gameState.currentPlayerId;
+    const currentPlayer = room.players.find((p: any) => p.id === currentPlayerId);
+
+    if (!currentPlayer || !currentPlayer.isBot) return;
+
+    const delay = 800 + Math.floor(Math.random() * 1200);
+
+    setTimeout(async () => {
+      const latestRoom = roomService.getRoom(roomId) as any;
+      if (!latestRoom || !latestRoom.gameState) return;
+
+      const latestCurrentId = latestRoom.gameState.currentPlayerId;
+      const player = latestRoom.players.find((p: any) => p.id === latestCurrentId);
+      if (!player || !player.isBot) return;
+
+      // 1) 优先使用与真人提示相同的 LLM 提示系统
+      try {
+        const hint = await playHintService.getPlayHint(roomId, player.id);
+        if (hint && hint.success && Array.isArray(hint.cards)) {
+          const llmCards = hint.cards;
+          if (llmCards.length > 0) {
+            this.handlePlayCards(roomId, player.id, llmCards);
+          } else {
+            this.handlePass(roomId, player.id);
+          }
+          return; // 已根据 LLM 结果完成出牌/不出
+        }
+      } catch (e) {
+        console.warn('🤖 [BotHint] 调用 LLM 提示失败，使用本地机器人逻辑兜底:', e);
+      }
+
+      // 2) LLM 不可用或未返回有效结果时，回退到原有机器人逻辑
+      const cardsToPlay = this.decideBotPlay(latestRoom, player);
+
+      if (cardsToPlay && cardsToPlay.length > 0) {
+        this.handlePlayCards(roomId, player.id, cardsToPlay);
+      } else {
+        if (latestRoom.gameState.isNewRound) {
+          const fallback = this.decideMinSingle(player);
+          if (fallback.length > 0) {
+            this.handlePlayCards(roomId, player.id, fallback);
+          } else {
+            this.handlePass(roomId, player.id);
+          }
+        } else {
+          this.handlePass(roomId, player.id);
+        }
+      }
+    }, delay);
+  }
+
+  private decideBotPlay(room: any, player: any): string[] | null {
+    const cards: string[] = Array.isArray(player.cards) ? [...player.cards] : [];
+    if (cards.length === 0) return null;
+
+    const gameState = room.gameState;
+    const lastPattern: CardPattern | null = gameState.lastPattern || null;
+
+    const isNewRound = gameState.isNewRound || !lastPattern;
+    if (isNewRound) {
+      // 新回合时，智能选择最优牌型（优先出对子、三张等组合牌）
+      return this.decideBestOpeningPlay(cards);
+    }
+
+    if (!lastPattern) {
+      return this.decideBestOpeningPlay(cards);
+    }
+
+    // 根据上家牌型选择对应的出牌
+    switch (lastPattern.type) {
+      case CardType.SINGLE:
+        return this.findSingleToBeat(cards, lastPattern.value);
+      case CardType.PAIR:
+        return this.findPairToBeat(cards, lastPattern.value);
+      case CardType.TRIPLE:
+        return this.findTripleToBeat(cards, lastPattern.value);
+      case CardType.TRIPLE_WITH_SINGLE:
+        return this.findTripleWithSingleToBeat(cards, lastPattern.value);
+      case CardType.BOMB:
+        return this.findBombToBeat(cards, lastPattern.value);
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * 智能选择开局出牌：优先出对子、三张等组合牌，最后才出单张
+   */
+  private decideBestOpeningPlay(cards: string[]): string[] {
+    if (cards.length === 0) return [];
+
+    // 统计牌型
+    const groups: Record<string, string[]> = {};
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🀏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const ranksInOrder = Object.keys(groups).sort(
+      (a, b) => CardTypeDetector.getCardValue(groups[a][0]) - CardTypeDetector.getCardValue(groups[b][0]),
+    );
+
+    // 1. 优先出三带二 / 三带一（尽量多出牌）
+    for (const rank of ranksInOrder) {
+      const arr = groups[rank];
+      // 只在正好三张时考虑三带，避免随意拆炸弹
+      if (arr.length === 3) {
+        // 1.1 先找一对，出三带二
+        const pairRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 2);
+        if (pairRank) {
+          const triple = arr.slice(0, 3);
+          const pair = groups[pairRank].slice(0, 2);
+          return [...triple, ...pair];
+        }
+
+        // 1.2 如果没有对子，再找一张单牌，出三带一
+        const singleRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 1);
+        if (singleRank) {
+          const triple = arr.slice(0, 3);
+          const single = groups[singleRank][0];
+          return [...triple, single];
+        }
+      }
+    }
+
+    // 2. 其次出纯三张（最小的）
+    for (const rank of ranksInOrder) {
+      if (groups[rank].length >= 3) {
+        return groups[rank].slice(0, 3);
+      }
+    }
+
+    // 3. 再其次出对子（最小的）
+    for (const rank of ranksInOrder) {
+      if (groups[rank].length >= 2) {
+        return groups[rank].slice(0, 2);
+      }
+    }
+
+    // 4. 最后出单张（最小的）
+    const sorted = [...cards].sort((a, b) => CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b));
+    return [sorted[0]];
+  }
+
+  private decideMinSingle(player: any): string[] {
+    const cards: string[] = Array.isArray(player.cards) ? [...player.cards] : [];
+    if (cards.length === 0) return [];
+    const sorted = cards.sort((a, b) => CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b));
+    return sorted.length > 0 ? [sorted[0]] : [];
+  }
+
+  private findSingleToBeat(cards: string[], minValue: number): string[] | null {
+    const sorted = [...cards].sort(
+      (a, b) => CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b),
+    );
+
+    for (const c of sorted) {
+      if (CardTypeDetector.getCardValue(c) > minValue) {
+        return [c];
+      }
+    }
+
+    return null;
+  }
+
+  private findPairToBeat(cards: string[], minValue: number): string[] | null {
+    const groups: Record<string, string[]> = {};
+
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const candidates: { value: number; pair: string[] }[] = [];
+
+    for (const rank of Object.keys(groups)) {
+      const arr = groups[rank];
+      if (arr.length >= 2) {
+        const pair = arr.slice(0, 2);
+        const value = CardTypeDetector.getCardValue(pair[0]);
+        if (value > minValue) {
+          candidates.push({ value, pair });
+        }
+      }
+    }
+
+    if (candidates.length === 0) return null;
+
+    candidates.sort((a, b) => a.value - b.value);
+    return candidates[0].pair;
+  }
+
+  /**
+   * 找到能压过上家的三张
+   */
+  private findTripleToBeat(cards: string[], minValue: number): string[] | null {
+    const groups: Record<string, string[]> = {};
+
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const candidates: { value: number; triple: string[] }[] = [];
+
+    for (const rank of Object.keys(groups)) {
+      const arr = groups[rank];
+      if (arr.length >= 3) {
+        const triple = arr.slice(0, 3);
+        const value = CardTypeDetector.getCardValue(triple[0]);
+        if (value > minValue) {
+          candidates.push({ value, triple });
+        }
+      }
+    }
+
+    if (candidates.length === 0) return null;
+
+    candidates.sort((a, b) => a.value - b.value);
+    return candidates[0].triple;
+  }
+
+  /**
+   * 找到能压过上家的三带一
+   */
+  private findTripleWithSingleToBeat(cards: string[], minValue: number): string[] | null {
+    const groups: Record<string, string[]> = {};
+
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    // 找三张
+    for (const rank of Object.keys(groups).sort((a, b) => 
+      CardTypeDetector.getCardValue(groups[a][0]) - CardTypeDetector.getCardValue(groups[b][0])
+    )) {
+      const arr = groups[rank];
+      if (arr.length >= 3) {
+        const value = CardTypeDetector.getCardValue(arr[0]);
+        if (value > minValue) {
+          const triple = arr.slice(0, 3);
+          // 找一张单牌（最小的）
+          for (const otherRank of Object.keys(groups)) {
+            if (otherRank !== rank && groups[otherRank].length > 0) {
+              return [...triple, groups[otherRank][0]];
+            }
+          }
+          // 如果没有其他牌，就出三张
+          return triple;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * 找到能压过上家的炸弹
+   */
+  private findBombToBeat(cards: string[], minValue: number): string[] | null {
+    const groups: Record<string, string[]> = {};
+
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const candidates: { value: number; bomb: string[] }[] = [];
+
+    for (const rank of Object.keys(groups)) {
+      const arr = groups[rank];
+      if (arr.length === 4) {
+        const value = CardTypeDetector.getCardValue(arr[0]);
+        if (value > minValue) {
+          candidates.push({ value, bomb: arr });
+        }
+      }
+    }
+
+    if (candidates.length === 0) return null;
+
+    candidates.sort((a, b) => a.value - b.value);
+    return candidates[0].bomb;
   }
 
   /**

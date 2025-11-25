@@ -41,6 +41,81 @@ export class GameFlowHandler {
   }
 
   /**
+   * 如果当前轮到的是机器人，则在短暂延迟后自动执行抢地主决策
+   */
+  private scheduleBotBidIfNeeded(roomId: string): void {
+    const room: any = roomService.getRoom(roomId);
+    if (!room || !room.biddingState) {
+      return;
+    }
+
+    const currentBidderId = room.biddingState.currentBidderId;
+    const currentPlayer = room.players.find((p: any) => p.id === currentBidderId);
+
+    if (!currentPlayer || !currentPlayer.isBot) {
+      return;
+    }
+
+    const delay = 800 + Math.floor(Math.random() * 1200); // 0.8~2 秒，模拟思考时间
+
+    setTimeout(() => {
+      try {
+        const latestRoom: any = roomService.getRoom(roomId);
+        if (!latestRoom || !latestRoom.biddingState) {
+          return;
+        }
+
+        // 如果当前轮到的玩家已经变化，则不再执行
+        if (latestRoom.biddingState.currentBidderId !== currentBidderId) {
+          return;
+        }
+
+        const latestPlayer = latestRoom.players.find((p: any) => p.id === currentBidderId);
+        if (!latestPlayer || !latestPlayer.isBot) {
+          return;
+        }
+
+        const bid = this.decideBotBid(latestPlayer);
+        console.log(`🤖 机器人${latestPlayer.name} 自动${bid ? '抢' : '不抢'}地主`);
+        this.handleBidLandlord(roomId, currentBidderId, bid);
+      } catch (error) {
+        console.error('机器人抢地主决策失败:', error);
+      }
+    }, delay);
+  }
+
+  /**
+   * 简单的机器人抢地主决策：根据手牌中高牌数量决定是否抢
+   */
+  private decideBotBid(player: any): boolean {
+    const cards: string[] = Array.isArray(player.cards) ? player.cards : [];
+
+    // 统计 A、2、大小王、K 的数量
+    const highRanks = ['A', '2', '🃏小王', '🃏大王', 'K'];
+    let highCount = 0;
+
+    for (const card of cards) {
+      const rank = card.includes('🃏') ? card : card.slice(1);
+      if (highRanks.includes(rank)) {
+        highCount++;
+      }
+    }
+
+    // 高牌很多时，基本都抢
+    if (highCount >= 8) {
+      return true;
+    }
+
+    // 高牌很少时，大概率不抢
+    if (highCount <= 3) {
+      return Math.random() < 0.2;
+    }
+
+    // 其他情况有一定概率抢
+    return Math.random() < 0.6;
+  }
+
+  /**
    * 获取CardPlayHandler实例
    */
   public getCardPlayHandler(): CardPlayHandler | null {
@@ -165,6 +240,9 @@ export class GameFlowHandler {
 
       console.log(`🎲 抢地主开始: 第一个玩家=${firstBidderId}`);
 
+      // 如果第一个抢地主的是机器人，则自动执行抢地主决策
+      this.scheduleBotBidIfNeeded(roomId);
+
     } catch (error) {
       console.error('开始抢地主失败:', error);
     }
@@ -217,6 +295,9 @@ export class GameFlowHandler {
       } else {
         // 更新当前抢地主的玩家
         room.biddingState.currentBidderId = nextBidderId;
+
+        // 如果下一个玩家是机器人，则自动执行抢/不抢
+        this.scheduleBotBidIfNeeded(roomId);
       }
 
     } catch (error) {
@@ -331,6 +412,10 @@ export class GameFlowHandler {
           isFirst: true,
           lastPattern: null
         });
+
+        if (this.cardPlayHandler) {
+          this.cardPlayHandler.triggerBotAction(roomId);
+        }
       }, 2000);
 
     } catch (error) {

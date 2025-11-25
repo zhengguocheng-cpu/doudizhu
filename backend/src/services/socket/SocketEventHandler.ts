@@ -8,6 +8,7 @@ import { EventBus } from '../../core/EventBus';
 import { gameRoomsService } from '../game/gameRoomsService';
 import { roomService } from '../room/roomService';
 import { gameFlowHandler } from './GameFlowHandler';
+import { playHintService } from '../llm/PlayHintService';
 
 export interface AuthenticatedSocket extends Socket {
   userId?: string;
@@ -313,6 +314,26 @@ export class SocketEventHandler {
         
         // 检查是否所有玩家都准备好
         if (room && room.players) {
+          // 如果是等待中的房间且人数不足3，则自动补充机器人玩家
+          if (room.status === 'waiting' && room.players.length < 3) {
+            const maxPlayers = 3;
+            while (room.players.length < maxPlayers) {
+              try {
+                roomService.addBotPlayer(roomId);
+              } catch (e) {
+                console.warn('添加机器人玩家失败:', e);
+                break;
+              }
+            }
+          }
+
+          // 确保机器人玩家始终处于已准备状态（包括“再来一局”场景）
+          room.players.forEach((p: any) => {
+            if (p.isBot) {
+              p.ready = true;
+            }
+          });
+
           const allReady = room.players.every((p: any) => p.ready);
           const hasEnoughPlayers = room.players.length === 3;
           
@@ -405,6 +426,46 @@ export class SocketEventHandler {
       console.error('不出错误:', error);
       socket.emit('error', {
         message: error instanceof Error ? error.message : '不出过程中发生错误'
+      });
+    }
+  }
+
+  /**
+   * 处理出牌提示请求（大模型提示）
+   */
+  public async handleRequestHint(socket: AuthenticatedSocket, data: any): Promise<void> {
+    try {
+      const { roomId, userId, llmConfig } = data || {};
+      console.log('💡 收到出牌提示请求:', { roomId, userId, llmConfig });
+
+      if (!roomId || !userId) {
+        socket.emit('hint_result', {
+          success: false,
+          error: '参数错误：缺少 roomId 或 userId',
+          roomId,
+          userId,
+        });
+        return;
+      }
+
+      const result = await playHintService.getPlayHint(roomId, userId, {
+        model: typeof llmConfig?.model === 'string' ? llmConfig.model : undefined,
+        customPrompt: typeof llmConfig?.customPrompt === 'string' ? llmConfig.customPrompt : undefined,
+      });
+
+      socket.emit('hint_result', {
+        roomId,
+        userId,
+        ...result,
+      });
+    } catch (error) {
+      console.error('出牌提示错误:', error);
+      const message = error instanceof Error ? error.message : '出牌提示过程中发生错误';
+      socket.emit('hint_result', {
+        success: false,
+        error: message,
+        roomId: data?.roomId,
+        userId: data?.userId,
       });
     }
   }

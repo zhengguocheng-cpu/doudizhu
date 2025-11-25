@@ -5,19 +5,20 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import config from '../config';
 
 const router = Router();
 
 // 配置文件上传
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(process.cwd(), 'uploads', 'feedback');
-    
+    const uploadDir = path.join(config.paths.uploads, 'feedback');
+
     // 确保目录存在
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
+
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -92,7 +93,7 @@ router.post('/feedback', upload.array('screenshots', 3), async (req: Request, re
     };
     
     // 保存到文件
-    const feedbackDir = path.join(process.cwd(), 'data', 'feedback');
+    const feedbackDir = config.paths.feedbackData;
     if (!fs.existsSync(feedbackDir)) {
       fs.mkdirSync(feedbackDir, { recursive: true });
     }
@@ -129,7 +130,7 @@ router.post('/feedback', upload.array('screenshots', 3), async (req: Request, re
  */
 router.get('/feedback/list', (req: Request, res: Response) => {
   try {
-    const feedbackDir = path.join(process.cwd(), 'data', 'feedback');
+    const feedbackDir = config.paths.feedbackData;
     
     if (!fs.existsSync(feedbackDir)) {
       res.json({

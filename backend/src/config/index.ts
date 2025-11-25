@@ -117,7 +117,8 @@ export const pathsConfig = {
   },
   logs: path.join(process.cwd(), process.env.LOGS_PATH || 'logs'),
   uploads: path.join(process.cwd(), process.env.UPLOADS_PATH || 'uploads'),
-  temp: path.join(process.cwd(), process.env.TEMP_PATH || 'temp')
+  temp: path.join(process.cwd(), process.env.TEMP_PATH || 'temp'),
+  feedbackData: process.env.FEEDBACK_DATA_PATH || path.join(process.cwd(), 'data', 'feedback')
 };
 
 // 开发环境配置

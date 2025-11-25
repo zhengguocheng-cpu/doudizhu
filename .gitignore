@@ -58,3 +58,4 @@ coverage/
 *.js.map
 *.css.map
 backend/dist
+backend/data/feedback/

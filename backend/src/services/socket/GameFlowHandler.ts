@@ -459,6 +459,122 @@ export class GameFlowHandler {
       playerCards[playerIndex].push(deck[i]);
     }
 
+    // 在保留总体随机性的前提下，轻微偏向真人玩家：
+    // 对三手牌做一个简单评分（炸弹、王炸、长顺子），
+    // 将评分最好的一手整副牌交换给某个真人玩家（仅在存在真人+机器人混合时生效）。
+    try {
+      const humanIndices: number[] = [];
+      const botIndices: number[] = [];
+      if (Array.isArray(room.players)) {
+        room.players.forEach((p: any, idx: number) => {
+          if (p && p.isBot) {
+            botIndices.push(idx);
+          } else {
+            humanIndices.push(idx);
+          }
+        });
+      }
+
+      // 只有在“至少有一个真人且至少有一个机器人”的情况下才做偏好处理，
+      // 避免全真人房间产生明显不公平感。
+      if (humanIndices.length > 0 && botIndices.length > 0) {
+        const STRAIGHT_ORDER = ['3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+        const evaluateHand = (cards: string[]): number => {
+          const rankCounts: Record<string, number> = {};
+          const straightRanks: string[] = [];
+          let hasSmallJoker = false;
+          let hasBigJoker = false;
+
+          for (const card of cards) {
+            if (card.includes('🃏')) {
+              if (card.includes('小王')) hasSmallJoker = true;
+              if (card.includes('大王')) hasBigJoker = true;
+              rankCounts[card] = (rankCounts[card] || 0) + 1;
+            } else {
+              const rank = card.slice(1);
+              rankCounts[rank] = (rankCounts[rank] || 0) + 1;
+              // 顺子不包含2和大小王
+              if (rank !== '2') {
+                straightRanks.push(rank);
+              }
+            }
+          }
+
+          let score = 0;
+
+          // 普通炸弹（四张相同点数，不包含大小王）
+          for (const key of Object.keys(rankCounts)) {
+            const count = rankCounts[key];
+            if (count >= 4 && !key.includes('🃏')) {
+              score += 12; // 四张炸弹给较高权重
+            }
+          }
+
+          // 王炸（大小王同时存在）
+          if (hasSmallJoker && hasBigJoker) {
+            score += 18;
+          }
+
+          // 顺子（最长连续长度>=5）
+          const uniqueStraightRanks = Array.from(new Set(straightRanks));
+          const idxList = uniqueStraightRanks
+            .map((r) => STRAIGHT_ORDER.indexOf(r))
+            .filter((idx) => idx >= 0)
+            .sort((a, b) => a - b);
+
+          let longest = 0;
+          let current = 1;
+          for (let i = 1; i < idxList.length; i++) {
+            if (idxList[i] === idxList[i - 1] + 1) {
+              current++;
+            } else {
+              if (current > longest) longest = current;
+              current = 1;
+            }
+          }
+          if (idxList.length > 0) {
+            if (current > longest) longest = current;
+          }
+
+          if (longest >= 5) {
+            // 5张顺子给3分，每多一张多加1分
+            score += 3 + (longest - 5);
+          }
+
+          return score;
+        };
+
+        const scores = playerCards.map((cards) => evaluateHand(cards));
+
+        let bestIndex = 0;
+        for (let i = 1; i < scores.length; i++) {
+          if (scores[i] > scores[bestIndex]) {
+            bestIndex = i;
+          }
+        }
+
+        // 选择一个真人玩家（这里简单地选第一个真人索引）
+        const targetHumanIndex = humanIndices[0];
+
+        if (
+          bestIndex !== targetHumanIndex &&
+          scores[bestIndex] > scores[targetHumanIndex]
+        ) {
+          const tmp = playerCards[targetHumanIndex];
+          playerCards[targetHumanIndex] = playerCards[bestIndex];
+          playerCards[bestIndex] = tmp;
+          console.log('🎯 [发牌偏好] 将更好的一手牌交换给真人玩家', {
+            scores,
+            targetHumanIndex,
+            bestIndex,
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ [发牌偏好] 评估或调整手牌失败，继续使用原始随机发牌:', e);
+    }
+
     // 底牌
     const bottomCards = deck.slice(51, 54);
 

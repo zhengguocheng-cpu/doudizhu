@@ -23,6 +23,7 @@ export class SocketEventHandler {
   private eventBus: EventBus;
   private gameRoomsService: any;
   private io: any; // Socket.IO服务器实例
+  private quickRoomBotTimers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor() {
     // Initialize services
@@ -314,37 +315,86 @@ export class SocketEventHandler {
         
         // 检查是否所有玩家都准备好
         if (room && room.players) {
-          // 如果是等待中的房间且人数不足3，则自动补充机器人玩家
-          if (room.status === 'waiting' && room.players.length < 3) {
-            const maxPlayers = 3;
-            while (room.players.length < maxPlayers) {
-              try {
-                roomService.addBotPlayer(roomId);
-              } catch (e) {
-                console.warn('添加机器人玩家失败:', e);
-                break;
-              }
-            }
-          }
+          const isQuickRoom = typeof roomId === 'string' && String(roomId).startsWith('K');
+          const botDelayRaw = (data as any)?.botDelayMs;
+          const botDelayMs = typeof botDelayRaw === 'number' && botDelayRaw >= 0 ? botDelayRaw : 0;
 
-          // 确保机器人玩家始终处于已准备状态（包括“再来一局”场景）
-          room.players.forEach((p: any) => {
-            if (p.isBot) {
-              p.ready = true;
-            }
-          });
+          const allReadyNow = room.players.every((p: any) => p.ready);
+          const hasEnoughPlayersNow = room.players.length === 3;
 
-          const allReady = room.players.every((p: any) => p.ready);
-          const hasEnoughPlayers = room.players.length === 3;
-          
-          console.log(`房间${roomId}状态: 玩家数=${room.players.length}, 全部准备=${allReady}`);
-          
-          if (allReady && hasEnoughPlayers) {
-            console.log(`🎮 房间${roomId}所有玩家准备完毕，开始游戏！`);
-            // 延迟1秒开始游戏，让客户端有时间更新UI
+          if (allReadyNow && hasEnoughPlayersNow) {
+            console.log(`🎮 房间${roomId}所有玩家准备完毕，开始游戏！（全真人或已满员）`);
             setTimeout(() => {
               gameFlowHandler.startGame(roomId);
             }, 1000);
+            return;
+          }
+
+          const ensureBotsReadyAndMaybeStart = (targetRoom: any) => {
+            targetRoom.players.forEach((p: any) => {
+              if (p.isBot) {
+                p.ready = true;
+              }
+            });
+
+            const allReady = targetRoom.players.every((p: any) => p.ready);
+            const hasEnoughPlayers = targetRoom.players.length === 3;
+
+            console.log(`房间${roomId}状态: 玩家数=${targetRoom.players.length}, 全部准备=${allReady}`);
+
+            if (allReady && hasEnoughPlayers) {
+              console.log(`🎮 房间${roomId}所有玩家准备完毕，开始游戏！`);
+              setTimeout(() => {
+                gameFlowHandler.startGame(roomId);
+              }, 1000);
+            }
+          };
+
+          if (!isQuickRoom || botDelayMs <= 0) {
+            if (room.status === 'waiting' && room.players.length < 3) {
+              const maxPlayers = 3;
+              while (room.players.length < maxPlayers) {
+                try {
+                  roomService.addBotPlayer(roomId);
+                } catch (e) {
+                  console.warn('添加机器人玩家失败:', e);
+                  break;
+                }
+              }
+            }
+            ensureBotsReadyAndMaybeStart(room);
+          } else {
+            if (!this.quickRoomBotTimers.has(roomId)) {
+              console.log(`⏳ [QuickRoomBot] 计划在 ${botDelayMs}ms 后为快速房间补齐机器人`, {
+                roomId,
+                botDelayMs,
+              });
+              const timer = setTimeout(() => {
+                this.quickRoomBotTimers.delete(roomId);
+                const latestRoom = roomService.getRoom(roomId);
+                if (!latestRoom || !latestRoom.players) {
+                  return;
+                }
+                if (latestRoom.status !== 'waiting') {
+                  return;
+                }
+
+                if (latestRoom.players.length < 3) {
+                  const maxPlayers = 3;
+                  while (latestRoom.players.length < maxPlayers) {
+                    try {
+                      roomService.addBotPlayer(roomId);
+                    } catch (e) {
+                      console.warn('添加机器人玩家失败:', e);
+                      break;
+                    }
+                  }
+                }
+
+                ensureBotsReadyAndMaybeStart(latestRoom);
+              }, botDelayMs);
+              this.quickRoomBotTimers.set(roomId, timer);
+            }
           }
         }
       } else {

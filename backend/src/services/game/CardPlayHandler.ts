@@ -579,45 +579,52 @@ export class CardPlayHandler {
     const ranksInOrder = Object.keys(groups).sort(
       (a, b) => CardTypeDetector.getCardValue(groups[a][0]) - CardTypeDetector.getCardValue(groups[b][0]),
     );
+    
+    // 手牌很多（>=10）时认为是前期：此时尽量不要一上来就把大三带一/三带二打光，
+    // 而是保守一些，优先用小对子/小单张走牌。
+    const isEarlyPhase = cards.length >= 10;
 
-    // 1. 优先出三带二 / 三带一（尽量多出牌）
-    for (const rank of ranksInOrder) {
-      const arr = groups[rank];
-      // 只在正好三张时考虑三带，避免随意拆炸弹
-      if (arr.length === 3) {
-        // 1.1 先找一对，出三带二
-        const pairRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 2);
-        if (pairRank) {
-          const triple = arr.slice(0, 3);
-          const pair = groups[pairRank].slice(0, 2);
-          return [...triple, ...pair];
+    // 1. 只有在牌局后期（牌较少）时，才使用“三带二/三带一”和纯三张优先的策略，帮助快速出完牌
+    if (!isEarlyPhase) {
+      // 1.1 优先出三带二 / 三带一（尽量多出牌）
+      for (const rank of ranksInOrder) {
+        const arr = groups[rank];
+        // 只在正好三张时考虑三带，避免随意拆炸弹
+        if (arr.length === 3) {
+          // 先找一对，出三带二
+          const pairRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 2);
+          if (pairRank) {
+            const triple = arr.slice(0, 3);
+            const pair = groups[pairRank].slice(0, 2);
+            return [...triple, ...pair];
+          }
+
+          // 如果没有对子，再找一张单牌，出三带一
+          const singleRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 1);
+          if (singleRank) {
+            const triple = arr.slice(0, 3);
+            const single = groups[singleRank][0];
+            return [...triple, single];
+          }
         }
+      }
 
-        // 1.2 如果没有对子，再找一张单牌，出三带一
-        const singleRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 1);
-        if (singleRank) {
-          const triple = arr.slice(0, 3);
-          const single = groups[singleRank][0];
-          return [...triple, single];
+      // 1.2 其次出纯三张（最小的）
+      for (const rank of ranksInOrder) {
+        if (groups[rank].length >= 3) {
+          return groups[rank].slice(0, 3);
         }
       }
     }
 
-    // 2. 其次出纯三张（最小的）
-    for (const rank of ranksInOrder) {
-      if (groups[rank].length >= 3) {
-        return groups[rank].slice(0, 3);
-      }
-    }
-
-    // 3. 再其次出对子（最小的）
+    // 2. 再其次出对子（最小的）——前期和后期都可以用的小牌优先策略
     for (const rank of ranksInOrder) {
       if (groups[rank].length >= 2) {
         return groups[rank].slice(0, 2);
       }
     }
 
-    // 4. 最后出单张（最小的）
+    // 3. 最后出单张（最小的）
     const sorted = [...cards].sort((a, b) => CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b));
     return [sorted[0]];
   }

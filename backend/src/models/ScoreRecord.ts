@@ -55,6 +55,9 @@ export interface PlayerScoreRecord {
   /** 玩家名称 */
   username: string;
   
+  /** 玩家头像（可选，供个人资料与排行榜展示） */
+  avatar?: string;
+  
   /** 当前总积分 */
   totalScore: number;
   
@@ -378,6 +381,7 @@ export function createInitialPlayerRecord(userId: string, username: string): Pla
   return {
     userId,
     username,
+    avatar: undefined,
     totalScore: 500000, // 初始积分：50万
     gamesPlayed: 0,
     gamesWon: 0,

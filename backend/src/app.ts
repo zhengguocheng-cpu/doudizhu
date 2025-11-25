@@ -7,6 +7,7 @@ import { config } from './config';
 import indexRoutes from './routes';
 import gameRoutes from './routes/gameRoutes';
 import scoreRoutes from './routes/scoreRoutes';
+import userRoutes from './routes/userRoutes';
 import { createUserManager, UserManager } from './services/user/userManager';
 import { PlayerSession } from './services/player/playerSession';
 import { StateRecoveryService } from './services/state/stateRecovery';
@@ -140,6 +141,9 @@ export class Application {
 
     // 3. 游戏API路由 - 前缀匹配 /api/games/*
     this.app.use('/api/games', gameRoutes);
+
+    // 4. 用户API路由 - 前缀匹配 /api/user/*
+    this.app.use('/api/user', userRoutes);
 
     // 3. 页面路由 - 直接挂载，不使用前缀
     this.app.use(indexRoutes);

@@ -56,7 +56,7 @@ export class GameFlowHandler {
       return;
     }
 
-    const delay = 800 + Math.floor(Math.random() * 1200); // 0.8~2 秒，模拟思考时间
+    const delay = 400 + Math.floor(Math.random() * 400); // 0.4~0.8 秒，加快出牌速度
 
     setTimeout(() => {
       try {

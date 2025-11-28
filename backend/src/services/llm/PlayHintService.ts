@@ -1,7 +1,7 @@
 import { roomService } from '../room/roomService'
 import { CardTypeDetector, CardPattern, CardType } from '../game/CardTypeDetector'
 import { CardPlayValidator } from '../game/CardPlayValidator'
-import { ChatMessage, LLMClientFactory } from './LLMClient'
+import { ChatMessage, LLMClientFactory, UserLlmConfig } from './LLMClient'
 
 interface CandidateMove {
   id: string
@@ -41,12 +41,15 @@ export interface PlayHintResult {
 }
 
 class PlayHintService {
-  private llm = LLMClientFactory.getClient()
-
   public async getPlayHint(
     roomId: string,
     userId: string,
-    options?: { model?: string; customPrompt?: string },
+    options?: { 
+      model?: string
+      customPrompt?: string
+      /** 用户自定义 LLM 配置 */
+      llmConfig?: UserLlmConfig 
+    },
   ): Promise<PlayHintResult> {
     try {
       const room = roomService.getRoom(roomId) as any
@@ -201,7 +204,9 @@ class PlayHintService {
           '\n\n请根据上面的信息，选择这一回合要出的牌或不出(PASS)，并按照系统提示中规定的 JSON 格式输出结果。',
       }
 
-      const raw = await this.llm.chat([systemPrompt, userPrompt], {
+      // 根据用户配置获取 LLM 客户端
+      const llmClient = LLMClientFactory.getClientWithUserConfig(options?.llmConfig)
+      const raw = await llmClient.chat([systemPrompt, userPrompt], {
         temperature: 0.3,
         maxTokens: 800,
         model: options?.model,

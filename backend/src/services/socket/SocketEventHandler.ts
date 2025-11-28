@@ -498,9 +498,23 @@ export class SocketEventHandler {
         return;
       }
 
+      const selectedModel =
+        llmConfig && llmConfig.provider === 'custom'
+          ? (typeof llmConfig.customModel === 'string' ? llmConfig.customModel : undefined)
+          : (typeof llmConfig?.model === 'string' ? llmConfig.model : undefined);
+
       const result = await playHintService.getPlayHint(roomId, userId, {
-        model: typeof llmConfig?.model === 'string' ? llmConfig.model : undefined,
+        model: selectedModel,
         customPrompt: typeof llmConfig?.customPrompt === 'string' ? llmConfig.customPrompt : undefined,
+        llmConfig: llmConfig
+          ? {
+              provider: llmConfig.provider,
+              model: llmConfig.model,
+              apiKey: llmConfig.apiKey,
+              customBaseUrl: llmConfig.customBaseUrl,
+              customModel: llmConfig.customModel,
+            }
+          : undefined,
       });
 
       socket.emit('hint_result', {

@@ -34,6 +34,12 @@ export class CardPlayValidator {
 
     // 3. 识别牌型
     const pattern = CardTypeDetector.detect(playedCards);
+    console.log('🔍 [牌型检测]', {
+      cards: playedCards,
+      detectedType: pattern.type,
+      value: pattern.value,
+      length: pattern.length
+    });
     if (pattern.type === CardType.INVALID) {
       return { valid: false, error: '无效的牌型' };
     }

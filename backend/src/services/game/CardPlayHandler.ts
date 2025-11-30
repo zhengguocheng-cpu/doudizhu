@@ -579,47 +579,83 @@ export class CardPlayHandler {
     const ranksInOrder = Object.keys(groups).sort(
       (a, b) => CardTypeDetector.getCardValue(groups[a][0]) - CardTypeDetector.getCardValue(groups[b][0]),
     );
+    const bombRanks = ranksInOrder.filter((r) => groups[r].length === 4);
+    const hasNonBombRanks = ranksInOrder.some((r) => groups[r].length < 4);
+
+    // 如果整手牌只有炸弹（或多组炸弹）而没有其他牌型，则出点数最小的一组炸弹
+    if (!hasNonBombRanks && bombRanks.length > 0) {
+      const smallestBombRank = bombRanks[0];
+      return groups[smallestBombRank].slice(0, 4);
+    }
     
-    // 手牌很多（>=10）时认为是前期：此时尽量不要一上来就把大三带一/三带二打光，
-    // 而是保守一些，优先用小对子/小单张走牌。
+    // 手牌很多（>=10）时认为是前期：目前主要用于后续策略扩展，这里先保留该标记
     const isEarlyPhase = cards.length >= 10;
 
-    // 1. 只有在牌局后期（牌较少）时，才使用“三带二/三带一”和纯三张优先的策略，帮助快速出完牌
-    if (!isEarlyPhase) {
-      // 1.1 优先出三带二 / 三带一（尽量多出牌）
-      for (const rank of ranksInOrder) {
-        const arr = groups[rank];
-        // 只在正好三张时考虑三带，避免随意拆炸弹
-        if (arr.length === 3) {
-          // 先找一对，出三带二
-          const pairRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 2);
-          if (pairRank) {
-            const triple = arr.slice(0, 3);
-            const pair = groups[pairRank].slice(0, 2);
+    // 0. 无论前期还是后期，都优先尝试出一手完整的“飞机带翅膀”（先带对，再带单）
+    const planeWithPairs = this.findBestPlaneWithWings(cards, true);
+    if (planeWithPairs && planeWithPairs.length > 0) {
+      return planeWithPairs;
+    }
+
+    const planeWithSingles = this.findBestPlaneWithWings(cards, false);
+    if (planeWithSingles && planeWithSingles.length > 0) {
+      return planeWithSingles;
+    }
+
+    // 1. 首家出牌时，三张优先尝试带小对或小单（尽量多出牌），找不到合适翅膀再考虑纯三张
+    // 1.1 优先出三带二 / 三带一（尽量多出牌），对子优先用小对
+    for (const rank of ranksInOrder) {
+      const arr = groups[rank];
+      // 只在正好三张时考虑三带，避免随意拆炸弹
+      if (arr.length === 3) {
+        const triple = arr.slice(0, 3);
+
+        // 先找小对，出三带二（对子只用非炸弹点数）
+        const pairCandidates = ranksInOrder.filter(
+          (r) => r !== rank && groups[r].length >= 2 && groups[r].length < 4,
+        );
+
+        if (pairCandidates.length > 0) {
+          if (pairCandidates.length > 1) {
+            // 有不止一个对子时，直接用最小的对子
+            const smallPairRank = pairCandidates[0];
+            const pair = groups[smallPairRank].slice(0, 2);
             return [...triple, ...pair];
           }
 
-          // 如果没有对子，再找一张单牌，出三带一
-          const singleRank = ranksInOrder.find((r) => r !== rank && groups[r].length >= 1);
-          if (singleRank) {
-            const triple = arr.slice(0, 3);
-            const single = groups[singleRank][0];
-            return [...triple, single];
+          // 只有一个对子时，如果出完这手后牌已经很少，可以接受用这个对子；否则改用三带一
+          const onlyPairRank = pairCandidates[0];
+          const remainingAfterTriplePair = cards.length - 5; // 三张 + 一对 共 5 张
+
+          if (remainingAfterTriplePair <= 3) {
+            const pair = groups[onlyPairRank].slice(0, 2);
+            return [...triple, ...pair];
           }
         }
-      }
 
-      // 1.2 其次出纯三张（最小的）
-      for (const rank of ranksInOrder) {
-        if (groups[rank].length >= 3) {
-          return groups[rank].slice(0, 3);
+        // 如果没有合适的小对，再找一张小单牌，出三带一（不拆炸弹）
+        const singleRank = ranksInOrder.find(
+          (r) => r !== rank && groups[r].length >= 1 && groups[r].length < 4,
+        );
+        if (singleRank) {
+          const single = groups[singleRank][0];
+          return [...triple, single];
         }
+      }
+    }
+
+    // 1.2 如果没法带对/单，再退而求其次出纯三张（最小的）
+    for (const rank of ranksInOrder) {
+      if (groups[rank].length === 3) {
+        return groups[rank].slice(0, 3);
       }
     }
 
     // 2. 再其次出对子（最小的）——前期和后期都可以用的小牌优先策略
     for (const rank of ranksInOrder) {
-      if (groups[rank].length >= 2) {
+      const len = groups[rank].length;
+      // 只从恰好两张或三张的点数中取对子，避免从炸弹拆对子
+      if (len === 2 || len === 3) {
         return groups[rank].slice(0, 2);
       }
     }
@@ -627,6 +663,119 @@ export class CardPlayHandler {
     // 3. 最后出单张（最小的）
     const sorted = [...cards].sort((a, b) => CardTypeDetector.getCardValue(a) - CardTypeDetector.getCardValue(b));
     return [sorted[0]];
+  }
+
+  /**
+   * 找到一手“飞机带翅膀”作为首家出牌：
+   * - 飞机主体只使用恰好三张的连续点数（不拆炸弹）
+   * - wingsPreferPairs=true 时优先寻找每个三张对应的一对；若不足，再交由外部调用 fallback 为单牌方案
+   * - wingsPreferPairs=false 时寻找每个三张对应的一张单牌
+   */
+  private findBestPlaneWithWings(cards: string[], wingsPreferPairs: boolean): string[] | null {
+    if (cards.length < 8) return null; // 最少 2 组三张 + 2 张翅膀
+
+    const groups: Record<string, string[]> = {};
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    // 找出所有恰好三张的点数，按点数从小到大排序
+    const tripleRanks = Object.keys(groups)
+      .filter((rank) => groups[rank].length === 3)
+      .sort(
+        (a, b) =>
+          CardTypeDetector.getCardValue(groups[a][0]) -
+          CardTypeDetector.getCardValue(groups[b][0]),
+      );
+
+    if (tripleRanks.length < 2) return null;
+
+    // 在 tripleRanks 中找连续点数组成飞机主体
+    const triplesWithValue = tripleRanks.map((rank) => ({
+      rank,
+      value: CardTypeDetector.getCardValue(groups[rank][0]),
+    }));
+
+    let bestCombo: string[] | null = null;
+
+    let start = 0;
+    for (let i = 1; i <= triplesWithValue.length; i++) {
+      const prev = triplesWithValue[i - 1];
+      const curr = triplesWithValue[i];
+      const isEnd =
+        i === triplesWithValue.length ||
+        !curr ||
+        curr.value !== prev.value + 1;
+
+      if (isEnd) {
+        const run = triplesWithValue.slice(start, i);
+        if (run.length >= 2) {
+          const planeRanks = run.map((x) => x.rank);
+          const planeCount = planeRanks.length;
+
+          // 构造飞机主体：每个点数取 3 张
+          const body: string[] = [];
+          for (const r of planeRanks) {
+            const g = groups[r];
+            body.push(g[0], g[1], g[2]);
+          }
+
+          // 剩余牌用于找翅膀
+          const planeRankSet = new Set(planeRanks);
+          const otherRanks = Object.keys(groups)
+            .filter((r) => !planeRankSet.has(r))
+            .sort(
+              (a, b) =>
+                CardTypeDetector.getCardValue(groups[a][0]) -
+                CardTypeDetector.getCardValue(groups[b][0]),
+            );
+
+          if (wingsPreferPairs) {
+            // 优先带对：从剩余点数中找 planeCount 个小对子（不拆炸弹）
+            const wingsPairs: string[][] = [];
+            for (const r of otherRanks) {
+              const arr = groups[r];
+              const len = arr.length;
+              if (len >= 2 && len < 4) {
+                wingsPairs.push([arr[0], arr[1]]);
+                if (wingsPairs.length >= planeCount) break;
+              }
+            }
+
+            if (wingsPairs.length === planeCount) {
+              const wings = wingsPairs.flat();
+              const combo = [...body, ...wings];
+              if (!bestCombo) {
+                bestCombo = combo;
+              }
+            }
+          } else {
+            // 带单：从剩余点数中找 planeCount 个小单牌（不拆炸弹）
+            const singles: string[] = [];
+            for (const r of otherRanks) {
+              const arr = groups[r];
+              const len = arr.length;
+              if (len >= 1 && len < 4) {
+                singles.push(arr[0]);
+                if (singles.length >= planeCount) break;
+              }
+            }
+
+            if (singles.length === planeCount) {
+              const combo = [...body, ...singles];
+              if (!bestCombo) {
+                bestCombo = combo;
+              }
+            }
+          }
+        }
+        start = i;
+      }
+    }
+
+    return bestCombo;
   }
 
   private decideMinSingle(player: any): string[] {

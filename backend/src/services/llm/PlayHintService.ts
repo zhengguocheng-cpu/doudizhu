@@ -280,6 +280,30 @@ class PlayHintService {
         return { success: false, error: validationError }
       }
 
+      // 额外策略约束：避免在牌局早期主动使用炸弹/王炸
+      // 典型场景：手里有 3333、77 时，不应该一上来就把 3333 当炸弹打掉，而是先出 77。
+      const pattern = validation.pattern
+      if (pattern) {
+        const isBombLike = pattern.type === CardType.BOMB || pattern.type === CardType.ROCKET
+        if (isBombLike) {
+          const handSize = hand.length
+          const lastType = lastPattern?.type
+          const lastIsBombLike = lastType === CardType.BOMB || lastType === CardType.ROCKET
+
+          // 认为“牌局还比较早”的简单条件：手牌数量 > 4
+          // 在这种情况下：
+          // - 如果是首家/新一轮（没有上家牌型），禁止用炸弹/王炸开局；
+          // - 如果是在跟牌，但上家不是炸弹/王炸，同样避免用炸弹/王炸，交给本地保守逻辑决定是否要炸。
+          const isEarlyHand = handSize > 4
+          if (isEarlyHand && (!lastPattern || !lastIsBombLike)) {
+            return {
+              success: false,
+              error: '策略约束：避免在牌局早期主动使用炸弹/王炸',
+            }
+          }
+        }
+      }
+
       return {
         success: true,
         cards: suggestedCards,

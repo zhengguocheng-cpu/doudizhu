@@ -27,8 +27,28 @@ export class ScoreService {
 
     // 计算积分变化
     const scoreBefore = playerRecord.totalScore;
-    const scoreChange = gameRecord.scoreChange;
-    const scoreAfter = scoreBefore + scoreChange;
+    const baseChange = gameRecord.scoreChange;
+    let scoreAfter = scoreBefore + baseChange;
+    let effectiveChange = baseChange;
+
+    // 机器人积分保护：如果是机器人玩家且本局结算后积分小于等于 0，则自动将总积分重置为 500000
+    if (this.isBotUser(userId) && scoreAfter <= 0) {
+      const rechargeTo = 500000;
+      console.log(
+        `🤖 机器人 ${username} 积分耗尽，系统自动充值到 ${rechargeTo}`
+      );
+      scoreAfter = rechargeTo;
+      effectiveChange = scoreAfter - scoreBefore;
+    }
+
+    // 真人玩家积分下限保护：不能变成负数，最多扣到 0 分，差额由系统补足
+    if (!this.isBotUser(userId) && scoreAfter < 0) {
+      console.log(
+        `⚖️ 玩家 ${username} 本局扣分超出余额，实际扣至 0 分（系统补足差额）`
+      );
+      scoreAfter = 0;
+      effectiveChange = scoreAfter - scoreBefore; // 等于 -scoreBefore
+    }
 
     // 更新统计数据
     playerRecord.gamesPlayed += 1;
@@ -76,7 +96,7 @@ export class ScoreService {
       gameId: gameRecord.gameId,
       scoreBefore,
       scoreAfter,
-      scoreChange,
+      scoreChange: effectiveChange,
       reason: gameRecord.isWinner ? 'game_win' : 'game_lose',
       timestamp: gameRecord.timestamp
     };
@@ -85,11 +105,13 @@ export class ScoreService {
     // 检查成就
     const newAchievements = this.checkAchievements(userId, playerRecord);
 
-    console.log(`📊 玩家 ${username} 积分更新: ${scoreBefore} → ${scoreAfter} (${scoreChange > 0 ? '+' : ''}${scoreChange})`);
+    console.log(
+      `📊 玩家 ${username} 积分更新: ${scoreBefore} → ${scoreAfter} (${effectiveChange > 0 ? '+' : ''}${effectiveChange})`
+    );
 
     return {
       newScore: scoreAfter,
-      scoreChange,
+      scoreChange: effectiveChange,
       achievements: newAchievements
     };
   }
@@ -227,6 +249,13 @@ export class ScoreService {
    */
   getPlayerScore(userId: string): PlayerScoreRecord | null {
     return scoreDAO.getPlayerRecord(userId);
+  }
+
+  /**
+   * 简单判断是否为机器人玩家：当前机器人 ID 统一为 bot_XXX
+   */
+  private isBotUser(userId: string): boolean {
+    return typeof userId === 'string' && userId.startsWith('bot_');
   }
 
   /**

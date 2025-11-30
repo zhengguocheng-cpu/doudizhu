@@ -1,6 +1,6 @@
 {
   "name": "doudizhu-backend",
-  "version": "1.5.3",
+  "version": "1.5.5",
   "description": "斗地主游戏后端服务器",
   "main": "dist/server.js",
   "engines": {

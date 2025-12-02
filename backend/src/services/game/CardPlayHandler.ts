@@ -482,7 +482,7 @@ export class CardPlayHandler {
 
     if (!currentPlayer || !currentPlayer.isBot) return;
 
-    const delay = 400 + Math.floor(Math.random() * 400); // 0.4~0.8 秒，加快出牌速度
+    const delay = 220 + Math.floor(Math.random() * 180); // ≈0.22~0.4 秒，进一步加快机器人出牌速度
 
     setTimeout(async () => {
       const latestRoom = roomService.getRoom(roomId) as any;

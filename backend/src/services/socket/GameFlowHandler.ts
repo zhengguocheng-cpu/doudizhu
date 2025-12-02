@@ -56,7 +56,7 @@ export class GameFlowHandler {
       return;
     }
 
-    const delay = 400 + Math.floor(Math.random() * 400); // 0.4~0.8 秒，加快出牌速度
+    const delay = 220 + Math.floor(Math.random() * 180); // ≈0.22~0.4 秒，让机器人抢地主更快
 
     setTimeout(() => {
       try {

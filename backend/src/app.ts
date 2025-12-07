@@ -8,6 +8,7 @@ import indexRoutes from './routes';
 import gameRoutes from './routes/gameRoutes';
 import scoreRoutes from './routes/scoreRoutes';
 import userRoutes from './routes/userRoutes';
+import adminRoutes from './routes/adminRoutes';
 import { createUserManager, UserManager } from './services/user/userManager';
 import { PlayerSession } from './services/player/playerSession';
 import { StateRecoveryService } from './services/state/stateRecovery';
@@ -135,6 +136,9 @@ export class Application {
         hintHistory,
       });
     });
+
+    // 管理员相关 API（目前仅用于后台自用，无复杂权限控制）
+    this.app.use('/api/admin', adminRoutes);
 
     // 2. 积分API路由 - 前缀匹配 /api/score/*
     this.app.use('/api/score', scoreRoutes);

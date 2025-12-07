@@ -9,6 +9,7 @@ import { gameRoomsService } from '../game/gameRoomsService';
 import { roomService } from '../room/roomService';
 import { gameFlowHandler } from './GameFlowHandler';
 import { playHintService } from '../llm/PlayHintService';
+import { scoreService } from '../score/ScoreService';
 
 export interface AuthenticatedSocket extends Socket {
   userId?: string;
@@ -179,15 +180,25 @@ export class SocketEventHandler {
       // 检查是否有保存的游戏状态（玩家重连）
       const savedGameState = roomService.getGameState(roomId);
       
-      // 发送成功响应给当前玩家
+      // 为每个玩家添加积分信息，并回写到 room.players，后续广播统一复用
+      const playersWithScore = (room.players || []).map((p: any) => {
+        const playerScore = scoreService.getPlayerScore(p.id || p.name);
+        return {
+          ...p,
+          score: playerScore?.totalScore ?? 0
+        };
+      });
+      (room as any).players = playersWithScore;
+
+      // 发送成功响应给当前玩家（携带带积分的玩家列表）
       socket.emit('join_game_success', {
         roomId: roomId,
         roomName: room.name,
-        players: room.players || [],
+        players: playersWithScore,
         room: {
           id: roomId,
           name: room.name,
-          players: room.players || [],
+          players: playersWithScore,
           maxPlayers: room.maxPlayers || 3,
           status: room.status || 'waiting'
         },
@@ -206,10 +217,13 @@ export class SocketEventHandler {
       console.log(`📢 当前房间内的所有socket:`, Array.from(this.io.sockets.adapter.rooms.get(`room_${roomId}`) || []));
       console.log(`📢 当前socket ID: ${socket.id}`);
       
+      // 使用已经带有积分信息的 room.players 进行广播
+      const playersWithScoreForJoin = (room.players || []) as any[];
+
       socket.to(`room_${roomId}`).emit('player_joined', {
         playerId: userId,
         playerName: user.name,
-        players: room.players || [] // 发送完整的玩家列表
+        players: playersWithScoreForJoin // 发送带积分的玩家列表
       });
       
       console.log(`✅ player_joined 事件已发送`);

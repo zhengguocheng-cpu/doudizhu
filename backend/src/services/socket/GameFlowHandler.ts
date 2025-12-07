@@ -143,8 +143,28 @@ export class GameFlowHandler {
       // 更新房间状态为游戏中
       room.status = 'playing';
 
+      // 初始化本局游戏的日志元信息（起始牌等）
+      const startedAt = new Date();
+
       // 发牌
       const dealResult = this.dealCards(room);
+      (room as any).gameLogMeta = {
+        startedAt: startedAt.toISOString(),
+        players: room.players.map((player: any, index: number) => ({
+          playerId: player.id,
+          playerName: player.name,
+          seatIndex: index,
+          isBot: !!player.isBot,
+          initialCards: Array.isArray(dealResult.playerCards[index])
+            ? [...dealResult.playerCards[index]]
+            : [],
+        })),
+        bottomCards: Array.isArray(dealResult.bottomCards) ? [...dealResult.bottomCards] : [],
+        bidding: {
+          order: [],
+          bids: [],
+        },
+      };
       
       // 通知所有玩家游戏开始
       this.io.to(`room_${roomId}`).emit('game_started', {
@@ -168,7 +188,8 @@ export class GameFlowHandler {
           playerReady: player.ready,
           position: player.position,
           cards: dealResult.playerCards[index],
-          cardCount: dealResult.playerCards[index].length
+          cardCount: dealResult.playerCards[index].length,
+          score: (player as any).score ?? 0,
         })),
         bottomCards: dealResult.bottomCards,
         bottomCardCount: dealResult.bottomCards.length
@@ -178,14 +199,15 @@ export class GameFlowHandler {
 
       console.log(`✅ 游戏开始成功: 房间${roomId}`);
       
-      // 保存游戏状态
+      // 保存游戏状态（包含当前各玩家积分快照）
       this.saveGameState(roomId, {
         phase: 'dealing',
         players: room.players.map((player: any, index: number) => ({
           id: player.id,
           name: player.name,
           cards: dealResult.playerCards[index],
-          cardCount: dealResult.playerCards[index].length
+          cardCount: dealResult.playerCards[index].length,
+          score: (player as any).score ?? 0,
         })),
         bottomCards: dealResult.bottomCards
       });
@@ -229,6 +251,49 @@ export class GameFlowHandler {
         ]
       };
 
+      // 记录抢地主顺序到游戏日志元信息中
+      const meta: any = (room as any).gameLogMeta || {};
+      if (!meta.bidding) {
+        meta.bidding = { order: [], bids: [] };
+      }
+      meta.bidding.order = Array.isArray(room.biddingState.biddingOrder)
+        ? [...room.biddingState.biddingOrder]
+        : [];
+      (room as any).gameLogMeta = meta;
+
+      // 在抢地主阶段也保存一次游戏状态，便于断线重连时恢复
+      this.saveGameState(roomId, {
+        phase: 'bidding',
+        landlordId: room.biddingState.landlordId,
+        currentPlayerId: room.biddingState.currentBidderId,
+        lastPlayedCards: null,
+        lastPlayerId: null,
+        lastPattern: null,
+        isNewRound: true,
+        passCount: 0,
+        players: room.players.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          cards: Array.isArray(p.cards) ? [...p.cards] : [],
+          cardCount: Array.isArray(p.cards) ? p.cards.length : (p.cardCount || 0),
+          score: (p as any).score ?? 0,
+        })),
+        bottomCards: Array.isArray(room.bottomCards) ? [...room.bottomCards] : [],
+        biddingState: {
+          currentBidderId: room.biddingState.currentBidderId,
+          landlordId: room.biddingState.landlordId,
+          bids: Array.isArray(room.biddingState.bids)
+            ? room.biddingState.bids.map((b: any) => ({
+                userId: b.userId,
+                bid: !!b.bid,
+              }))
+            : [],
+          biddingOrder: Array.isArray(room.biddingState.biddingOrder)
+            ? [...room.biddingState.biddingOrder]
+            : [],
+        },
+      });
+
       // 通知所有玩家开始抢地主
       this.io.to(`room_${roomId}`).emit('bidding_start', {
         roomId: roomId,
@@ -270,6 +335,19 @@ export class GameFlowHandler {
       // 记录抢地主结果
       room.biddingState.bids.push({ userId, bid });
 
+      // 同步到游戏日志元信息中，记录每一次抢/不抢
+      const meta: any = (room as any).gameLogMeta;
+      if (meta && meta.bidding) {
+        if (!Array.isArray(meta.bidding.bids)) {
+          meta.bidding.bids = [];
+        }
+        meta.bidding.bids.push({
+          userId,
+          bid,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       // 如果选择抢，记录为潜在地主
       if (bid) {
         room.biddingState.landlordId = userId;
@@ -295,6 +373,39 @@ export class GameFlowHandler {
       } else {
         // 更新当前抢地主的玩家
         room.biddingState.currentBidderId = nextBidderId;
+
+        // 在抢地主过程中保存最新状态，便于断线重连
+        this.saveGameState(roomId, {
+          phase: 'bidding',
+          landlordId: room.biddingState.landlordId,
+          currentPlayerId: room.biddingState.currentBidderId,
+          lastPlayedCards: null,
+          lastPlayerId: null,
+          lastPattern: null,
+          isNewRound: true,
+          passCount: 0,
+          players: room.players.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            cards: Array.isArray(p.cards) ? [...p.cards] : [],
+            cardCount: Array.isArray(p.cards) ? p.cards.length : (p.cardCount || 0),
+            score: (p as any).score ?? 0,
+          })),
+          bottomCards: Array.isArray(room.bottomCards) ? [...room.bottomCards] : [],
+          biddingState: {
+            currentBidderId: room.biddingState.currentBidderId,
+            landlordId: room.biddingState.landlordId,
+            bids: Array.isArray(room.biddingState.bids)
+              ? room.biddingState.bids.map((b: any) => ({
+                  userId: b.userId,
+                  bid: !!b.bid,
+                }))
+              : [],
+            biddingOrder: Array.isArray(room.biddingState.biddingOrder)
+              ? [...room.biddingState.biddingOrder]
+              : [],
+          },
+        });
 
         // 如果下一个玩家是机器人，则自动执行抢/不抢
         this.scheduleBotBidIfNeeded(roomId);
@@ -346,6 +457,12 @@ export class GameFlowHandler {
       landlord.cards = landlord.cards.concat(room.bottomCards);
       this.sortCards(landlord.cards);
 
+      // 在日志元信息中记录地主及其拿到底牌后的完整手牌
+      const meta: any = (room as any).gameLogMeta || {};
+      meta.landlordId = landlordId;
+      meta.landlordCardsAfterBottom = Array.isArray(landlord.cards) ? [...landlord.cards] : [];
+      (room as any).gameLogMeta = meta;
+
       // 设置角色
       room.players.forEach((p: any) => {
         p.role = p.id === landlordId ? 'landlord' : 'farmer';
@@ -369,7 +486,7 @@ export class GameFlowHandler {
       // 在地主确定后保存当前游戏状态，供断线重连使用
       this.saveGameState(roomId, {
         phase: 'playing',
-        landlordId: landlordId,
+        landlordId,
         currentPlayerId: landlordId,
         lastPlayedCards: null,
         lastPlayerId: null,
@@ -379,15 +496,13 @@ export class GameFlowHandler {
         players: room.players.map((p: any) => ({
           id: p.id,
           name: p.name,
-          avatar: p.avatar,
           cards: p.cards,
-          cardCount: Array.isArray(p.cards) ? p.cards.length : (p.cardCount ?? 0),
-          role: p.role,
+          cardCount: Array.isArray(p.cards) ? p.cards.length : 0,
+          score: (p as any).score ?? 0,
         })),
         bottomCards: room.bottomCards,
       });
 
-      // 通知所有玩家地主确定（包含地主的新手牌）
       console.log(`📢 向房间 room_${roomId} 广播地主确定事件`);
       
       this.io.to(`room_${roomId}`).emit('landlord_determined', {

@@ -11,6 +11,9 @@ import { ScoreCalculator } from './ScoreCalculator';
 import { scoreService } from '../score/ScoreService';
 import { GameRecord } from '../../models/ScoreRecord';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
+import { config } from '../../config';
 import { playHintService } from '../llm/PlayHintService';
 
 export class CardPlayHandler {
@@ -158,7 +161,8 @@ export class CardPlayHandler {
           name: p.name,
           avatar: p.avatar,
           cards: p.cards,
-          cardCount: p.cardCount
+          cardCount: p.cardCount,
+          score: (p as any).score ?? 0,
         })),
         landlordId: room.gameState.landlordId,
         bottomCards: room.gameState.bottomCards
@@ -264,7 +268,8 @@ export class CardPlayHandler {
           name: p.name,
           avatar: p.avatar,
           cards: p.cards,
-          cardCount: p.cardCount
+          cardCount: p.cardCount,
+          score: (p as any).score ?? 0,
         })),
         landlordId: room.gameState.landlordId,
         bottomCards: room.gameState.bottomCards
@@ -360,6 +365,141 @@ export class CardPlayHandler {
       } catch (error) {
         console.error(`记录玩家 ${player.name} 积分失败:`, error);
       }
+    }
+
+    // 组装完整对局日志并写入文件，供后续大模型训练/审核使用
+    try {
+      const gameMeta: any = (room as any).gameLogMeta || {};
+
+      const startedAtStr = typeof gameMeta.startedAt === 'string'
+        ? gameMeta.startedAt
+        : gameTimestamp.toISOString();
+      let durationMs: number | undefined;
+      try {
+        const startedAtDate = new Date(startedAtStr);
+        if (!Number.isNaN(startedAtDate.getTime())) {
+          durationMs = gameTimestamp.getTime() - startedAtDate.getTime();
+        }
+      } catch {
+        // ignore
+      }
+
+      const playersMeta = Array.isArray(gameMeta.players) ? gameMeta.players : [];
+      const playersForLog = room.players.map((p: any, index: number) => {
+        const metaPlayer = playersMeta.find((mp: any) => mp.playerId === p.id) || {};
+        const remaining = remainingHands[p.id];
+
+        return {
+          playerId: p.id,
+          playerName: p.name,
+          seatIndex: typeof metaPlayer.seatIndex === 'number' ? metaPlayer.seatIndex : index,
+          isBot: !!p.isBot,
+          role: p.role,
+          initialCards: Array.isArray(metaPlayer.initialCards) ? [...metaPlayer.initialCards] : [],
+          finalCards: remaining && Array.isArray(remaining.cards) ? [...remaining.cards] : [],
+        };
+      });
+
+      const biddingMeta = gameMeta.bidding || {};
+      const biddingLog = {
+        order: Array.isArray(biddingMeta.order)
+          ? [...biddingMeta.order]
+          : Array.isArray((room as any).biddingState?.biddingOrder)
+            ? [...(room as any).biddingState.biddingOrder]
+            : [],
+        bids: Array.isArray(biddingMeta.bids)
+          ? biddingMeta.bids.map((b: any) => ({
+              userId: b.userId,
+              bid: !!b.bid,
+              timestamp: typeof b.timestamp === 'string'
+                ? b.timestamp
+                : new Date().toISOString(),
+            }))
+          : [],
+      };
+
+      const rawHistory = room.gameState?.playHistory || [];
+      const playHistory = Array.isArray(rawHistory)
+        ? rawHistory.map((entry: any, index: number) => ({
+            index,
+            playerId: entry.playerId,
+            playerName: entry.playerName,
+            action:
+              Array.isArray(entry.cards) && entry.cards.length > 0
+                ? 'play'
+                : 'pass',
+            cards: Array.isArray(entry.cards) ? [...entry.cards] : [],
+            cardType: entry.cardType || null,
+            timestamp:
+              entry.timestamp instanceof Date
+                ? entry.timestamp.toISOString()
+                : typeof entry.timestamp === 'string'
+                  ? entry.timestamp
+                  : new Date().toISOString(),
+          }))
+        : [];
+
+      const resultLog = {
+        winnerId: winner.id,
+        winnerName: winner.name,
+        winnerRole: winner.role,
+        landlordWin,
+        baseScore: gameScore.baseScore,
+        bombCount: gameScore.bombCount,
+        rocketCount: gameScore.rocketCount,
+        isSpring: gameScore.isSpring,
+        isAntiSpring: gameScore.isAntiSpring,
+        multipliers: gameScore.playerScores[0]?.multipliers || null,
+        playerScores: gameScore.playerScores.map((ps) => ({
+          playerId: ps.playerId,
+          playerName: ps.playerName,
+          role: ps.role,
+          isWinner: ps.isWinner,
+          baseScore: ps.baseScore,
+          multipliers: ps.multipliers,
+          finalScore: ps.finalScore,
+        })),
+      };
+
+      const fullLog = {
+        version: '1.0.0',
+        gameId,
+        roomId,
+        startedAt: startedAtStr,
+        endedAt: gameTimestamp.toISOString(),
+        durationMs,
+        players: playersForLog,
+        bottomCards: Array.isArray(gameMeta.bottomCards) ? [...gameMeta.bottomCards] : [],
+        landlordId:
+          gameMeta.landlordId ||
+          (room.gameState && (room.gameState as any).landlordId) ||
+          null,
+        landlordCardsAfterBottom: Array.isArray(gameMeta.landlordCardsAfterBottom)
+          ? [...gameMeta.landlordCardsAfterBottom]
+          : [],
+        bidding: biddingLog,
+        playHistory,
+        result: resultLog,
+        remainingHands,
+        hintHistory: room.gameState?.hintHistory || [],
+      };
+
+      const logDir = config.paths.gameLogs;
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+
+      const safeRoomId = String(roomId).replace(/[^a-zA-Z0-9_-]/g, '_');
+      const fileName = `GAME_${gameId}_${safeRoomId}.json`;
+      const filePath = path.join(logDir, fileName);
+      fs.writeFileSync(filePath, JSON.stringify(fullLog, null, 2), 'utf-8');
+
+      const summaryFile = path.join(logDir, 'all_games.jsonl');
+      fs.appendFileSync(summaryFile, JSON.stringify(fullLog) + '\n', 'utf-8');
+
+      console.log(`📝 已写入对局日志: ${fileName}`);
+    } catch (error) {
+      console.error('写入对局日志失败:', error);
     }
 
     // 广播游戏结束（包含得分信息、成就、每个玩家的剩余手牌以及本局 AI 提示历史）

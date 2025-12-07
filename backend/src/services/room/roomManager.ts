@@ -15,16 +15,26 @@ interface BotProfile {
 }
 
 const BOT_POOL: BotProfile[] = [
-  { id: 'bot_001', name: '小爱同学', avatar: '🤖' },
-  { id: 'bot_002', name: '小明同学', avatar: '👾' },
-  { id: 'bot_003', name: '小红同学', avatar: '🤗' },
-  { id: 'bot_004', name: '小强同学', avatar: '👽' },
-  { id: 'bot_005', name: '小芳同学', avatar: '🤓' },
-  { id: 'bot_006', name: '小军同学', avatar: '👨‍💻' },
-  { id: 'bot_007', name: '小花同学', avatar: '👩‍💻' },
-  { id: 'bot_008', name: '小天同学', avatar: '🧑‍🚀' },
-  { id: 'bot_009', name: '小雨同学', avatar: '🧑‍🎨' },
-  { id: 'bot_010', name: '小雪同学', avatar: '🧑‍🏫' },
+  { id: 'bot_001', name: '菜鸡一号', avatar: '🐣' },
+  { id: 'bot_002', name: '欢乐农民', avatar: '🌾' },
+  { id: 'bot_003', name: '牌神候补', avatar: '🃏' },
+  { id: 'bot_004', name: '深度学习机', avatar: '🧠' },
+  { id: 'bot_005', name: '摸牌怪侠', avatar: '🕵️‍♂️' },
+  { id: 'bot_006', name: '理性出牌机', avatar: '🤖' },
+  { id: 'bot_007', name: '地道农民工', avatar: '🧑‍🌾' },
+  { id: 'bot_008', name: '牌局观察者', avatar: '👀' },
+  { id: 'bot_009', name: '随缘出牌人', avatar: '🎲' },
+  { id: 'bot_010', name: '月光牌手', avatar: '🌙' },
+  { id: 'bot_011', name: '午休AI', avatar: '😴' },
+  { id: 'bot_012', name: '凌晨排位狗', avatar: '🌃' },
+  { id: 'bot_013', name: '左手炸弹', avatar: '💣' },
+  { id: 'bot_014', name: '右手王炸', avatar: '🔥' },
+  { id: 'bot_015', name: '稳健理财型', avatar: '💼' },
+  { id: 'bot_016', name: '梭哈练习生', avatar: '🎰' },
+  { id: 'bot_017', name: '快乐摸鱼人', avatar: '🐟' },
+  { id: 'bot_018', name: '安静思考者', avatar: '🤔' },
+  { id: 'bot_019', name: '落单小地主', avatar: '👑' },
+  { id: 'bot_020', name: '不出牌专家', avatar: '🙅‍♂️' },
 ]
 
 export class RoomManager {
@@ -475,15 +485,17 @@ export class RoomManager {
         .map((p: Player) => p.id)
     )
 
-    // 找到第一个未在房间的机器人
-    for (const bot of BOT_POOL) {
-      if (!existingBotIds.has(bot.id)) {
-        return bot
-      }
+    // 先过滤出当前房间还未使用过的机器人
+    const candidates = BOT_POOL.filter(bot => !existingBotIds.has(bot.id))
+
+    if (candidates.length === 0) {
+      // 如果所有机器人都已在房间，返回 null
+      return null
     }
 
-    // 如果所有机器人都已在房间，返回 null
-    return null
+    // 从可用机器人中随机选择一个，避免总是同几个人
+    const randomIndex = Math.floor(Math.random() * candidates.length)
+    return candidates[randomIndex]
   }
 
   /**

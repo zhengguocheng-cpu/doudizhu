@@ -9,7 +9,8 @@ import {
   GameRecord,
   ScoreChangeRecord,
   PlayerStats,
-  LeaderboardEntry
+  LeaderboardEntry,
+  createInitialPlayerRecord
 } from '../../models/ScoreRecord';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -246,9 +247,17 @@ export class ScoreService {
 
   /**
    * 获取玩家积分记录
+   * 机器人如果没有记录，会自动创建并存储（初始50万积分）
    */
   getPlayerScore(userId: string): PlayerScoreRecord | null {
-    return scoreDAO.getPlayerRecord(userId);
+    const record = scoreDAO.getPlayerRecord(userId);
+    
+    // 如果是机器人且没有记录，创建并存储默认积分记录
+    if (!record && this.isBotUser(userId)) {
+      return scoreDAO.getOrCreatePlayerRecord(userId, userId);
+    }
+    
+    return record;
   }
 
   /**

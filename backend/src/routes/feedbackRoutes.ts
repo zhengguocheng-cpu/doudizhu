@@ -79,17 +79,23 @@ router.post('/feedback', upload.array('screenshots', 3), async (req: Request, re
     })) : [];
     
     // 构建反馈数据
+    const now = new Date().toISOString();
+    const feedbackId = `FB_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const feedback = {
-      id: `FB_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: feedbackId,
       userName: userName || '匿名用户',
       feedbackType,
       feedbackContent,
       contact: contact || '',
       screenshots,
-      timestamp: timestamp || new Date().toISOString(),
+      timestamp: timestamp || now,
       userAgent: userAgent || '',
       url: url || '',
-      createdAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now,
+      status: 'pending',          // 默认：待排查
+      priority: 'normal',         // 默认优先级
+      replies: [] as any[]        // 管理员回复列表
     };
     
     // 保存到文件
@@ -162,6 +168,89 @@ router.get('/feedback/list', (req: Request, res: Response) => {
       success: false,
       message: '服务器错误'
     });
+  }
+});
+
+/**
+ * 更新反馈状态 / 优先级
+ */
+router.patch('/feedback/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status, priority } = req.body as { status?: string; priority?: string };
+
+    const feedbackDir = config.paths.feedbackData;
+    const feedbackFile = path.join(feedbackDir, `${id}.json`);
+
+    if (!fs.existsSync(feedbackFile)) {
+      res.status(404).json({ success: false, message: '反馈不存在' });
+      return;
+    }
+
+    const raw = fs.readFileSync(feedbackFile, 'utf-8');
+    const data: any = JSON.parse(raw);
+
+    if (typeof status === 'string' && status.trim()) {
+      data.status = status.trim();
+    }
+    if (typeof priority === 'string' && priority.trim()) {
+      data.priority = priority.trim();
+    }
+    data.updatedAt = new Date().toISOString();
+
+    fs.writeFileSync(feedbackFile, JSON.stringify(data, null, 2));
+
+    res.json({ success: true, feedback: data });
+  } catch (error) {
+    console.error('更新反馈状态失败:', error);
+    res.status(500).json({ success: false, message: '服务器错误' });
+  }
+});
+
+/**
+ * 管理员对反馈追加回复
+ */
+router.post('/feedback/:id/reply', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { author, content } = req.body as { author?: string; content?: string };
+
+    if (!content || !String(content).trim()) {
+      res.status(400).json({ success: false, message: '回复内容不能为空' });
+      return;
+    }
+
+    const feedbackDir = config.paths.feedbackData;
+    const feedbackFile = path.join(feedbackDir, `${id}.json`);
+
+    if (!fs.existsSync(feedbackFile)) {
+      res.status(404).json({ success: false, message: '反馈不存在' });
+      return;
+    }
+
+    const raw = fs.readFileSync(feedbackFile, 'utf-8');
+    const data: any = JSON.parse(raw);
+
+    const now = new Date().toISOString();
+    const reply = {
+      id: `R_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      author: (author && String(author).trim()) || '管理员',
+      content: String(content).trim(),
+      createdAt: now
+    };
+
+    if (!Array.isArray(data.replies)) {
+      data.replies = [];
+    }
+    data.replies.push(reply);
+    data.updatedAt = now;
+
+    fs.writeFileSync(feedbackFile, JSON.stringify(data, null, 2));
+
+    res.json({ success: true, feedback: data, reply });
+  } catch (error) {
+    console.error('追加反馈回复失败:', error);
+    res.status(500).json({ success: false, message: '服务器错误' });
   }
 });
 

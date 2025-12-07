@@ -322,6 +322,17 @@ export class CardPlayHandler {
     const gameTimestamp = new Date();
     const achievements: { [userId: string]: string[] } = {};
 
+    // ✅ 优先向前端广播 game_over，避免后续积分结算和日志写盘阻塞结算面板
+    this.io.to(`room_${roomId}`).emit('game_over', {
+      winnerId: winner.id,
+      winnerName: winner.name,
+      winnerRole: winner.role,
+      landlordWin,
+      score: gameScore,              // 本局得分明细
+      remainingHands,                // 各玩家剩余手牌（用于前端亮牌）
+      hintHistory: room.gameState?.hintHistory || [], // 本局所有提示请求
+    });
+
     for (const playerScore of gameScore.playerScores) {
       const player = room.players.find((p: any) => p.id === playerScore.playerId);
       if (!player) continue;
@@ -482,20 +493,8 @@ export class CardPlayHandler {
         result: resultLog,
         remainingHands,
         hintHistory: room.gameState?.hintHistory || [],
+        achievements,
       };
-
-      // 广播游戏结束（包含得分信息、成就、每个玩家的剩余手牌以及本局 AI 提示历史）
-      // 提前发送给前端，避免后续同步写日志阻塞导致结算面板延迟出现
-      this.io.to(`room_${roomId}`).emit('game_over', {
-        winnerId: winner.id,
-        winnerName: winner.name,
-        winnerRole: winner.role,
-        landlordWin: landlordWin,
-        score: gameScore,  // 添加得分信息
-        achievements,      // 添加成就信息
-        remainingHands,    // 各玩家剩余手牌
-        hintHistory: room.gameState?.hintHistory || [], // 本局所有提示请求与 DeepSeek 返回
-      });
 
       const logDir = config.paths.gameLogs;
       if (!fs.existsSync(logDir)) {

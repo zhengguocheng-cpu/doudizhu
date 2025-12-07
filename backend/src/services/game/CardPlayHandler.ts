@@ -322,7 +322,7 @@ export class CardPlayHandler {
     const gameTimestamp = new Date();
     const achievements: { [userId: string]: string[] } = {};
 
-    // ✅ 优先向前端广播 game_over，避免后续积分结算和日志写盘阻塞结算面板
+    // ✅ 先广播 game_over，再把重型 I/O 放到下一轮事件循环，避免阻塞前端收到事件
     this.io.to(`room_${roomId}`).emit('game_over', {
       winnerId: winner.id,
       winnerName: winner.name,
@@ -333,209 +333,210 @@ export class CardPlayHandler {
       hintHistory: room.gameState?.hintHistory || [], // 本局所有提示请求
     });
 
-    for (const playerScore of gameScore.playerScores) {
-      const player = room.players.find((p: any) => p.id === playerScore.playerId);
-      if (!player) continue;
+    // 使用 setTimeout(..., 0) 把后续结算和写盘放到下一轮事件循环，避免阻塞当前 Tick
+    setTimeout(() => {
+      // 结算积分 & 成就
+      for (const playerScore of gameScore.playerScores) {
+        const player = room.players.find((p: any) => p.id === playerScore.playerId);
+        if (!player) continue;
 
-      // 创建游戏记录
-      const gameRecord: GameRecord = {
-        gameId,
-        timestamp: gameTimestamp,
-        roomId,
-        role: playerScore.role,
-        isWinner: playerScore.playerId === winner.id,
-        scoreChange: playerScore.finalScore,
-        multipliers: playerScore.multipliers,
-        opponents: room.players
-          .filter((p: any) => p.id !== playerScore.playerId)
-          .map((p: any) => p.id),
-        tags: []
-      };
-
-      // 添加特殊标记
-      if (gameScore.isSpring) gameRecord.tags?.push('春天');
-      if (gameScore.isAntiSpring) gameRecord.tags?.push('反春');
-      if (gameScore.bombCount > 0) gameRecord.tags?.push(`炸弹×${gameScore.bombCount}`);
-      if (gameScore.rocketCount > 0) gameRecord.tags?.push(`王炸×${gameScore.rocketCount}`);
-
-      // 记录积分
-      try {
-        const result = scoreService.recordGameResult(
-          playerScore.playerId,
-          player.name,
-          gameRecord
-        );
-
-        achievements[playerScore.playerId] = result.achievements;
-
-        console.log(`📊 ${player.name} 积分: ${result.scoreChange > 0 ? '+' : ''}${result.scoreChange} → ${result.newScore}`);
-        
-        if (result.achievements.length > 0) {
-          console.log(`🏆 ${player.name} 解锁成就:`, result.achievements);
-        }
-      } catch (error) {
-        console.error(`记录玩家 ${player.name} 积分失败:`, error);
-      }
-    }
-
-    // 组装完整对局日志并写入文件，供后续大模型训练/审核使用
-    try {
-      const gameMeta: any = (room as any).gameLogMeta || {};
-
-      const startedAtStr = typeof gameMeta.startedAt === 'string'
-        ? gameMeta.startedAt
-        : gameTimestamp.toISOString();
-      let durationMs: number | undefined;
-      try {
-        const startedAtDate = new Date(startedAtStr);
-        if (!Number.isNaN(startedAtDate.getTime())) {
-          durationMs = gameTimestamp.getTime() - startedAtDate.getTime();
-        }
-      } catch {
-        // ignore
-      }
-
-      const playersMeta = Array.isArray(gameMeta.players) ? gameMeta.players : [];
-      const playersForLog = room.players.map((p: any, index: number) => {
-        const metaPlayer = playersMeta.find((mp: any) => mp.playerId === p.id) || {};
-        const remaining = remainingHands[p.id];
-
-        return {
-          playerId: p.id,
-          playerName: p.name,
-          seatIndex: typeof metaPlayer.seatIndex === 'number' ? metaPlayer.seatIndex : index,
-          isBot: !!p.isBot,
-          role: p.role,
-          initialCards: Array.isArray(metaPlayer.initialCards) ? [...metaPlayer.initialCards] : [],
-          finalCards: remaining && Array.isArray(remaining.cards) ? [...remaining.cards] : [],
+        const gameRecord: GameRecord = {
+          gameId,
+          timestamp: gameTimestamp,
+          roomId,
+          role: playerScore.role,
+          isWinner: playerScore.playerId === winner.id,
+          scoreChange: playerScore.finalScore,
+          multipliers: playerScore.multipliers,
+          opponents: room.players
+            .filter((p: any) => p.id !== playerScore.playerId)
+            .map((p: any) => p.id),
+          tags: []
         };
-      });
 
-      const biddingMeta = gameMeta.bidding || {};
-      const biddingLog = {
-        order: Array.isArray(biddingMeta.order)
-          ? [...biddingMeta.order]
-          : Array.isArray((room as any).biddingState?.biddingOrder)
-            ? [...(room as any).biddingState.biddingOrder]
-            : [],
-        bids: Array.isArray(biddingMeta.bids)
-          ? biddingMeta.bids.map((b: any) => ({
-              userId: b.userId,
-              bid: !!b.bid,
-              timestamp: typeof b.timestamp === 'string'
-                ? b.timestamp
-                : new Date().toISOString(),
-            }))
-          : [],
-      };
+        if (gameScore.isSpring) gameRecord.tags?.push('春天');
+        if (gameScore.isAntiSpring) gameRecord.tags?.push('反春');
+        if (gameScore.bombCount > 0) gameRecord.tags?.push(`炸弹×${gameScore.bombCount}`);
+        if (gameScore.rocketCount > 0) gameRecord.tags?.push(`王炸×${gameScore.rocketCount}`);
 
-      const rawHistory = room.gameState?.playHistory || [];
-      const playHistory = Array.isArray(rawHistory)
-        ? rawHistory.map((entry: any, index: number) => ({
-            index,
-            playerId: entry.playerId,
-            playerName: entry.playerName,
-            action:
-              Array.isArray(entry.cards) && entry.cards.length > 0
-                ? 'play'
-                : 'pass',
-            cards: Array.isArray(entry.cards) ? [...entry.cards] : [],
-            cardType: entry.cardType || null,
-            timestamp:
-              entry.timestamp instanceof Date
-                ? entry.timestamp.toISOString()
-                : typeof entry.timestamp === 'string'
-                  ? entry.timestamp
-                  : new Date().toISOString(),
-          }))
-        : [];
+        try {
+          const result = scoreService.recordGameResult(
+            playerScore.playerId,
+            player.name,
+            gameRecord
+          );
 
-      const resultLog = {
-        winnerId: winner.id,
-        winnerName: winner.name,
-        winnerRole: winner.role,
-        landlordWin,
-        baseScore: gameScore.baseScore,
-        bombCount: gameScore.bombCount,
-        rocketCount: gameScore.rocketCount,
-        isSpring: gameScore.isSpring,
-        isAntiSpring: gameScore.isAntiSpring,
-        multipliers: gameScore.playerScores[0]?.multipliers || null,
-        playerScores: gameScore.playerScores.map((ps) => ({
-          playerId: ps.playerId,
-          playerName: ps.playerName,
-          role: ps.role,
-          isWinner: ps.isWinner,
-          baseScore: ps.baseScore,
-          multipliers: ps.multipliers,
-          finalScore: ps.finalScore,
-        })),
-      };
+          achievements[playerScore.playerId] = result.achievements;
 
-      const fullLog = {
-        version: '1.0.0',
-        gameId,
-        roomId,
-        startedAt: startedAtStr,
-        endedAt: gameTimestamp.toISOString(),
-        durationMs,
-        players: playersForLog,
-        bottomCards: Array.isArray(gameMeta.bottomCards) ? [...gameMeta.bottomCards] : [],
-        landlordId:
-          gameMeta.landlordId ||
-          (room.gameState && (room.gameState as any).landlordId) ||
-          null,
-        landlordCardsAfterBottom: Array.isArray(gameMeta.landlordCardsAfterBottom)
-          ? [...gameMeta.landlordCardsAfterBottom]
-          : [],
-        bidding: biddingLog,
-        playHistory,
-        result: resultLog,
-        remainingHands,
-        hintHistory: room.gameState?.hintHistory || [],
-        achievements,
-      };
-
-      const logDir = config.paths.gameLogs;
-      if (!fs.existsSync(logDir)) {
-        fs.mkdirSync(logDir, { recursive: true });
+          console.log(`📊 ${player.name} 积分: ${result.scoreChange > 0 ? '+' : ''}${result.scoreChange} → ${result.newScore}`);
+          
+          if (result.achievements.length > 0) {
+            console.log(`🏆 ${player.name} 解锁成就:`, result.achievements);
+          }
+        } catch (error) {
+          console.error(`记录玩家 ${player.name} 积分失败:`, error);
+        }
       }
 
-      const safeRoomId = String(roomId).replace(/[^a-zA-Z0-9_-]/g, '_');
-      const fileName = `GAME_${gameId}_${safeRoomId}.json`;
-      const filePath = path.join(logDir, fileName);
-      fs.writeFileSync(filePath, JSON.stringify(fullLog, null, 2), 'utf-8');
+      // 写入对局日志
+      try {
+        const gameMeta: any = (room as any).gameLogMeta || {};
 
-      const summaryFile = path.join(logDir, 'all_games.jsonl');
-      fs.appendFileSync(summaryFile, JSON.stringify(fullLog) + '\n', 'utf-8');
+        const startedAtStr = typeof gameMeta.startedAt === 'string'
+          ? gameMeta.startedAt
+          : gameTimestamp.toISOString();
+        let durationMs: number | undefined;
+        try {
+          const startedAtDate = new Date(startedAtStr);
+          if (!Number.isNaN(startedAtDate.getTime())) {
+            durationMs = gameTimestamp.getTime() - startedAtDate.getTime();
+          }
+        } catch {
+          // ignore
+        }
 
-      console.log(`📝 已写入对局日志: ${fileName}`);
-    } catch (error) {
-      console.error('写入对局日志失败:', error);
-    }
+        const playersMeta = Array.isArray(gameMeta.players) ? gameMeta.players : [];
+        const playersForLog = room.players.map((p: any, index: number) => {
+          const metaPlayer = playersMeta.find((mp: any) => mp.playerId === p.id) || {};
+          const remaining = remainingHands[p.id];
 
-    // 重置房间状态为waiting，允许再来一局
-    room.status = 'waiting';
-    room.gameState = null;
+          return {
+            playerId: p.id,
+            playerName: p.name,
+            seatIndex: typeof metaPlayer.seatIndex === 'number' ? metaPlayer.seatIndex : index,
+            isBot: !!p.isBot,
+            role: p.role,
+            initialCards: Array.isArray(metaPlayer.initialCards) ? [...metaPlayer.initialCards] : [],
+            finalCards: remaining && Array.isArray(remaining.cards) ? [...remaining.cards] : [],
+          };
+        });
 
-    // 同步清除持久化的游戏状态，避免下一次进入房间被误判为断线重连
-    // 否则 join_game 时会读取旧的 gameState，触发 game_state_restored，导致上一局手牌被恢复
-    try {
-      roomService.clearGameState(roomId);
-      console.log(`🗑️ 清除房间 ${roomId} 的持久化游戏状态（游戏结束）`);
-    } catch (error) {
-      console.warn(`⚠️ 清除房间 ${roomId} 游戏状态失败，不影响当前房间重置:`, error);
-    }
-    
-    // 重置所有玩家的准备状态
-    room.players.forEach((p: any) => {
-      p.ready = false;
-      p.role = null;
-      p.cards = [];
-      p.cardCount = 0;
-    });
-    
-    console.log(`🔄 房间${roomId}已重置，可以开始新一局`);
+        const biddingMeta = gameMeta.bidding || {};
+        const biddingLog = {
+          order: Array.isArray(biddingMeta.order)
+            ? [...biddingMeta.order]
+            : Array.isArray((room as any).biddingState?.biddingOrder)
+              ? [...(room as any).biddingState.biddingOrder]
+              : [],
+          bids: Array.isArray(biddingMeta.bids)
+            ? biddingMeta.bids.map((b: any) => ({
+                userId: b.userId,
+                bid: !!b.bid,
+                timestamp: typeof b.timestamp === 'string'
+                  ? b.timestamp
+                  : new Date().toISOString(),
+              }))
+            : [],
+        };
+
+        const rawHistory = room.gameState?.playHistory || [];
+        const playHistory = Array.isArray(rawHistory)
+          ? rawHistory.map((entry: any, index: number) => ({
+              index,
+              playerId: entry.playerId,
+              playerName: entry.playerName,
+              action:
+                Array.isArray(entry.cards) && entry.cards.length > 0
+                  ? 'play'
+                  : 'pass',
+              cards: Array.isArray(entry.cards) ? [...entry.cards] : [],
+              cardType: entry.cardType || null,
+              timestamp:
+                entry.timestamp instanceof Date
+                  ? entry.timestamp.toISOString()
+                  : typeof entry.timestamp === 'string'
+                    ? entry.timestamp
+                    : new Date().toISOString(),
+            }))
+          : [];
+
+        const resultLog = {
+          winnerId: winner.id,
+          winnerName: winner.name,
+          winnerRole: winner.role,
+          landlordWin,
+          baseScore: gameScore.baseScore,
+          bombCount: gameScore.bombCount,
+          rocketCount: gameScore.rocketCount,
+          isSpring: gameScore.isSpring,
+          isAntiSpring: gameScore.isAntiSpring,
+          multipliers: gameScore.playerScores[0]?.multipliers || null,
+          playerScores: gameScore.playerScores.map((ps) => ({
+            playerId: ps.playerId,
+            playerName: ps.playerName,
+            role: ps.role,
+            isWinner: ps.isWinner,
+            baseScore: ps.baseScore,
+            multipliers: ps.multipliers,
+            finalScore: ps.finalScore,
+          })),
+        };
+
+        const fullLog = {
+          version: '1.0.0',
+          gameId,
+          roomId,
+          startedAt: startedAtStr,
+          endedAt: gameTimestamp.toISOString(),
+          durationMs,
+          players: playersForLog,
+          bottomCards: Array.isArray(gameMeta.bottomCards) ? [...gameMeta.bottomCards] : [],
+          landlordId:
+            gameMeta.landlordId ||
+            (room.gameState && (room.gameState as any).landlordId) ||
+            null,
+          landlordCardsAfterBottom: Array.isArray(gameMeta.landlordCardsAfterBottom)
+            ? [...gameMeta.landlordCardsAfterBottom]
+            : [],
+          bidding: biddingLog,
+          playHistory,
+          result: resultLog,
+          remainingHands,
+          hintHistory: room.gameState?.hintHistory || [],
+          achievements,
+        };
+
+        const logDir = config.paths.gameLogs;
+        if (!fs.existsSync(logDir)) {
+          fs.mkdirSync(logDir, { recursive: true });
+        }
+
+        const safeRoomId = String(roomId).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const fileName = `GAME_${gameId}_${safeRoomId}.json`;
+        const filePath = path.join(logDir, fileName);
+        fs.writeFileSync(filePath, JSON.stringify(fullLog, null, 2), 'utf-8');
+
+        const summaryFile = path.join(logDir, 'all_games.jsonl');
+        fs.appendFileSync(summaryFile, JSON.stringify(fullLog) + '\n', 'utf-8');
+
+        console.log(`📝 已写入对局日志: ${fileName}`);
+      } catch (error) {
+        console.error('写入对局日志失败:', error);
+      }
+
+      // 重置房间状态为waiting，允许再来一局
+      room.status = 'waiting';
+      room.gameState = null;
+
+      // 同步清除持久化的游戏状态，避免下一次进入房间被误判为断线重连
+      // 否则 join_game 时会读取旧的 gameState，触发 game_state_restored，导致上一局手牌被恢复
+      try {
+        roomService.clearGameState(roomId);
+        console.log(`🗑️ 清除房间 ${roomId} 的持久化游戏状态（游戏结束）`);
+      } catch (error) {
+        console.warn(`⚠️ 清除房间 ${roomId} 游戏状态失败，不影响当前房间重置:`, error);
+      }
+      
+      // 重置所有玩家的准备状态
+      room.players.forEach((p: any) => {
+        p.ready = false;
+        p.role = null;
+        p.cards = [];
+        p.cardCount = 0;
+      });
+      
+      console.log(`🔄 房间${roomId}已重置，可以开始新一局`);
+    }, 0);
 
     return true;
   }

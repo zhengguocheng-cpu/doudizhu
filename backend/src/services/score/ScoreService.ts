@@ -251,12 +251,26 @@ export class ScoreService {
    */
   getPlayerScore(userId: string): PlayerScoreRecord | null {
     const record = scoreDAO.getPlayerRecord(userId);
-    
-    // 如果是机器人且没有记录，创建并存储默认积分记录
-    if (!record && this.isBotUser(userId)) {
-      return scoreDAO.getOrCreatePlayerRecord(userId, userId);
+
+    // 机器人：如果没有记录，自动创建；如果记录存在但总积分<=0，重置到初始值
+    if (this.isBotUser(userId)) {
+      if (!record) {
+        return scoreDAO.getOrCreatePlayerRecord(userId, userId);
+      }
+
+      if (record.totalScore <= 0) {
+        const repaired: PlayerScoreRecord = {
+          ...record,
+          totalScore: 500000,
+          maxScore: Math.max(record.maxScore, 500000),
+          minScore: Math.min(record.minScore, 500000),
+          updatedAt: new Date(),
+        };
+        scoreDAO.updatePlayerRecord(userId, repaired);
+        return repaired;
+      }
     }
-    
+
     return record;
   }
 

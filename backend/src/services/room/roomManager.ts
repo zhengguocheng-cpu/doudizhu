@@ -2,6 +2,7 @@ import { GameRoom, Player } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 import { DefaultRoomConfig } from './defaultRooms';
 import { RoomValidator } from './roomValidator';
+import { scoreService } from '../score/ScoreService';
 
 /**
  * 房间管理器服务
@@ -36,6 +37,43 @@ const BOT_POOL: BotProfile[] = [
   { id: 'bot_019', name: '落单小地主', avatar: '👑' },
   { id: 'bot_020', name: '不出牌专家', avatar: '🙅‍♂️' },
 ]
+
+const BOT_NAME_WORDS_LEFT = [
+  '菜鸡',
+  '快乐',
+  '深度',
+  '摸鱼',
+  '理性',
+  '冷静',
+  '激进',
+  '稳健',
+  '夜猫',
+  '清晨',
+]
+
+const BOT_NAME_WORDS_RIGHT = [
+  '牌手',
+  '农民',
+  '地主',
+  '打工人',
+  'AI',
+  '同学',
+  '老哥',
+  '少女',
+  '大神',
+  '观察员',
+]
+
+function generateBotNicknameFromId(botId: string): string {
+  let hash = 0
+  for (let i = 0; i < botId.length; i++) {
+    hash = (hash * 31 + botId.charCodeAt(i)) | 0
+  }
+  const left = BOT_NAME_WORDS_LEFT[Math.abs(hash) % BOT_NAME_WORDS_LEFT.length]
+  const right =
+    BOT_NAME_WORDS_RIGHT[Math.abs(hash >> 3) % BOT_NAME_WORDS_RIGHT.length]
+  return left + right
+}
 
 export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
@@ -517,9 +555,11 @@ export class RoomManager {
       throw new Error('没有可用的机器人，机器人池已用尽');
     }
 
+    const displayName = this.getOrCreateBotDisplayName(botProfile)
+
     const bot: Player = {
       id: botProfile.id,
-      name: botProfile.name,
+      name: displayName,
       userId: botProfile.id,
       avatar: botProfile.avatar,
       ready: true,
@@ -549,5 +589,24 @@ export class RoomManager {
       hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash) % avatarCount;
+  }
+
+  private getOrCreateBotDisplayName(botProfile: BotProfile): string {
+    try {
+      const record = scoreService.getPlayerScore(botProfile.id)
+      if (record && record.username && !record.username.startsWith('bot_')) {
+        return record.username
+      }
+
+      const nickname = generateBotNicknameFromId(botProfile.id)
+      scoreService.updatePlayerProfile(botProfile.id, {
+        username: nickname,
+        avatar: botProfile.avatar,
+      })
+      return nickname
+    } catch (e) {
+      console.warn('⚠️ 获取机器人昵称失败，回退到预设名称:', e)
+      return botProfile.name
+    }
   }
 }

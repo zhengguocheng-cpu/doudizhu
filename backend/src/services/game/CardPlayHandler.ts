@@ -14,7 +14,6 @@ import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../../config';
-import { playHintService } from '../llm/PlayHintService';
 
 export class CardPlayHandler {
   constructor(private io: Server) {}
@@ -623,7 +622,8 @@ export class CardPlayHandler {
 
     if (!currentPlayer || !currentPlayer.isBot) return;
 
-    const delay = 220 + Math.floor(Math.random() * 180); // ≈0.22~0.4 秒，进一步加快机器人出牌速度
+    // 机器人思考时间：改为约 1~2 秒，观感更自然
+    const delay = 1000 + Math.floor(Math.random() * 1000); // 1000~1999ms
 
     setTimeout(async () => {
       const latestRoom = roomService.getRoom(roomId) as any;
@@ -632,24 +632,6 @@ export class CardPlayHandler {
       const latestCurrentId = latestRoom.gameState.currentPlayerId;
       const player = latestRoom.players.find((p: any) => p.id === latestCurrentId);
       if (!player || !player.isBot) return;
-
-      // 1) 优先使用与真人提示相同的 LLM 提示系统
-      try {
-        const hint = await playHintService.getPlayHint(roomId, player.id);
-        if (hint && hint.success && Array.isArray(hint.cards)) {
-          const llmCards = hint.cards;
-          if (llmCards.length > 0) {
-            this.handlePlayCards(roomId, player.id, llmCards);
-          } else {
-            this.handlePass(roomId, player.id);
-          }
-          return; // 已根据 LLM 结果完成出牌/不出
-        }
-      } catch (e) {
-        console.warn('🤖 [BotHint] 调用 LLM 提示失败，使用本地机器人逻辑兜底:', e);
-      }
-
-      // 2) LLM 不可用或未返回有效结果时，回退到原有机器人逻辑
       const cardsToPlay = this.decideBotPlay(latestRoom, player);
 
       if (cardsToPlay && cardsToPlay.length > 0) {
@@ -696,6 +678,10 @@ export class CardPlayHandler {
         return this.findTripleToBeat(cards, lastPattern.value);
       case CardType.TRIPLE_WITH_SINGLE:
         return this.findTripleWithSingleToBeat(cards, lastPattern.value);
+      case CardType.AIRPLANE:
+        return this.findAirplaneToBeat(cards, lastPattern);
+      case CardType.AIRPLANE_WITH_WINGS:
+        return this.findPlaneWithWingsToBeat(cards, lastPattern);
       case CardType.BOMB:
         return this.findBombToBeat(cards, lastPattern.value);
       default:
@@ -917,6 +903,181 @@ export class CardPlayHandler {
     }
 
     return bestCombo;
+  }
+
+  private findAirplaneToBeat(cards: string[], lastPattern: CardPattern): string[] | null {
+    const targetLen = typeof lastPattern.length === 'number' ? lastPattern.length : 0;
+    if (targetLen <= 0) return null;
+
+    const groups: Record<string, string[]> = {};
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const triplesWithValue = Object.keys(groups)
+      .filter((rank) => groups[rank].length === 3)
+      .map((rank) => ({
+        rank,
+        value: CardTypeDetector.getCardValue(groups[rank][0]),
+      }))
+      .sort((a, b) => a.value - b.value);
+
+    if (triplesWithValue.length < targetLen) return null;
+
+    let best: { value: number; cards: string[] } | null = null;
+
+    let start = 0;
+    for (let i = 1; i <= triplesWithValue.length; i++) {
+      const prev = triplesWithValue[i - 1];
+      const curr = triplesWithValue[i];
+      const isEnd =
+        i === triplesWithValue.length ||
+        !curr ||
+        curr.value !== prev.value + 1;
+
+      if (isEnd) {
+        const run = triplesWithValue.slice(start, i);
+        if (run.length >= targetLen) {
+          for (let offset = 0; offset + targetLen <= run.length; offset++) {
+            const window = run.slice(offset, offset + targetLen);
+            const highValue = window[window.length - 1].value;
+            if (highValue <= lastPattern.value) continue;
+
+            const body: string[] = [];
+            for (const w of window) {
+              const g = groups[w.rank];
+              body.push(g[0], g[1], g[2]);
+            }
+
+            if (!best || highValue < best.value) {
+              best = { value: highValue, cards: body };
+            }
+          }
+        }
+        start = i;
+      }
+    }
+
+    return best ? best.cards : null;
+  }
+
+  private findPlaneWithWingsToBeat(cards: string[], lastPattern: CardPattern): string[] | null {
+    const targetLen = Array.isArray(lastPattern.cards) ? lastPattern.cards.length : 0;
+    if (targetLen < 8) return null;
+
+    const options: { planeCount: number; preferPairs: boolean }[] = [];
+    if (targetLen % 5 === 0 && targetLen / 5 >= 2) {
+      options.push({ planeCount: targetLen / 5, preferPairs: true });
+    }
+    if (targetLen % 4 === 0 && targetLen / 4 >= 2) {
+      options.push({ planeCount: targetLen / 4, preferPairs: false });
+    }
+    if (!options.length) return null;
+
+    const groups: Record<string, string[]> = {};
+    for (const c of cards) {
+      const rank = c.replace(/[♠♥♣♦🃏]/g, '');
+      if (!groups[rank]) groups[rank] = [];
+      groups[rank].push(c);
+    }
+
+    const triplesWithValue = Object.keys(groups)
+      .filter((rank) => groups[rank].length === 3)
+      .map((rank) => ({
+        rank,
+        value: CardTypeDetector.getCardValue(groups[rank][0]),
+      }))
+      .sort((a, b) => a.value - b.value);
+
+    if (triplesWithValue.length < 2) return null;
+
+    let best: { value: number; cards: string[] } | null = null;
+
+    let start = 0;
+    for (let i = 1; i <= triplesWithValue.length; i++) {
+      const prev = triplesWithValue[i - 1];
+      const curr = triplesWithValue[i];
+      const isEnd =
+        i === triplesWithValue.length ||
+        !curr ||
+        curr.value !== prev.value + 1;
+
+      if (isEnd) {
+        const run = triplesWithValue.slice(start, i);
+        for (const opt of options) {
+          const planeCount = opt.planeCount;
+          if (run.length < planeCount) continue;
+
+          for (let offset = 0; offset + planeCount <= run.length; offset++) {
+            const window = run.slice(offset, offset + planeCount);
+            const highValue = window[window.length - 1].value;
+            if (highValue <= lastPattern.value) continue;
+
+            const planeRanks = window.map((w) => w.rank);
+            const body: string[] = [];
+            for (const r of planeRanks) {
+              const g = groups[r];
+              body.push(g[0], g[1], g[2]);
+            }
+
+            const planeRankSet = new Set(planeRanks);
+            const otherRanks = Object.keys(groups)
+              .filter((r) => !planeRankSet.has(r))
+              .sort(
+                (a, b) =>
+                  CardTypeDetector.getCardValue(groups[a][0]) -
+                  CardTypeDetector.getCardValue(groups[b][0]),
+              );
+
+            if (opt.preferPairs) {
+              const wingsPairs: string[][] = [];
+              for (const r of otherRanks) {
+                const arr = groups[r];
+                const len = arr.length;
+                if (len >= 2 && len < 4) {
+                  wingsPairs.push([arr[0], arr[1]]);
+                  if (wingsPairs.length >= planeCount) break;
+                }
+              }
+
+              if (wingsPairs.length === planeCount) {
+                const wings = wingsPairs.flat();
+                const combo = [...body, ...wings];
+                if (combo.length === targetLen) {
+                  if (!best || highValue < best.value) {
+                    best = { value: highValue, cards: combo };
+                  }
+                }
+              }
+            } else {
+              const singles: string[] = [];
+              for (const r of otherRanks) {
+                const arr = groups[r];
+                const len = arr.length;
+                if (len >= 1 && len < 4) {
+                  singles.push(arr[0]);
+                  if (singles.length >= planeCount) break;
+                }
+              }
+
+              if (singles.length === planeCount) {
+                const combo = [...body, ...singles];
+                if (combo.length === targetLen) {
+                  if (!best || highValue < best.value) {
+                    best = { value: highValue, cards: combo };
+                  }
+                }
+              }
+            }
+          }
+        }
+        start = i;
+      }
+    }
+
+    return best ? best.cards : null;
   }
 
   private decideMinSingle(player: any): string[] {

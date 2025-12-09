@@ -152,8 +152,9 @@ export class Application {
     // 3. 页面路由 - 直接挂载，不使用前缀
     this.app.use(indexRoutes);
 
+    this.app.use('/uploads', express.static(config.paths.uploads));
+
     // 4. 静态文件服务 - 最后作为fallback
-    // 使用 process.cwd() 而不是 __dirname，因为编译后 __dirname 会指向 dist 目录
     const frontendPath = path.join(process.cwd(), '..', 'frontend', 'public');
     console.log('📁 静态文件路径:', frontendPath);
     this.app.use(express.static(frontendPath));

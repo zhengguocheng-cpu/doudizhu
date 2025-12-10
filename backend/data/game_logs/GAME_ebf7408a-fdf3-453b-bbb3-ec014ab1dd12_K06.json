@@ -1,0 +1,475 @@
+{
+  "version": "1.0.0",
+  "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+  "roomId": "K06",
+  "startedAt": "2025-12-10T14:23:23.297Z",
+  "endedAt": "2025-12-10T14:24:12.902Z",
+  "durationMs": 49605,
+  "players": [
+    {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "seatIndex": 0,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♦4",
+        "♥5",
+        "♣6",
+        "♥8",
+        "♦8",
+        "♥9",
+        "♠9",
+        "♦10",
+        "♠10",
+        "♣J",
+        "♦Q",
+        "♣Q",
+        "♥Q",
+        "♠Q",
+        "♠A",
+        "♠2"
+      ],
+      "finalCards": [
+        "♣3",
+        "♦4",
+        "♥5",
+        "♣6",
+        "♥8",
+        "♦8",
+        "♥9",
+        "♠9",
+        "♦10",
+        "♠10",
+        "♣J",
+        "♦Q",
+        "♣Q",
+        "♥Q",
+        "♠Q",
+        "♠A",
+        "♠2"
+      ]
+    },
+    {
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♠3",
+        "♣4",
+        "♠5",
+        "♦7",
+        "♣8",
+        "♣9",
+        "♦9",
+        "♣10",
+        "♥10",
+        "♠J",
+        "♦J",
+        "♣K",
+        "♥K",
+        "♦K",
+        "♣2",
+        "♦2",
+        "♥2"
+      ],
+      "finalCards": [
+        "♣4",
+        "♠5",
+        "♦7",
+        "♣8",
+        "♣9",
+        "♦9",
+        "♣10",
+        "♥10",
+        "♠J",
+        "♦J",
+        "♣K",
+        "♥K",
+        "♦K"
+      ]
+    },
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 2,
+      "isBot": false,
+      "role": "landlord",
+      "initialCards": [
+        "♥3",
+        "♦3",
+        "♠4",
+        "♦5",
+        "♣5",
+        "♥6",
+        "♠6",
+        "♣7",
+        "♠7",
+        "♥7",
+        "♠8",
+        "♠K",
+        "♣A",
+        "♥A",
+        "♦A",
+        "🃏小王",
+        "🃏大王"
+      ],
+      "finalCards": []
+    }
+  ],
+  "bottomCards": [
+    "♦6",
+    "♥J",
+    "♥4"
+  ],
+  "landlordId": "83696397",
+  "landlordCardsAfterBottom": [
+    "♥3",
+    "♦3",
+    "♠4",
+    "♥4",
+    "♦5",
+    "♣5",
+    "♥6",
+    "♠6",
+    "♦6",
+    "♣7",
+    "♠7",
+    "♥7",
+    "♠8",
+    "♥J",
+    "♠K",
+    "♣A",
+    "♥A",
+    "♦A",
+    "🃏小王",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_020",
+      "83696397",
+      "bot_015"
+    ],
+    "bids": [
+      {
+        "userId": "bot_020",
+        "bid": true,
+        "timestamp": "2025-12-10T14:23:25.719Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-10T14:23:33.251Z"
+      },
+      {
+        "userId": "bot_015",
+        "bid": false,
+        "timestamp": "2025-12-10T14:23:33.573Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥3",
+        "♣5",
+        "♦5",
+        "♠4",
+        "♥4",
+        "♦3"
+      ],
+      "cardType": {
+        "type": "consecutive_pairs",
+        "value": 5,
+        "cards": [
+          "♥3",
+          "♣5",
+          "♦5",
+          "♠4",
+          "♥4",
+          "♦3"
+        ],
+        "length": 3,
+        "description": "连对"
+      },
+      "timestamp": "2025-12-10T14:23:46.680Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:23:48.080Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:23:49.655Z"
+    },
+    {
+      "index": 3,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦6",
+        "♥6",
+        "♠6",
+        "♣7",
+        "♥7",
+        "♠7",
+        "♠8",
+        "♥J"
+      ],
+      "cardType": {
+        "type": "airplane_with_wings",
+        "value": 7,
+        "cards": [
+          "♦6",
+          "♥6",
+          "♠6",
+          "♣7",
+          "♥7",
+          "♠7",
+          "♠8",
+          "♥J"
+        ],
+        "description": "飞机带翅膀"
+      },
+      "timestamp": "2025-12-10T14:24:04.358Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:24:06.247Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:24:07.822Z"
+    },
+    {
+      "index": 6,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥A",
+        "♣A",
+        "♦A",
+        "♠K"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 14,
+        "cards": [
+          "♥A",
+          "♣A",
+          "♦A",
+          "♠K"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T14:24:08.712Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:24:10.620Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♣2",
+        "♦2",
+        "♥2",
+        "♠3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 15,
+        "cards": [
+          "♣2",
+          "♦2",
+          "♥2",
+          "♠3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T14:24:12.356Z"
+    },
+    {
+      "index": 9,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "🃏小王",
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "rocket",
+        "value": 17,
+        "cards": [
+          "🃏小王",
+          "🃏大王"
+        ],
+        "description": "王炸"
+      },
+      "timestamp": "2025-12-10T14:24:12.901Z"
+    }
+  ],
+  "result": {
+    "winnerId": "83696397",
+    "winnerName": "83696397",
+    "winnerRole": "landlord",
+    "landlordWin": true,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 1,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 8,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 8
+    },
+    "playerScores": [
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "landlord",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": 80000
+      },
+      {
+        "playerId": "bot_015",
+        "playerName": "稳健理财型",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": -40000
+      },
+      {
+        "playerId": "bot_020",
+        "playerName": "不出牌专家",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": -40000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": []
+    },
+    "bot_015": {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "cards": [
+        "♣3",
+        "♦4",
+        "♥5",
+        "♣6",
+        "♥8",
+        "♦8",
+        "♥9",
+        "♠9",
+        "♦10",
+        "♠10",
+        "♣J",
+        "♦Q",
+        "♣Q",
+        "♥Q",
+        "♠Q",
+        "♠A",
+        "♠2"
+      ]
+    },
+    "bot_020": {
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "cards": [
+        "♣4",
+        "♠5",
+        "♦7",
+        "♣8",
+        "♣9",
+        "♦9",
+        "♣10",
+        "♥10",
+        "♠J",
+        "♦J",
+        "♣K",
+        "♥K",
+        "♦K"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_015": [],
+    "bot_020": []
+  }
+}

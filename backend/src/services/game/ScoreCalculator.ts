@@ -110,18 +110,38 @@ export class ScoreCalculator {
    * 春天：地主获胜，且农民一张牌都没出过
    */
   private static checkSpring(players: any[], landlordWin: boolean, gameHistory: any[]): boolean {
-    if (!landlordWin) return false;
+    if (!landlordWin) {
+      console.log('[春天检查] 农民获胜，不是春天');
+      return false;
+    }
 
     const farmers = players.filter(p => p.role === 'farmer');
-    if (farmers.length === 0) return false;
+    if (farmers.length === 0) {
+      console.log('[春天检查] 找不到农民');
+      return false;
+    }
 
     // 检查游戏历史中是否有农民真正出过牌（PASS 不算）
     const farmerIds = farmers.map(f => f.id);
-    const farmerPlayed = gameHistory.some(play =>
-      farmerIds.includes(play.playerId) && Array.isArray(play.cards) && play.cards.length > 0
-    );
+    console.log('[春天检查] 农民ID列表:', farmerIds);
+    console.log('[春天检查] 游戏历史记录数:', gameHistory.length);
     
-    return !farmerPlayed;  // 农民没出过任何牌就是春天
+    const farmerPlayed = gameHistory.some(play => {
+      const isFarmer = farmerIds.includes(play.playerId);
+      const hasCards = Array.isArray(play.cards) && play.cards.length > 0;
+      if (isFarmer) {
+        console.log('[春天检查] 农民出牌:', {
+          playerId: play.playerId,
+          cards: play.cards,
+          hasCards
+        });
+      }
+      return isFarmer && hasCards;
+    });
+    
+    const isSpring = !farmerPlayed;
+    console.log(`[春天检查] 结果: ${isSpring ? '是春天(×16)' : '不是春天'}`);
+    return isSpring;
   }
 
   /**
@@ -129,17 +149,37 @@ export class ScoreCalculator {
    * 反春：农民获胜，且地主一张牌都没出过
    */
   private static checkAntiSpring(players: any[], landlordWin: boolean, gameHistory: any[]): boolean {
-    if (landlordWin) return false;
+    if (landlordWin) {
+      console.log('[反春检查] 地主获胜，不是反春');
+      return false;
+    }
 
     const landlord = players.find(p => p.role === 'landlord');
-    if (!landlord) return false;
+    if (!landlord) {
+      console.log('[反春检查] 找不到地主');
+      return false;
+    }
+
+    console.log('[反春检查] 地主ID:', landlord.id);
+    console.log('[反春检查] 游戏历史记录数:', gameHistory.length);
 
     // 检查游戏历史中地主是否真正出过牌（PASS 不算）
-    const landlordPlayed = gameHistory.some(play =>
-      play.playerId === landlord.id && Array.isArray(play.cards) && play.cards.length > 0
-    );
+    const landlordPlayed = gameHistory.some(play => {
+      const isLandlord = play.playerId === landlord.id;
+      const hasCards = Array.isArray(play.cards) && play.cards.length > 0;
+      if (isLandlord) {
+        console.log('[反春检查] 地主出牌:', {
+          playerId: play.playerId,
+          cards: play.cards,
+          hasCards
+        });
+      }
+      return isLandlord && hasCards;
+    });
     
-    return !landlordPlayed;  // 地主没出过任何牌就是反春
+    const isAntiSpring = !landlordPlayed;
+    console.log(`[反春检查] 结果: ${isAntiSpring ? '是反春(×16)' : '不是反春'}`);
+    return isAntiSpring;
   }
 
   /**

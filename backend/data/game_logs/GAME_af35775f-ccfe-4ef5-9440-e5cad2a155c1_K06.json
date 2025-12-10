@@ -1,0 +1,1022 @@
+{
+  "version": "1.0.0",
+  "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+  "roomId": "K06",
+  "startedAt": "2025-12-10T14:06:48.826Z",
+  "endedAt": "2025-12-10T14:08:11.326Z",
+  "durationMs": 82500,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "landlord",
+      "initialCards": [
+        "♦6",
+        "♣7",
+        "♣8",
+        "♠8",
+        "♥8",
+        "♥9",
+        "♣9",
+        "♠10",
+        "♦10",
+        "♠J",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♥K",
+        "♥A",
+        "♥2",
+        "♦2"
+      ],
+      "finalCards": [
+        "♣7",
+        "♥9",
+        "♣9",
+        "♠10",
+        "♦10",
+        "♣10",
+        "♠J",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♥K",
+        "♠K",
+        "♥A",
+        "♥2",
+        "♦2"
+      ]
+    },
+    {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♠3",
+        "♣4",
+        "♦4",
+        "♠5",
+        "♣6",
+        "♠6",
+        "♥6",
+        "♠7",
+        "♥7",
+        "♠9",
+        "♥10",
+        "♣J",
+        "♠Q",
+        "♣A",
+        "♦A",
+        "♣2",
+        "🃏大王"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♦3",
+        "♣3",
+        "♥4",
+        "♠4",
+        "♣5",
+        "♥5",
+        "♦5",
+        "♦7",
+        "♦8",
+        "♦9",
+        "♦J",
+        "♣Q",
+        "♣K",
+        "♦K",
+        "♠A",
+        "♠2",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "♠A"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♠K",
+    "♣10",
+    "♥3"
+  ],
+  "landlordId": "83696397",
+  "landlordCardsAfterBottom": [
+    "♥3",
+    "♦6",
+    "♣7",
+    "♣8",
+    "♠8",
+    "♥8",
+    "♥9",
+    "♣9",
+    "♠10",
+    "♦10",
+    "♣10",
+    "♠J",
+    "♥J",
+    "♥Q",
+    "♦Q",
+    "♥K",
+    "♠K",
+    "♥A",
+    "♥2",
+    "♦2"
+  ],
+  "bidding": {
+    "order": [
+      "bot_020",
+      "83696397",
+      "bot_015"
+    ],
+    "bids": [
+      {
+        "userId": "bot_020",
+        "bid": true,
+        "timestamp": "2025-12-10T14:06:51.214Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-10T14:06:54.374Z"
+      },
+      {
+        "userId": "bot_015",
+        "bid": false,
+        "timestamp": "2025-12-10T14:06:54.700Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣8",
+        "♥8",
+        "♠8",
+        "♥3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 8,
+        "cards": [
+          "♣8",
+          "♥8",
+          "♠8",
+          "♥3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T14:07:02.565Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:04.199Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:05.280Z"
+    },
+    {
+      "index": 3,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♦6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:09.504Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♠7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:10.642Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♦8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:11.730Z"
+    },
+    {
+      "index": 6,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:12.541Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♠9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:13.844Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♦J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:15.793Z"
+    },
+    {
+      "index": 9,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:16.424Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♠Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:17.659Z"
+    },
+    {
+      "index": 11,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♣K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♣K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:19.039Z"
+    },
+    {
+      "index": 12,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:19.709Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♣A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:20.882Z"
+    },
+    {
+      "index": 14,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♠2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♠2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:22.030Z"
+    },
+    {
+      "index": 15,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:23.125Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:24.918Z"
+    },
+    {
+      "index": 17,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:26.773Z"
+    },
+    {
+      "index": 18,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:27.971Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣6",
+        "♠6",
+        "♥6",
+        "♠3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 6,
+        "cards": [
+          "♣6",
+          "♠6",
+          "♥6",
+          "♠3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T14:07:29.926Z"
+    },
+    {
+      "index": 20,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:31.361Z"
+    },
+    {
+      "index": 21,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:33.466Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣4",
+        "♦4"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 4,
+        "cards": [
+          "♣4",
+          "♦4"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T14:07:35.290Z"
+    },
+    {
+      "index": 23,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♣5",
+        "♥5"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 5,
+        "cards": [
+          "♣5",
+          "♥5"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T14:07:36.422Z"
+    },
+    {
+      "index": 24,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:37.344Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:38.562Z"
+    },
+    {
+      "index": 26,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦3",
+        "♣3"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 3,
+        "cards": [
+          "♦3",
+          "♣3"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T14:07:39.992Z"
+    },
+    {
+      "index": 27,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:40.809Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:42.209Z"
+    },
+    {
+      "index": 29,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♥4",
+        "♠4"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 4,
+        "cards": [
+          "♥4",
+          "♠4"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T14:07:44.021Z"
+    },
+    {
+      "index": 30,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:44.970Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:46.122Z"
+    },
+    {
+      "index": 32,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♦5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:47.447Z"
+    },
+    {
+      "index": 33,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:48.162Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♥7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♥7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:49.397Z"
+    },
+    {
+      "index": 35,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♦9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:50.415Z"
+    },
+    {
+      "index": 36,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:50.937Z"
+    },
+    {
+      "index": 37,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♥10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♥10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:52.390Z"
+    },
+    {
+      "index": 38,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♣Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♣Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:53.430Z"
+    },
+    {
+      "index": 39,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:53.705Z"
+    },
+    {
+      "index": 40,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♦A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♦A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:55.539Z"
+    },
+    {
+      "index": 41,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "🃏小王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 16,
+        "cards": [
+          "🃏小王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:07:56.822Z"
+    },
+    {
+      "index": 42,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:57.901Z"
+    },
+    {
+      "index": 43,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:07:59.913Z"
+    },
+    {
+      "index": 44,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♦7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:08:01.737Z"
+    },
+    {
+      "index": 45,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:08:02.254Z"
+    },
+    {
+      "index": 46,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♣J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:08:04.083Z"
+    },
+    {
+      "index": 47,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "play",
+      "cards": [
+        "♦K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♦K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:08:06.043Z"
+    },
+    {
+      "index": 48,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:08:06.341Z"
+    },
+    {
+      "index": 49,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♣2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:08:07.651Z"
+    },
+    {
+      "index": 50,
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:08:09.444Z"
+    },
+    {
+      "index": 51,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T14:08:09.729Z"
+    },
+    {
+      "index": 52,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♠5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T14:08:11.324Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_015",
+    "winnerName": "稳健理财型",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -10000
+      },
+      {
+        "playerId": "bot_015",
+        "playerName": "稳健理财型",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      },
+      {
+        "playerId": "bot_020",
+        "playerName": "不出牌专家",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♣7",
+        "♥9",
+        "♣9",
+        "♠10",
+        "♦10",
+        "♣10",
+        "♠J",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♥K",
+        "♠K",
+        "♥A",
+        "♥2",
+        "♦2"
+      ]
+    },
+    "bot_015": {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "cards": []
+    },
+    "bot_020": {
+      "playerId": "bot_020",
+      "playerName": "不出牌专家",
+      "cards": [
+        "♠A"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_015": [],
+    "bot_020": []
+  }
+}

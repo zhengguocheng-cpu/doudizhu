@@ -4867,20 +4867,152 @@
     "83696397": {
       "userId": "83696397",
       "username": "88888888",
-      "totalScore": 5047235,
-      "gamesPlayed": 167,
-      "gamesWon": 86,
-      "gamesLost": 81,
-      "winRate": 51.49700598802395,
+      "totalScore": 5037235,
+      "gamesPlayed": 173,
+      "gamesWon": 87,
+      "gamesLost": 86,
+      "winRate": 50.28901734104046,
       "maxStreak": 9,
-      "currentStreak": 0,
+      "currentStreak": 1,
       "maxScore": 5197235,
       "minScore": 1000,
-      "landlordGames": 79,
-      "landlordWins": 54,
+      "landlordGames": 85,
+      "landlordWins": 55,
       "farmerGames": 88,
       "farmerWins": 32,
       "gameHistory": [
+        {
+          "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+          "timestamp": "2025-12-10T14:24:12.902Z",
+          "roomId": "K06",
+          "role": "landlord",
+          "isWinner": true,
+          "scoreChange": 80000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 8,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "bot_015",
+            "bot_020"
+          ],
+          "tags": [
+            "王炸×1"
+          ]
+        },
+        {
+          "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+          "timestamp": "2025-12-10T14:15:17.644Z",
+          "roomId": "K06",
+          "role": "landlord",
+          "isWinner": false,
+          "scoreChange": -30000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_015",
+            "bot_020"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
+        {
+          "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+          "timestamp": "2025-12-10T14:13:01.531Z",
+          "roomId": "K06",
+          "role": "landlord",
+          "isWinner": false,
+          "scoreChange": -10000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_015",
+            "bot_020"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+          "timestamp": "2025-12-10T14:08:11.326Z",
+          "roomId": "K06",
+          "role": "landlord",
+          "isWinner": false,
+          "scoreChange": -10000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_015",
+            "bot_020"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+          "timestamp": "2025-12-10T13:39:13.762Z",
+          "roomId": "K04",
+          "role": "landlord",
+          "isWinner": false,
+          "scoreChange": -10000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_004",
+            "bot_006"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+          "timestamp": "2025-12-10T13:24:42.501Z",
+          "roomId": "K04",
+          "role": "landlord",
+          "isWinner": false,
+          "scoreChange": -30000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_004",
+            "bot_006"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
         {
           "gameId": "7e923262-bcd0-4ed5-9010-e59887ae8694",
           "timestamp": "2025-12-10T13:16:49.821Z",
@@ -6939,141 +7071,11 @@
             "bot_002"
           ],
           "tags": []
-        },
-        {
-          "gameId": "9a09f90f-004e-4e83-860e-72094de5b819",
-          "timestamp": "2025-11-28T13:50:05.138Z",
-          "roomId": "K03",
-          "role": "farmer",
-          "isWinner": false,
-          "scoreChange": -5000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 1,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 1
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": []
-        },
-        {
-          "gameId": "e6dcfb02-73a1-4407-95a2-9dc3fd6bbee2",
-          "timestamp": "2025-11-28T13:42:58.502Z",
-          "roomId": "K03",
-          "role": "landlord",
-          "isWinner": false,
-          "scoreChange": -10000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 1,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 1
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": []
-        },
-        {
-          "gameId": "454657d2-5c7f-48bc-98ff-5dca4e07e78b",
-          "timestamp": "2025-11-28T13:30:47.563Z",
-          "roomId": "K03",
-          "role": "farmer",
-          "isWinner": false,
-          "scoreChange": 5000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 1,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 1
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": []
-        },
-        {
-          "gameId": "e8ac53c8-138a-4579-8b8e-2fc9c135aae6",
-          "timestamp": "2025-11-28T13:23:34.184Z",
-          "roomId": "K02",
-          "role": "landlord",
-          "isWinner": true,
-          "scoreChange": 30000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 3,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 3
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": [
-            "炸弹×1"
-          ]
-        },
-        {
-          "gameId": "e0fff44a-3230-4411-adfd-6240460f39c9",
-          "timestamp": "2025-11-28T13:09:56.657Z",
-          "roomId": "K01",
-          "role": "landlord",
-          "isWinner": false,
-          "scoreChange": -30000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 3,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 3
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": [
-            "炸弹×1"
-          ]
-        },
-        {
-          "gameId": "94f42674-cb21-4b9c-a9ec-f837e7190a8c",
-          "timestamp": "2025-11-25T16:11:13.301Z",
-          "roomId": "K03",
-          "role": "farmer",
-          "isWinner": true,
-          "scoreChange": 5000,
-          "multipliers": {
-            "base": 1,
-            "bomb": 1,
-            "rocket": 1,
-            "spring": 1,
-            "antiSpring": 1,
-            "total": 1
-          },
-          "opponents": [
-            "bot_001",
-            "bot_002"
-          ],
-          "tags": []
         }
       ],
       "createdAt": "2025-11-19T18:07:57.156Z",
-      "updatedAt": "2025-12-10T13:16:50.168Z",
-      "lastPlayedAt": "2025-12-10T13:16:49.821Z",
+      "updatedAt": "2025-12-10T14:24:12.924Z",
+      "lastPlayedAt": "2025-12-10T14:24:12.902Z",
       "avatar": "avatar-7"
     },
     "92083068": {
@@ -11141,20 +11143,108 @@
     "bot_020": {
       "userId": "bot_020",
       "username": "不出牌专家",
-      "totalScore": 510610,
-      "gamesPlayed": 3,
-      "gamesWon": 2,
-      "gamesLost": 1,
-      "winRate": 66.66666666666666,
+      "totalScore": 495610,
+      "gamesPlayed": 7,
+      "gamesWon": 4,
+      "gamesLost": 3,
+      "winRate": 57.14285714285714,
       "maxStreak": 2,
       "currentStreak": 0,
-      "maxScore": 515610,
-      "minScore": 500000,
+      "maxScore": 535610,
+      "minScore": 495610,
       "landlordGames": 1,
       "landlordWins": 1,
-      "farmerGames": 2,
-      "farmerWins": 1,
+      "farmerGames": 6,
+      "farmerWins": 3,
       "gameHistory": [
+        {
+          "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+          "timestamp": "2025-12-10T14:24:12.902Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -40000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 8,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "bot_015",
+            "83696397"
+          ],
+          "tags": [
+            "王炸×1"
+          ]
+        },
+        {
+          "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+          "timestamp": "2025-12-10T14:15:17.644Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": true,
+          "scoreChange": 15000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_015",
+            "83696397"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
+        {
+          "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+          "timestamp": "2025-12-10T14:13:01.531Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": true,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_015",
+            "83696397"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+          "timestamp": "2025-12-10T14:08:11.326Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "83696397",
+            "bot_015"
+          ],
+          "tags": []
+        },
         {
           "gameId": "23044294-3112-43d7-be8e-ed9b48e10ba8",
           "timestamp": "2025-12-07T01:21:36.805Z",
@@ -11220,8 +11310,8 @@
         }
       ],
       "createdAt": "2025-12-05T07:29:39.794Z",
-      "updatedAt": "2025-12-07T01:21:37.095Z",
-      "lastPlayedAt": "2025-12-07T01:21:36.805Z"
+      "updatedAt": "2025-12-10T14:24:13.017Z",
+      "lastPlayedAt": "2025-12-10T14:24:12.902Z"
     },
     "bot_011": {
       "userId": "bot_011",
@@ -11440,20 +11530,108 @@
     "bot_015": {
       "userId": "bot_015",
       "username": "稳健理财型",
-      "totalScore": 460610,
-      "gamesPlayed": 12,
-      "gamesWon": 3,
-      "gamesLost": 9,
+      "totalScore": 445610,
+      "gamesPlayed": 16,
+      "gamesWon": 4,
+      "gamesLost": 12,
       "winRate": 25,
-      "maxStreak": 1,
-      "currentStreak": 1,
+      "maxStreak": 2,
+      "currentStreak": 0,
       "maxScore": 585610,
-      "minScore": 455610,
+      "minScore": 445610,
       "landlordGames": 2,
       "landlordWins": 0,
-      "farmerGames": 10,
-      "farmerWins": 3,
+      "farmerGames": 14,
+      "farmerWins": 4,
       "gameHistory": [
+        {
+          "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+          "timestamp": "2025-12-10T14:24:12.902Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": -40000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 8,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 8
+          },
+          "opponents": [
+            "bot_020",
+            "83696397"
+          ],
+          "tags": [
+            "王炸×1"
+          ]
+        },
+        {
+          "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+          "timestamp": "2025-12-10T14:15:17.644Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": 15000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_020",
+            "83696397"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
+        {
+          "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+          "timestamp": "2025-12-10T14:13:01.531Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_020",
+            "83696397"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+          "timestamp": "2025-12-10T14:08:11.326Z",
+          "roomId": "K06",
+          "role": "farmer",
+          "isWinner": true,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "83696397",
+            "bot_020"
+          ],
+          "tags": []
+        },
         {
           "gameId": "084d538d-c9f9-4617-92be-0db6291c7fee",
           "timestamp": "2025-12-10T12:20:06.089Z",
@@ -11716,8 +11894,8 @@
         }
       ],
       "createdAt": "2025-12-05T11:07:31.208Z",
-      "updatedAt": "2025-12-10T12:20:06.240Z",
-      "lastPlayedAt": "2025-12-10T12:20:06.089Z"
+      "updatedAt": "2025-12-10T14:24:12.975Z",
+      "lastPlayedAt": "2025-12-10T14:24:12.902Z"
     },
     "bot_014": {
       "userId": "bot_014",
@@ -12769,20 +12947,64 @@
     "bot_006": {
       "userId": "bot_006",
       "username": "理性出牌机",
-      "totalScore": 440610,
-      "gamesPlayed": 5,
-      "gamesWon": 1,
-      "gamesLost": 4,
-      "winRate": 20,
+      "totalScore": 460610,
+      "gamesPlayed": 7,
+      "gamesWon": 2,
+      "gamesLost": 5,
+      "winRate": 28.57142857142857,
       "maxStreak": 1,
-      "currentStreak": 0,
+      "currentStreak": 1,
       "maxScore": 515600,
       "minScore": 440610,
       "landlordGames": 1,
       "landlordWins": 1,
-      "farmerGames": 4,
-      "farmerWins": 0,
+      "farmerGames": 6,
+      "farmerWins": 1,
       "gameHistory": [
+        {
+          "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+          "timestamp": "2025-12-10T13:39:13.762Z",
+          "roomId": "K04",
+          "role": "farmer",
+          "isWinner": true,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_004",
+            "83696397"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+          "timestamp": "2025-12-10T13:24:42.501Z",
+          "roomId": "K04",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": 15000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_004",
+            "83696397"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
         {
           "gameId": "7e923262-bcd0-4ed5-9010-e59887ae8694",
           "timestamp": "2025-12-10T13:16:49.821Z",
@@ -12896,8 +13118,8 @@
         }
       ],
       "createdAt": "2025-12-05T12:21:07.180Z",
-      "updatedAt": "2025-12-10T13:16:50.084Z",
-      "lastPlayedAt": "2025-12-10T13:16:49.821Z"
+      "updatedAt": "2025-12-10T13:39:13.870Z",
+      "lastPlayedAt": "2025-12-10T13:39:13.762Z"
     },
     "bot_017": {
       "userId": "bot_017",
@@ -13632,20 +13854,64 @@
     "bot_004": {
       "userId": "bot_004",
       "username": "深度学习机",
-      "totalScore": 675610,
-      "gamesPlayed": 8,
-      "gamesWon": 3,
-      "gamesLost": 5,
-      "winRate": 37.5,
-      "maxStreak": 2,
-      "currentStreak": 2,
-      "maxScore": 675610,
+      "totalScore": 695640,
+      "gamesPlayed": 10,
+      "gamesWon": 4,
+      "gamesLost": 6,
+      "winRate": 40,
+      "maxStreak": 3,
+      "currentStreak": 0,
+      "maxScore": 695640,
       "minScore": 470600,
       "landlordGames": 4,
       "landlordWins": 3,
-      "farmerGames": 4,
-      "farmerWins": 0,
+      "farmerGames": 6,
+      "farmerWins": 1,
       "gameHistory": [
+        {
+          "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+          "timestamp": "2025-12-10T13:39:13.762Z",
+          "roomId": "K04",
+          "role": "farmer",
+          "isWinner": false,
+          "scoreChange": 5000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 1,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 1
+          },
+          "opponents": [
+            "bot_006",
+            "83696397"
+          ],
+          "tags": []
+        },
+        {
+          "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+          "timestamp": "2025-12-10T13:24:42.501Z",
+          "roomId": "K04",
+          "role": "farmer",
+          "isWinner": true,
+          "scoreChange": 15000,
+          "multipliers": {
+            "base": 1,
+            "bomb": 3,
+            "rocket": 1,
+            "spring": 1,
+            "antiSpring": 1,
+            "total": 3
+          },
+          "opponents": [
+            "bot_006",
+            "83696397"
+          ],
+          "tags": [
+            "炸弹×1"
+          ]
+        },
         {
           "gameId": "7e923262-bcd0-4ed5-9010-e59887ae8694",
           "timestamp": "2025-12-10T13:16:49.821Z",
@@ -13824,8 +14090,8 @@
         }
       ],
       "createdAt": "2025-12-06T04:36:10.641Z",
-      "updatedAt": "2025-12-10T13:16:49.873Z",
-      "lastPlayedAt": "2025-12-10T13:16:49.821Z"
+      "updatedAt": "2025-12-10T13:39:13.819Z",
+      "lastPlayedAt": "2025-12-10T13:39:13.762Z"
     },
     "bot_018": {
       "userId": "bot_018",
@@ -14275,6 +14541,197 @@
     }
   },
   "scoreChanges": [
+    {
+      "id": "11f630dc-c8c8-46c6-b1e7-de0ba5e321aa",
+      "userId": "bot_020",
+      "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+      "scoreBefore": 535610,
+      "scoreAfter": 495610,
+      "scoreChange": -40000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:24:12.902Z"
+    },
+    {
+      "id": "555b1e0c-d238-46d9-919b-75f639537d36",
+      "userId": "bot_015",
+      "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+      "scoreBefore": 485610,
+      "scoreAfter": 445610,
+      "scoreChange": -40000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:24:12.902Z"
+    },
+    {
+      "id": "bce258a1-7546-40fc-b21b-ad76cbf71775",
+      "userId": "83696397",
+      "gameId": "ebf7408a-fdf3-453b-bbb3-ec014ab1dd12",
+      "scoreBefore": 4957235,
+      "scoreAfter": 5037235,
+      "scoreChange": 80000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T14:24:12.902Z"
+    },
+    {
+      "id": "931ffde9-8048-464b-bd1c-4785b69bf1a6",
+      "userId": "bot_020",
+      "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+      "scoreBefore": 520610,
+      "scoreAfter": 535610,
+      "scoreChange": 15000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T14:15:17.644Z"
+    },
+    {
+      "id": "74ffd5a4-9e0f-4500-a3f3-deefe1d96ce6",
+      "userId": "bot_015",
+      "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+      "scoreBefore": 470610,
+      "scoreAfter": 485610,
+      "scoreChange": 15000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:15:17.644Z"
+    },
+    {
+      "id": "1ae247e1-1d0e-4957-8818-39061440e8ba",
+      "userId": "83696397",
+      "gameId": "291f37bb-e89a-4bd5-8108-511f133630fe",
+      "scoreBefore": 4987235,
+      "scoreAfter": 4957235,
+      "scoreChange": -30000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:15:17.644Z"
+    },
+    {
+      "id": "e4a0d5ea-a10b-47e8-92c3-d9fdfbf1e029",
+      "userId": "bot_020",
+      "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+      "scoreBefore": 515610,
+      "scoreAfter": 520610,
+      "scoreChange": 5000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T14:13:01.531Z"
+    },
+    {
+      "id": "1f7e1bb3-3204-438b-ae50-bb4cd1825847",
+      "userId": "bot_015",
+      "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+      "scoreBefore": 465610,
+      "scoreAfter": 470610,
+      "scoreChange": 5000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:13:01.531Z"
+    },
+    {
+      "id": "9e239d95-3406-4182-8c90-51e8a28ab50f",
+      "userId": "83696397",
+      "gameId": "c9ab69d0-248b-4cbc-8b17-9af63aabfe18",
+      "scoreBefore": 4997235,
+      "scoreAfter": 4987235,
+      "scoreChange": -10000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:13:01.531Z"
+    },
+    {
+      "id": "f2202314-340c-4a77-9538-93bfb79bf711",
+      "userId": "bot_020",
+      "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+      "scoreBefore": 510610,
+      "scoreAfter": 515610,
+      "scoreChange": 5000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:08:11.326Z"
+    },
+    {
+      "id": "0b133a98-a42a-47f0-bb31-a1450c21f3b0",
+      "userId": "bot_015",
+      "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+      "scoreBefore": 460610,
+      "scoreAfter": 465610,
+      "scoreChange": 5000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T14:08:11.326Z"
+    },
+    {
+      "id": "e172ba84-f9e1-422d-95f6-6b8eb34ab12c",
+      "userId": "83696397",
+      "gameId": "af35775f-ccfe-4ef5-9440-e5cad2a155c1",
+      "scoreBefore": 5007235,
+      "scoreAfter": 4997235,
+      "scoreChange": -10000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T14:08:11.326Z"
+    },
+    {
+      "id": "97d31e9f-3485-46e1-8623-5a125c4d10c6",
+      "userId": "bot_006",
+      "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+      "scoreBefore": 455610,
+      "scoreAfter": 460610,
+      "scoreChange": 5000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T13:39:13.762Z"
+    },
+    {
+      "id": "885b269d-34f2-4c85-8e24-3d62fd072def",
+      "userId": "bot_004",
+      "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+      "scoreBefore": 690640,
+      "scoreAfter": 695640,
+      "scoreChange": 5000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T13:39:13.762Z"
+    },
+    {
+      "id": "97871b79-79b6-4f81-93c7-a3c7200330ab",
+      "userId": "83696397",
+      "gameId": "6558c66f-f048-4bc2-bb23-e6b906c6b0fd",
+      "scoreBefore": 5017235,
+      "scoreAfter": 5007235,
+      "scoreChange": -10000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T13:39:13.762Z"
+    },
+    {
+      "id": "2a12ba6c-8eec-48e3-8f99-88b997107f0f",
+      "userId": "bot_006",
+      "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+      "scoreBefore": 440610,
+      "scoreAfter": 455610,
+      "scoreChange": 15000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T13:24:42.501Z"
+    },
+    {
+      "id": "4acd5d70-0951-4b46-91eb-50fb38b461d5",
+      "userId": "bot_004",
+      "gameId": "",
+      "scoreBefore": 690610,
+      "scoreAfter": 690640,
+      "scoreChange": 30,
+      "reason": "system_reward",
+      "timestamp": "2025-12-10T13:24:42.966Z",
+      "note": "解锁成就: 三连胜"
+    },
+    {
+      "id": "c16f325c-4942-46a6-a616-915b6e1726fb",
+      "userId": "bot_004",
+      "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+      "scoreBefore": 675610,
+      "scoreAfter": 690610,
+      "scoreChange": 15000,
+      "reason": "game_win",
+      "timestamp": "2025-12-10T13:24:42.501Z"
+    },
+    {
+      "id": "e631f787-5b22-4de6-89b9-11a54c080411",
+      "userId": "83696397",
+      "gameId": "ad409fd2-8d5c-45c2-af85-0cb4bff8d606",
+      "scoreBefore": 5047235,
+      "scoreAfter": 5017235,
+      "scoreChange": -30000,
+      "reason": "game_lose",
+      "timestamp": "2025-12-10T13:24:42.501Z"
+    },
     {
       "id": "c36367cd-fad1-4077-88f7-b97ef258f93b",
       "userId": "83696397",
@@ -23723,6 +24180,13 @@
         "unlockedAt": "2025-12-06T04:51:32.638Z",
         "progress": 100,
         "isUnlocked": true
+      },
+      {
+        "userId": "bot_004",
+        "achievementId": "streak_3",
+        "unlockedAt": "2025-12-10T13:24:42.895Z",
+        "progress": 100,
+        "isUnlocked": true
       }
     ],
     "bot_007": [
@@ -23804,5 +24268,5 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-10T13:16:50.189Z"
+  "lastUpdated": "2025-12-10T14:24:13.037Z"
 }

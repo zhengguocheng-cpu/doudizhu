@@ -1,0 +1,808 @@
+{
+  "version": "1.0.0",
+  "gameId": "7e923262-bcd0-4ed5-9010-e59887ae8694",
+  "roomId": "K04",
+  "startedAt": "2025-12-10T13:15:43.819Z",
+  "endedAt": "2025-12-10T13:16:49.821Z",
+  "durationMs": 66002,
+  "players": [
+    {
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "seatIndex": 0,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♠3",
+        "♣3",
+        "♥4",
+        "♥5",
+        "♥6",
+        "♠6",
+        "♠7",
+        "♣7",
+        "♠10",
+        "♠J",
+        "♦J",
+        "♠Q",
+        "♥K",
+        "♥A",
+        "♠2",
+        "♥2",
+        "♣2"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♦4",
+        "♣4",
+        "♣5",
+        "♥8",
+        "♣8",
+        "♠8",
+        "♥9",
+        "♦9",
+        "♦10",
+        "♥10",
+        "♣J",
+        "♣K",
+        "♦A",
+        "♠A",
+        "♣A",
+        "♦2",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "🃏小王"
+      ]
+    },
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 2,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♦3",
+        "♥3",
+        "♠4",
+        "♦5",
+        "♠5",
+        "♦6",
+        "♥7",
+        "♦8",
+        "♠9",
+        "♣9",
+        "♣10",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♣Q",
+        "♦K",
+        "🃏大王"
+      ],
+      "finalCards": [
+        "♥3",
+        "♠4",
+        "♦5",
+        "♠5",
+        "♦6",
+        "♥7",
+        "♦8",
+        "♠9",
+        "♣9",
+        "♣10",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♣Q",
+        "♦K"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♠K",
+    "♣6",
+    "♦7"
+  ],
+  "landlordId": "bot_004",
+  "landlordCardsAfterBottom": [
+    "♠3",
+    "♣3",
+    "♥4",
+    "♥5",
+    "♥6",
+    "♠6",
+    "♣6",
+    "♠7",
+    "♣7",
+    "♦7",
+    "♠10",
+    "♠J",
+    "♦J",
+    "♠Q",
+    "♥K",
+    "♠K",
+    "♥A",
+    "♠2",
+    "♥2",
+    "♣2"
+  ],
+  "bidding": {
+    "order": [
+      "bot_006",
+      "83696397",
+      "bot_004"
+    ],
+    "bids": [
+      {
+        "userId": "bot_006",
+        "bid": false,
+        "timestamp": "2025-12-10T13:15:46.173Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-10T13:15:49.172Z"
+      },
+      {
+        "userId": "bot_004",
+        "bid": true,
+        "timestamp": "2025-12-10T13:15:49.565Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♥6",
+        "♠6",
+        "♣6",
+        "♠7",
+        "♣7",
+        "♦7",
+        "♠3",
+        "♣3",
+        "♠J",
+        "♦J"
+      ],
+      "cardType": {
+        "type": "airplane_with_wings",
+        "value": 7,
+        "cards": [
+          "♥6",
+          "♠6",
+          "♣6",
+          "♠7",
+          "♣7",
+          "♦7",
+          "♠3",
+          "♣3",
+          "♠J",
+          "♦J"
+        ],
+        "description": "飞机带翅膀"
+      },
+      "timestamp": "2025-12-10T13:15:53.184Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:15:54.515Z"
+    },
+    {
+      "index": 2,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:15:55.613Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♠2",
+        "♥2",
+        "♣2",
+        "♥4"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 15,
+        "cards": [
+          "♠2",
+          "♥2",
+          "♣2",
+          "♥4"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T13:15:56.865Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:15:58.299Z"
+    },
+    {
+      "index": 5,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:15:59.443Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♥K",
+        "♠K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♥K",
+          "♠K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T13:16:01.173Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♦A",
+        "♠A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♦A",
+          "♠A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T13:16:02.846Z"
+    },
+    {
+      "index": 8,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:04.097Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:05.959Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥8",
+        "♣8",
+        "♠8",
+        "♦4",
+        "♣4"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 8,
+        "cards": [
+          "♥8",
+          "♣8",
+          "♠8",
+          "♦4",
+          "♣4"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-10T13:16:07.785Z"
+    },
+    {
+      "index": 11,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:10.776Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:12.190Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥9",
+        "♦9"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 9,
+        "cards": [
+          "♥9",
+          "♦9"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T13:16:13.732Z"
+    },
+    {
+      "index": 14,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:14.063Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:15.283Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♦10",
+        "♥10"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 10,
+        "cards": [
+          "♦10",
+          "♥10"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T13:16:16.826Z"
+    },
+    {
+      "index": 17,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:17.093Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:18.895Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♣5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♣5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:20.441Z"
+    },
+    {
+      "index": 20,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:22.328Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♠10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♠10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:23.623Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♣J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♣J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:25.346Z"
+    },
+    {
+      "index": 23,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:29.098Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♠Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:30.320Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♣K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♣K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:31.731Z"
+    },
+    {
+      "index": 26,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:34.279Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♥A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♥A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:36.106Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♦2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♦2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:37.255Z"
+    },
+    {
+      "index": 29,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:38.536Z"
+    },
+    {
+      "index": 30,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:39.797Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♣A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♣A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:41.229Z"
+    },
+    {
+      "index": 32,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:43.882Z"
+    },
+    {
+      "index": 33,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:44.929Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T13:16:46.760Z"
+    },
+    {
+      "index": 35,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦3"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 3,
+        "cards": [
+          "♦3"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:47.844Z"
+    },
+    {
+      "index": 36,
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "action": "play",
+      "cards": [
+        "♥5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♥5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T13:16:49.818Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_004",
+    "winnerName": "深度学习机",
+    "winnerRole": "landlord",
+    "landlordWin": true,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_004",
+        "playerName": "深度学习机",
+        "role": "landlord",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 10000
+      },
+      {
+        "playerId": "bot_006",
+        "playerName": "理性出牌机",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♥3",
+        "♠4",
+        "♦5",
+        "♠5",
+        "♦6",
+        "♥7",
+        "♦8",
+        "♠9",
+        "♣9",
+        "♣10",
+        "♥J",
+        "♥Q",
+        "♦Q",
+        "♣Q",
+        "♦K"
+      ]
+    },
+    "bot_004": {
+      "playerId": "bot_004",
+      "playerName": "深度学习机",
+      "cards": []
+    },
+    "bot_006": {
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "cards": [
+        "🃏小王"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_004": [],
+    "bot_006": []
+  }
+}

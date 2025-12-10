@@ -1,0 +1,938 @@
+{
+  "version": "1.0.0",
+  "gameId": "db671c75-3ea7-432b-8c2d-e493827ae9cb",
+  "roomId": "K02",
+  "startedAt": "2025-12-10T15:01:37.403Z",
+  "endedAt": "2025-12-10T15:03:18.628Z",
+  "durationMs": 101225,
+  "players": [
+    {
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "seatIndex": 0,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♥4",
+        "♥6",
+        "♠6",
+        "♦6",
+        "♣6",
+        "♠7",
+        "♠8",
+        "♥8",
+        "♥9",
+        "♣10",
+        "♠10",
+        "♥J",
+        "♦Q",
+        "♦K",
+        "♥K",
+        "♥2"
+      ],
+      "finalCards": [
+        "♥8"
+      ]
+    },
+    {
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♣4",
+        "♦4",
+        "♠5",
+        "♣7",
+        "♦8",
+        "♣9",
+        "♠9",
+        "♥10",
+        "♦J",
+        "♠Q",
+        "♣Q",
+        "♣A",
+        "♠A",
+        "♦A",
+        "♥A",
+        "♦2",
+        "♠2"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 2,
+      "isBot": false,
+      "role": "landlord",
+      "initialCards": [
+        "♦3",
+        "♥3",
+        "♠4",
+        "♣5",
+        "♥5",
+        "♦5",
+        "♦7",
+        "♣8",
+        "♦9",
+        "♦10",
+        "♣J",
+        "♠J",
+        "♥Q",
+        "♣K",
+        "♣2",
+        "🃏小王",
+        "🃏大王"
+      ],
+      "finalCards": [
+        "♦3",
+        "♥3",
+        "♠3",
+        "♣5",
+        "♥5",
+        "♦5",
+        "♦7",
+        "♥7",
+        "♣8",
+        "♦9",
+        "♦10",
+        "♣J",
+        "♠J",
+        "♥Q",
+        "♣K",
+        "♠K",
+        "♣2",
+        "🃏小王",
+        "🃏大王"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♠K",
+    "♠3",
+    "♥7"
+  ],
+  "landlordId": "83696397",
+  "landlordCardsAfterBottom": [
+    "♦3",
+    "♥3",
+    "♠3",
+    "♠4",
+    "♣5",
+    "♥5",
+    "♦5",
+    "♦7",
+    "♥7",
+    "♣8",
+    "♦9",
+    "♦10",
+    "♣J",
+    "♠J",
+    "♥Q",
+    "♣K",
+    "♠K",
+    "♣2",
+    "🃏小王",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_006",
+      "bot_014",
+      "83696397"
+    ],
+    "bids": [
+      {
+        "userId": "bot_006",
+        "bid": false,
+        "timestamp": "2025-12-10T15:01:39.719Z"
+      },
+      {
+        "userId": "bot_014",
+        "bid": true,
+        "timestamp": "2025-12-10T15:01:40.090Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-10T15:01:43.394Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠4"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 4,
+        "cards": [
+          "♠4"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:49.702Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♥6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:51.347Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♣7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:52.803Z"
+    },
+    {
+      "index": 3,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:01:54.046Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♠8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♠8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:55.306Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♣9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:56.621Z"
+    },
+    {
+      "index": 6,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:01:57.211Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♣10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♣10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:01:58.684Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♦J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♦J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:00.035Z"
+    },
+    {
+      "index": 9,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:00.551Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♦Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♦Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:02.235Z"
+    },
+    {
+      "index": 11,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♣A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:03.611Z"
+    },
+    {
+      "index": 12,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:06.296Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♥2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:07.741Z"
+    },
+    {
+      "index": 14,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:09.279Z"
+    },
+    {
+      "index": 15,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:39.356Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♠6",
+        "♦6",
+        "♣6",
+        "♣3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 6,
+        "cards": [
+          "♠6",
+          "♦6",
+          "♣6",
+          "♣3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T15:02:41.236Z"
+    },
+    {
+      "index": 17,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠A",
+        "♦A",
+        "♥A",
+        "♦2"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 14,
+        "cards": [
+          "♠A",
+          "♦A",
+          "♥A",
+          "♦2"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-10T15:02:42.456Z"
+    },
+    {
+      "index": 18,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:47.961Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:49.863Z"
+    },
+    {
+      "index": 20,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣4",
+        "♦4"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 4,
+        "cards": [
+          "♣4",
+          "♦4"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T15:02:51.136Z"
+    },
+    {
+      "index": 21,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:52.297Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♦K",
+        "♥K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♦K",
+          "♥K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T15:02:53.541Z"
+    },
+    {
+      "index": 23,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:54.979Z"
+    },
+    {
+      "index": 24,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:55.455Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥4"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 4,
+        "cards": [
+          "♥4"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:57.302Z"
+    },
+    {
+      "index": 26,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♠5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:02:58.495Z"
+    },
+    {
+      "index": 27,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:02:58.638Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♠7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♠7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:00.532Z"
+    },
+    {
+      "index": 29,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♦8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♦8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:02.228Z"
+    },
+    {
+      "index": 30,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:02.521Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♥9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:04.530Z"
+    },
+    {
+      "index": 32,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♥10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♥10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:06.499Z"
+    },
+    {
+      "index": 33,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:06.684Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♥J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♥J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:07.878Z"
+    },
+    {
+      "index": 35,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♠Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:09.107Z"
+    },
+    {
+      "index": 36,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:09.336Z"
+    },
+    {
+      "index": 37,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:10.563Z"
+    },
+    {
+      "index": 38,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♠9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:11.582Z"
+    },
+    {
+      "index": 39,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:12.065Z"
+    },
+    {
+      "index": 40,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "play",
+      "cards": [
+        "♠10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♠10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:13.089Z"
+    },
+    {
+      "index": 41,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♣Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:15.091Z"
+    },
+    {
+      "index": 42,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:15.612Z"
+    },
+    {
+      "index": 43,
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T15:03:17.125Z"
+    },
+    {
+      "index": 44,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♠2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T15:03:18.625Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_014",
+    "winnerName": "右手王炸",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -10000
+      },
+      {
+        "playerId": "bot_006",
+        "playerName": "理性出牌机",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      },
+      {
+        "playerId": "bot_014",
+        "playerName": "右手王炸",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♦3",
+        "♥3",
+        "♠3",
+        "♣5",
+        "♥5",
+        "♦5",
+        "♦7",
+        "♥7",
+        "♣8",
+        "♦9",
+        "♦10",
+        "♣J",
+        "♠J",
+        "♥Q",
+        "♣K",
+        "♠K",
+        "♣2",
+        "🃏小王",
+        "🃏大王"
+      ]
+    },
+    "bot_006": {
+      "playerId": "bot_006",
+      "playerName": "理性出牌机",
+      "cards": [
+        "♥8"
+      ]
+    },
+    "bot_014": {
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "cards": []
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_006": [],
+    "bot_014": [
+      "streak_5"
+    ]
+  }
+}

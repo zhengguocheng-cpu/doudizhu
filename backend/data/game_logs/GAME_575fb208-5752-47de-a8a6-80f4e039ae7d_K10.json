@@ -1,0 +1,917 @@
+{
+  "version": "1.0.0",
+  "gameId": "575fb208-5752-47de-a8a6-80f4e039ae7d",
+  "roomId": "K10",
+  "startedAt": "2025-12-09T21:18:06.802Z",
+  "endedAt": "2025-12-09T21:20:17.147Z",
+  "durationMs": 130345,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♣5",
+        "♥6",
+        "♦6",
+        "♠7",
+        "♣7",
+        "♥8",
+        "♦8",
+        "♦9",
+        "♥10",
+        "♥J",
+        "♦Q",
+        "♣Q",
+        "♣A",
+        "♣2",
+        "♥2",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "♣3",
+        "♣5",
+        "♥6",
+        "♦6",
+        "♠7",
+        "♣7",
+        "♥8",
+        "♦8",
+        "♦9",
+        "♥10",
+        "♥J",
+        "♦Q",
+        "♣Q",
+        "♣A",
+        "♣2",
+        "♥2",
+        "🃏小王"
+      ]
+    },
+    {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♦3",
+        "♠4",
+        "♠5",
+        "♦5",
+        "♠6",
+        "♣6",
+        "♥7",
+        "♠8",
+        "♣10",
+        "♠10",
+        "♣J",
+        "♥Q",
+        "♠K",
+        "♥K",
+        "♥A",
+        "♦A",
+        "♠2"
+      ],
+      "finalCards": [
+        "♠4"
+      ]
+    },
+    {
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♠3",
+        "♥3",
+        "♥4",
+        "♦4",
+        "♣4",
+        "♥5",
+        "♦7",
+        "♠9",
+        "♣9",
+        "♥9",
+        "♦J",
+        "♠J",
+        "♠Q",
+        "♦K",
+        "♣K",
+        "♠A",
+        "🃏大王"
+      ],
+      "finalCards": []
+    }
+  ],
+  "bottomCards": [
+    "♣8",
+    "♦10",
+    "♦2"
+  ],
+  "landlordId": "bot_012",
+  "landlordCardsAfterBottom": [
+    "♠3",
+    "♥3",
+    "♥4",
+    "♦4",
+    "♣4",
+    "♥5",
+    "♦7",
+    "♣8",
+    "♠9",
+    "♣9",
+    "♥9",
+    "♦10",
+    "♦J",
+    "♠J",
+    "♠Q",
+    "♦K",
+    "♣K",
+    "♠A",
+    "♦2",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_015",
+      "bot_012",
+      "83696397"
+    ],
+    "bids": [
+      {
+        "userId": "bot_015",
+        "bid": true,
+        "timestamp": "2025-12-09T21:18:09.084Z"
+      },
+      {
+        "userId": "bot_012",
+        "bid": true,
+        "timestamp": "2025-12-09T21:18:09.396Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": false,
+        "timestamp": "2025-12-09T21:18:25.410Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♥4",
+        "♦4",
+        "♣4",
+        "♠3",
+        "♥3"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 4,
+        "cards": [
+          "♥4",
+          "♦4",
+          "♣4",
+          "♠3",
+          "♥3"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T21:18:29.066Z"
+    },
+    {
+      "index": 1,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:18:30.148Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:18:31.371Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♠9",
+        "♣9",
+        "♥9",
+        "♦J",
+        "♠J"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 9,
+        "cards": [
+          "♠9",
+          "♣9",
+          "♥9",
+          "♦J",
+          "♠J"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T21:18:32.903Z"
+    },
+    {
+      "index": 4,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:18:33.961Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:18:35.722Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♦K",
+        "♣K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♦K",
+          "♣K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:18:37.034Z"
+    },
+    {
+      "index": 7,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:07.075Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♥A",
+        "♦A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♥A",
+          "♦A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:19:08.558Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:09.615Z"
+    },
+    {
+      "index": 10,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:13.649Z"
+    },
+    {
+      "index": 11,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠5",
+        "♦5"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 5,
+        "cards": [
+          "♠5",
+          "♦5"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:19:14.848Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:16.355Z"
+    },
+    {
+      "index": 13,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:17.964Z"
+    },
+    {
+      "index": 14,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠6",
+        "♣6"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 6,
+        "cards": [
+          "♠6",
+          "♣6"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:19:19.896Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:21.406Z"
+    },
+    {
+      "index": 16,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:21.631Z"
+    },
+    {
+      "index": 17,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣10",
+        "♠10"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 10,
+        "cards": [
+          "♣10",
+          "♠10"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:19:23.107Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:24.624Z"
+    },
+    {
+      "index": 19,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:24.819Z"
+    },
+    {
+      "index": 20,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠K",
+        "♥K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♠K",
+          "♥K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:19:26.820Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:28.506Z"
+    },
+    {
+      "index": 22,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:44.039Z"
+    },
+    {
+      "index": 23,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♦3"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 3,
+        "cards": [
+          "♦3"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:46.039Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♥5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♥5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:47.705Z"
+    },
+    {
+      "index": 25,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:47.947Z"
+    },
+    {
+      "index": 26,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♥7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♥7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:49.594Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♣8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:51.143Z"
+    },
+    {
+      "index": 28,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:52.955Z"
+    },
+    {
+      "index": 29,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♣J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♣J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:54.405Z"
+    },
+    {
+      "index": 30,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♠Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:55.681Z"
+    },
+    {
+      "index": 31,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:19:55.988Z"
+    },
+    {
+      "index": 32,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♠2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:57.865Z"
+    },
+    {
+      "index": 33,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:19:59.634Z"
+    },
+    {
+      "index": 34,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:00.594Z"
+    },
+    {
+      "index": 35,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:02.042Z"
+    },
+    {
+      "index": 36,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♦7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♦7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:03.288Z"
+    },
+    {
+      "index": 37,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:03.881Z"
+    },
+    {
+      "index": 38,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♠8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♠8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:04.990Z"
+    },
+    {
+      "index": 39,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♦10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♦10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:06.261Z"
+    },
+    {
+      "index": 40,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:09.273Z"
+    },
+    {
+      "index": 41,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "play",
+      "cards": [
+        "♥Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♥Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:11.003Z"
+    },
+    {
+      "index": 42,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♠A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♠A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:12.835Z"
+    },
+    {
+      "index": 43,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:13.372Z"
+    },
+    {
+      "index": 44,
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:20:15.170Z"
+    },
+    {
+      "index": 45,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♦2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♦2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:20:17.145Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_012",
+    "winnerName": "凌晨排位狗",
+    "winnerRole": "landlord",
+    "landlordWin": true,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_012",
+        "playerName": "凌晨排位狗",
+        "role": "landlord",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 10000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      },
+      {
+        "playerId": "bot_015",
+        "playerName": "稳健理财型",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♣3",
+        "♣5",
+        "♥6",
+        "♦6",
+        "♠7",
+        "♣7",
+        "♥8",
+        "♦8",
+        "♦9",
+        "♥10",
+        "♥J",
+        "♦Q",
+        "♣Q",
+        "♣A",
+        "♣2",
+        "♥2",
+        "🃏小王"
+      ]
+    },
+    "bot_015": {
+      "playerId": "bot_015",
+      "playerName": "稳健理财型",
+      "cards": [
+        "♠4"
+      ]
+    },
+    "bot_012": {
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "cards": []
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_012": [],
+    "bot_015": []
+  }
+}

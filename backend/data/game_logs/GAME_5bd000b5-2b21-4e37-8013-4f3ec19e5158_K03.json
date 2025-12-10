@@ -1,0 +1,950 @@
+{
+  "version": "1.0.0",
+  "gameId": "5bd000b5-2b21-4e37-8013-4f3ec19e5158",
+  "roomId": "K03",
+  "startedAt": "2025-12-10T12:46:30.893Z",
+  "endedAt": "2025-12-10T12:47:59.369Z",
+  "durationMs": 88476,
+  "players": [
+    {
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "seatIndex": 0,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♦3",
+        "♠3",
+        "♦4",
+        "♠4",
+        "♦6",
+        "♣7",
+        "♣8",
+        "♦8",
+        "♣9",
+        "♣10",
+        "♠10",
+        "♥Q",
+        "♠Q",
+        "♠A",
+        "♣A",
+        "♥2"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♥3",
+        "♥5",
+        "♠5",
+        "♥6",
+        "♠7",
+        "♠9",
+        "♥9",
+        "♦9",
+        "♦10",
+        "♥J",
+        "♣J",
+        "♠J",
+        "♦Q",
+        "♣Q",
+        "♠K",
+        "♥K",
+        "♥A"
+      ],
+      "finalCards": [
+        "♥6",
+        "♠J",
+        "♥A"
+      ]
+    },
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 2,
+      "isBot": false,
+      "role": "landlord",
+      "initialCards": [
+        "♥4",
+        "♣4",
+        "♣5",
+        "♣6",
+        "♥7",
+        "♦7",
+        "♥8",
+        "♠8",
+        "♥10",
+        "♦J",
+        "♣K",
+        "♦K",
+        "♦A",
+        "♠2",
+        "♣2",
+        "🃏小王",
+        "🃏大王"
+      ],
+      "finalCards": [
+        "♣K",
+        "♦K",
+        "♦A",
+        "♠2",
+        "♣2",
+        "♦2"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♦5",
+    "♦2",
+    "♠6"
+  ],
+  "landlordId": "83696397",
+  "landlordCardsAfterBottom": [
+    "♥4",
+    "♣4",
+    "♣5",
+    "♦5",
+    "♣6",
+    "♠6",
+    "♥7",
+    "♦7",
+    "♥8",
+    "♠8",
+    "♥10",
+    "♦J",
+    "♣K",
+    "♦K",
+    "♦A",
+    "♠2",
+    "♣2",
+    "♦2",
+    "🃏小王",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_007",
+      "83696397",
+      "bot_012"
+    ],
+    "bids": [
+      {
+        "userId": "bot_007",
+        "bid": false,
+        "timestamp": "2025-12-10T12:46:33.258Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-10T12:46:35.905Z"
+      },
+      {
+        "userId": "bot_012",
+        "bid": false,
+        "timestamp": "2025-12-10T12:46:36.167Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠8",
+        "♥8",
+        "♥7",
+        "♦7",
+        "♠6",
+        "♣6",
+        "♣5",
+        "♦5",
+        "♥4",
+        "♣4"
+      ],
+      "cardType": {
+        "type": "consecutive_pairs",
+        "value": 8,
+        "cards": [
+          "♠8",
+          "♥8",
+          "♥7",
+          "♦7",
+          "♠6",
+          "♣6",
+          "♣5",
+          "♦5",
+          "♥4",
+          "♣4"
+        ],
+        "length": 5,
+        "description": "连对"
+      },
+      "timestamp": "2025-12-10T12:46:45.184Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:46:46.423Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:46:48.054Z"
+    },
+    {
+      "index": 3,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♥10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:46:49.333Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♥Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♥Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:46:50.957Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♠K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♠K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:46:52.313Z"
+    },
+    {
+      "index": 6,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "🃏小王",
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "rocket",
+        "value": 17,
+        "cards": [
+          "🃏小王",
+          "🃏大王"
+        ],
+        "description": "王炸"
+      },
+      "timestamp": "2025-12-10T12:46:56.306Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:46:57.956Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:46:59.490Z"
+    },
+    {
+      "index": 9,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♦J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:03.067Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♠Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:04.706Z"
+    },
+    {
+      "index": 11,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♥K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♥K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:05.868Z"
+    },
+    {
+      "index": 12,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:06.986Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♠A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♠A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:08.641Z"
+    },
+    {
+      "index": 14,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:10.096Z"
+    },
+    {
+      "index": 15,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:14.688Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣3",
+        "♦3",
+        "♠3",
+        "♦4",
+        "♠4"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 3,
+        "cards": [
+          "♣3",
+          "♦3",
+          "♠3",
+          "♦4",
+          "♠4"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-10T12:47:16.582Z"
+    },
+    {
+      "index": 17,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:18.201Z"
+    },
+    {
+      "index": 18,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:18.871Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣8",
+        "♦8"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 8,
+        "cards": [
+          "♣8",
+          "♦8"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:20.526Z"
+    },
+    {
+      "index": 20,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♠9",
+        "♥9"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 9,
+        "cards": [
+          "♠9",
+          "♥9"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:22.371Z"
+    },
+    {
+      "index": 21,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:23.166Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣10",
+        "♠10"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 10,
+        "cards": [
+          "♣10",
+          "♠10"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:24.316Z"
+    },
+    {
+      "index": 23,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♥J",
+        "♣J"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 11,
+        "cards": [
+          "♥J",
+          "♣J"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:25.751Z"
+    },
+    {
+      "index": 24,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:27.045Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:28.946Z"
+    },
+    {
+      "index": 26,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♥5",
+        "♠5"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 5,
+        "cards": [
+          "♥5",
+          "♠5"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:30.917Z"
+    },
+    {
+      "index": 27,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:30.996Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:32.132Z"
+    },
+    {
+      "index": 29,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♦Q",
+        "♣Q"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 12,
+        "cards": [
+          "♦Q",
+          "♣Q"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-10T12:47:33.566Z"
+    },
+    {
+      "index": 30,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:33.662Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:35.512Z"
+    },
+    {
+      "index": 32,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♥3"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 3,
+        "cards": [
+          "♥3"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:36.686Z"
+    },
+    {
+      "index": 33,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:36.804Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♦6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♦6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:38.340Z"
+    },
+    {
+      "index": 35,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♠7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♠7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:39.781Z"
+    },
+    {
+      "index": 36,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:40.025Z"
+    },
+    {
+      "index": 37,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♣9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:41.748Z"
+    },
+    {
+      "index": 38,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♦10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♦10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:43.565Z"
+    },
+    {
+      "index": 39,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:44.528Z"
+    },
+    {
+      "index": 40,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♣A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:46.489Z"
+    },
+    {
+      "index": 41,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:47.607Z"
+    },
+    {
+      "index": 42,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:53.552Z"
+    },
+    {
+      "index": 43,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♣7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♣7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:55.459Z"
+    },
+    {
+      "index": 44,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♦9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♦9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:56.573Z"
+    },
+    {
+      "index": 45,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-10T12:47:57.393Z"
+    },
+    {
+      "index": 46,
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "action": "play",
+      "cards": [
+        "♥2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♥2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-10T12:47:59.366Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_012",
+    "winnerName": "凌晨排位狗",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 1,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 8,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 8
+    },
+    "playerScores": [
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": -80000
+      },
+      {
+        "playerId": "bot_012",
+        "playerName": "凌晨排位狗",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": 40000
+      },
+      {
+        "playerId": "bot_007",
+        "playerName": "冷静农民",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": 40000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♣K",
+        "♦K",
+        "♦A",
+        "♠2",
+        "♣2",
+        "♦2"
+      ]
+    },
+    "bot_012": {
+      "playerId": "bot_012",
+      "playerName": "凌晨排位狗",
+      "cards": []
+    },
+    "bot_007": {
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "cards": [
+        "♥6",
+        "♠J",
+        "♥A"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_012": [
+      "streak_3"
+    ],
+    "bot_007": []
+  }
+}

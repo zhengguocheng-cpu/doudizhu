@@ -1,0 +1,738 @@
+{
+  "version": "1.0.0",
+  "gameId": "36f956e6-56d1-459d-ae6f-c81a870274d4",
+  "roomId": "K08",
+  "startedAt": "2025-12-09T20:59:45.104Z",
+  "endedAt": "2025-12-09T21:01:21.774Z",
+  "durationMs": 96670,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♠3",
+        "♦3",
+        "♠6",
+        "♥6",
+        "♥7",
+        "♠7",
+        "♦7",
+        "♣8",
+        "♦8",
+        "♥8",
+        "♣9",
+        "♥10",
+        "♠10",
+        "♦10",
+        "♠K",
+        "🃏小王",
+        "🃏大王"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♥3",
+        "♣3",
+        "♠4",
+        "♥5",
+        "♦6",
+        "♥9",
+        "♠9",
+        "♣10",
+        "♣J",
+        "♥J",
+        "♠J",
+        "♣Q",
+        "♣K",
+        "♥K",
+        "♠A",
+        "♣A",
+        "♣2"
+      ],
+      "finalCards": [
+        "♠4",
+        "♦6",
+        "♣Q",
+        "♣A"
+      ]
+    },
+    {
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♦4",
+        "♣4",
+        "♥4",
+        "♣5",
+        "♠5",
+        "♣6",
+        "♣7",
+        "♠8",
+        "♦9",
+        "♦J",
+        "♥Q",
+        "♠Q",
+        "♦Q",
+        "♦K",
+        "♥A",
+        "♦A",
+        "♦2"
+      ],
+      "finalCards": [
+        "♣6",
+        "♣7",
+        "♠8",
+        "♦9",
+        "♦Q",
+        "♦K"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♥2",
+    "♠2",
+    "♦5"
+  ],
+  "landlordId": "bot_019",
+  "landlordCardsAfterBottom": [
+    "♥3",
+    "♣3",
+    "♠4",
+    "♥5",
+    "♦5",
+    "♦6",
+    "♥9",
+    "♠9",
+    "♣10",
+    "♣J",
+    "♥J",
+    "♠J",
+    "♣Q",
+    "♣K",
+    "♥K",
+    "♠A",
+    "♣A",
+    "♣2",
+    "♥2",
+    "♠2"
+  ],
+  "bidding": {
+    "order": [
+      "83696397",
+      "bot_019",
+      "bot_010"
+    ],
+    "bids": [
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-09T20:59:59.771Z"
+      },
+      {
+        "userId": "bot_019",
+        "bid": true,
+        "timestamp": "2025-12-09T21:00:00.063Z"
+      },
+      {
+        "userId": "bot_010",
+        "bid": false,
+        "timestamp": "2025-12-09T21:00:00.470Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♣J",
+        "♥J",
+        "♠J",
+        "♥3",
+        "♣3"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 11,
+        "cards": [
+          "♣J",
+          "♥J",
+          "♠J",
+          "♥3",
+          "♣3"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T21:00:03.546Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:05.528Z"
+    },
+    {
+      "index": 2,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:11.997Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♣2",
+        "♥2",
+        "♠2",
+        "♥5",
+        "♦5"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 15,
+        "cards": [
+          "♣2",
+          "♥2",
+          "♠2",
+          "♥5",
+          "♦5"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T21:00:13.730Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:14.750Z"
+    },
+    {
+      "index": 5,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:33.275Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♥9",
+        "♠9"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 9,
+        "cards": [
+          "♥9",
+          "♠9"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:00:34.633Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♥Q",
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 12,
+        "cards": [
+          "♥Q",
+          "♠Q"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:00:35.832Z"
+    },
+    {
+      "index": 8,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:37.351Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♣K",
+        "♥K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♣K",
+          "♥K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:00:39.280Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♥A",
+        "♦A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♥A",
+          "♦A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:00:40.352Z"
+    },
+    {
+      "index": 11,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:41.458Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:42.519Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♦4",
+        "♣4",
+        "♥4",
+        "♣5"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 4,
+        "cards": [
+          "♦4",
+          "♣4",
+          "♥4",
+          "♣5"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-09T21:00:44.040Z"
+    },
+    {
+      "index": 14,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:49.072Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:00:50.932Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♠5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♠5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:00:52.678Z"
+    },
+    {
+      "index": 17,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♣9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:00:59.480Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♣10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♣10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:01:00.824Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♦J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♦J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:01:02.195Z"
+    },
+    {
+      "index": 20,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♠K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:01:04.863Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "play",
+      "cards": [
+        "♠A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♠A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:01:06.656Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "play",
+      "cards": [
+        "♦2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♦2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:01:08.400Z"
+    },
+    {
+      "index": 23,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "🃏小王",
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "rocket",
+        "value": 17,
+        "cards": [
+          "🃏小王",
+          "🃏大王"
+        ],
+        "description": "王炸"
+      },
+      "timestamp": "2025-12-09T21:01:11.299Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:01:12.403Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:01:14.337Z"
+    },
+    {
+      "index": 26,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥7",
+        "♠7",
+        "♦7",
+        "♣8",
+        "♦8",
+        "♥8",
+        "♥6",
+        "♠6",
+        "♦3",
+        "♠3"
+      ],
+      "cardType": {
+        "type": "airplane_with_wings",
+        "value": 8,
+        "cards": [
+          "♥7",
+          "♠7",
+          "♦7",
+          "♣8",
+          "♦8",
+          "♥8",
+          "♥6",
+          "♠6",
+          "♦3",
+          "♠3"
+        ],
+        "description": "飞机带翅膀"
+      },
+      "timestamp": "2025-12-09T21:01:18.250Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:01:19.748Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:01:21.224Z"
+    },
+    {
+      "index": 29,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦10",
+        "♥10",
+        "♠10"
+      ],
+      "cardType": {
+        "type": "triple",
+        "value": 10,
+        "cards": [
+          "♦10",
+          "♥10",
+          "♠10"
+        ],
+        "description": "三张"
+      },
+      "timestamp": "2025-12-09T21:01:21.771Z"
+    }
+  ],
+  "result": {
+    "winnerId": "83696397",
+    "winnerName": "83696397",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 1,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 8,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 8
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_019",
+        "playerName": "夜猫老哥",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": -80000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": 40000
+      },
+      {
+        "playerId": "bot_010",
+        "playerName": "清晨AI",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 8,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 8
+        },
+        "finalScore": 40000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": []
+    },
+    "bot_019": {
+      "playerId": "bot_019",
+      "playerName": "夜猫老哥",
+      "cards": [
+        "♠4",
+        "♦6",
+        "♣Q",
+        "♣A"
+      ]
+    },
+    "bot_010": {
+      "playerId": "bot_010",
+      "playerName": "清晨AI",
+      "cards": [
+        "♣6",
+        "♣7",
+        "♠8",
+        "♦9",
+        "♦Q",
+        "♦K"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_019": [],
+    "bot_010": []
+  }
+}

@@ -1,0 +1,945 @@
+{
+  "version": "1.0.0",
+  "gameId": "63f6ba50-21d4-4208-b00a-fe56eba9dd1b",
+  "roomId": "K20",
+  "startedAt": "2025-12-09T23:00:45.132Z",
+  "endedAt": "2025-12-09T23:01:57.361Z",
+  "durationMs": 72229,
+  "players": [
+    {
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "seatIndex": 0,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♦3",
+        "♣3",
+        "♠3",
+        "♣5",
+        "♥6",
+        "♦6",
+        "♠6",
+        "♣7",
+        "♠7",
+        "♥8",
+        "♦9",
+        "♠9",
+        "♣J",
+        "♥Q",
+        "♠K",
+        "♦2",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "♣5",
+        "♦9",
+        "♠9",
+        "♠K"
+      ]
+    },
+    {
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♥3",
+        "♥4",
+        "♦4",
+        "♠4",
+        "♥5",
+        "♦5",
+        "♥7",
+        "♦7",
+        "♣10",
+        "♦10",
+        "♦J",
+        "♣Q",
+        "♦K",
+        "♠A",
+        "♥A",
+        "♦A",
+        "♠2"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 2,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♣4",
+        "♠5",
+        "♣6",
+        "♠8",
+        "♣8",
+        "♦8",
+        "♥9",
+        "♥10",
+        "♠10",
+        "♠J",
+        "♥J",
+        "♠Q",
+        "♦Q",
+        "♥K",
+        "♣A",
+        "♥2",
+        "♣2"
+      ],
+      "finalCards": [
+        "♠J",
+        "♥J",
+        "♣A"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♣9",
+    "🃏大王",
+    "♣K"
+  ],
+  "landlordId": "bot_014",
+  "landlordCardsAfterBottom": [
+    "♥3",
+    "♥4",
+    "♦4",
+    "♠4",
+    "♥5",
+    "♦5",
+    "♥7",
+    "♦7",
+    "♣9",
+    "♣10",
+    "♦10",
+    "♦J",
+    "♣Q",
+    "♦K",
+    "♣K",
+    "♠A",
+    "♥A",
+    "♦A",
+    "♠2",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "83696397",
+      "bot_002",
+      "bot_014"
+    ],
+    "bids": [
+      {
+        "userId": "83696397",
+        "bid": false,
+        "timestamp": "2025-12-09T23:00:48.496Z"
+      },
+      {
+        "userId": "bot_002",
+        "bid": false,
+        "timestamp": "2025-12-09T23:00:48.794Z"
+      },
+      {
+        "userId": "bot_014",
+        "bid": true,
+        "timestamp": "2025-12-09T23:00:49.208Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♥4",
+        "♦4",
+        "♠4",
+        "♥5",
+        "♦5"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 4,
+        "cards": [
+          "♥4",
+          "♦4",
+          "♠4",
+          "♥5",
+          "♦5"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T23:00:52.764Z"
+    },
+    {
+      "index": 1,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:00:54.817Z"
+    },
+    {
+      "index": 2,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:00:56.691Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠A",
+        "♥A",
+        "♦A",
+        "♥7",
+        "♦7"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 14,
+        "cards": [
+          "♠A",
+          "♥A",
+          "♦A",
+          "♥7",
+          "♦7"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T23:00:58.124Z"
+    },
+    {
+      "index": 4,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:00:58.385Z"
+    },
+    {
+      "index": 5,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:00:59.576Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣10",
+        "♦10"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 10,
+        "cards": [
+          "♣10",
+          "♦10"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:00.951Z"
+    },
+    {
+      "index": 7,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦Q",
+        "♠Q"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 12,
+        "cards": [
+          "♦Q",
+          "♠Q"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:01.855Z"
+    },
+    {
+      "index": 8,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:02.950Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♦K",
+        "♣K"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 13,
+        "cards": [
+          "♦K",
+          "♣K"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:04.304Z"
+    },
+    {
+      "index": 10,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣2",
+        "♥2"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 15,
+        "cards": [
+          "♣2",
+          "♥2"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:04.678Z"
+    },
+    {
+      "index": 11,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:05.900Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:07.561Z"
+    },
+    {
+      "index": 13,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦8",
+        "♣8",
+        "♠8",
+        "♣4"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 8,
+        "cards": [
+          "♦8",
+          "♣8",
+          "♠8",
+          "♣4"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-09T23:01:08.085Z"
+    },
+    {
+      "index": 14,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:09.813Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:11.171Z"
+    },
+    {
+      "index": 16,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♠5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:12.438Z"
+    },
+    {
+      "index": 17,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♥6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♥6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:13.773Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♣9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:15.177Z"
+    },
+    {
+      "index": 19,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:16.157Z"
+    },
+    {
+      "index": 20,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♣J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♣J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:17.566Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♣Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♣Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:19.400Z"
+    },
+    {
+      "index": 22,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♥K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:19.739Z"
+    },
+    {
+      "index": 23,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♦2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♦2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:21.567Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:22.755Z"
+    },
+    {
+      "index": 25,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:23.879Z"
+    },
+    {
+      "index": 26,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:25.049Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♥3"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 3,
+        "cards": [
+          "♥3"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:26.196Z"
+    },
+    {
+      "index": 28,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♥9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:28.740Z"
+    },
+    {
+      "index": 29,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♥Q"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 12,
+        "cards": [
+          "♥Q"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:29.808Z"
+    },
+    {
+      "index": 30,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♠2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♠2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:31.000Z"
+    },
+    {
+      "index": 31,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:32.445Z"
+    },
+    {
+      "index": 32,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "🃏小王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 16,
+        "cards": [
+          "🃏小王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:34.249Z"
+    },
+    {
+      "index": 33,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:35.590Z"
+    },
+    {
+      "index": 34,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:36.653Z"
+    },
+    {
+      "index": 35,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♦3",
+        "♣3",
+        "♠3",
+        "♦6",
+        "♠6"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 3,
+        "cards": [
+          "♦3",
+          "♣3",
+          "♠3",
+          "♦6",
+          "♠6"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T23:01:38.643Z"
+    },
+    {
+      "index": 36,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:39.750Z"
+    },
+    {
+      "index": 37,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:40.864Z"
+    },
+    {
+      "index": 38,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♣7",
+        "♠7"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 7,
+        "cards": [
+          "♣7",
+          "♠7"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:42.834Z"
+    },
+    {
+      "index": 39,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:44.706Z"
+    },
+    {
+      "index": 40,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥10",
+        "♠10"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 10,
+        "cards": [
+          "♥10",
+          "♠10"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T23:01:49.376Z"
+    },
+    {
+      "index": 41,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:51.337Z"
+    },
+    {
+      "index": 42,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T23:01:52.796Z"
+    },
+    {
+      "index": 43,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♣6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:54.870Z"
+    },
+    {
+      "index": 44,
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "action": "play",
+      "cards": [
+        "♥8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♥8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:56.344Z"
+    },
+    {
+      "index": 45,
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "action": "play",
+      "cards": [
+        "♦J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♦J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T23:01:57.360Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_014",
+    "winnerName": "右手王炸",
+    "winnerRole": "landlord",
+    "landlordWin": true,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_014",
+        "playerName": "右手王炸",
+        "role": "landlord",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 10000
+      },
+      {
+        "playerId": "bot_002",
+        "playerName": "小明同学",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♠J",
+        "♥J",
+        "♣A"
+      ]
+    },
+    "bot_002": {
+      "playerId": "bot_002",
+      "playerName": "小明同学",
+      "cards": [
+        "♣5",
+        "♦9",
+        "♠9",
+        "♠K"
+      ]
+    },
+    "bot_014": {
+      "playerId": "bot_014",
+      "playerName": "右手王炸",
+      "cards": []
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_014": [],
+    "bot_002": []
+  }
+}

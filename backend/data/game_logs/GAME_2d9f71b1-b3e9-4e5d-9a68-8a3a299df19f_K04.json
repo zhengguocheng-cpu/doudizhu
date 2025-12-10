@@ -1,0 +1,804 @@
+{
+  "version": "1.0.0",
+  "gameId": "2d9f71b1-b3e9-4e5d-9a68-8a3a299df19f",
+  "roomId": "K04",
+  "startedAt": "2025-12-09T15:34:17.115Z",
+  "endedAt": "2025-12-09T15:35:43.751Z",
+  "durationMs": 86636,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♥4",
+        "♣5",
+        "♠6",
+        "♠7",
+        "♥7",
+        "♥8",
+        "♣8",
+        "♦8",
+        "♣9",
+        "♥9",
+        "♠10",
+        "♦J",
+        "♥K",
+        "♠A",
+        "♥A",
+        "♦2"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♣4",
+        "♦6",
+        "♣6",
+        "♠8",
+        "♦9",
+        "♥10",
+        "♥J",
+        "♠Q",
+        "♦Q",
+        "♣K",
+        "♦K",
+        "♠K",
+        "♦A",
+        "♣2",
+        "♥2",
+        "♠2",
+        "🃏大王"
+      ],
+      "finalCards": [
+        "♦9",
+        "♥J"
+      ]
+    },
+    {
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♥3",
+        "♦3",
+        "♠4",
+        "♦4",
+        "♠5",
+        "♦5",
+        "♥5",
+        "♦7",
+        "♠9",
+        "♦10",
+        "♣10",
+        "♣J",
+        "♠J",
+        "♥Q",
+        "♣Q",
+        "♣A",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "♥3",
+        "♦3",
+        "♠4",
+        "♦4",
+        "♠5",
+        "♦5",
+        "♥5",
+        "♦7",
+        "♣10",
+        "♠J",
+        "♥Q",
+        "♣Q",
+        "♣A"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♥6",
+    "♠3",
+    "♣7"
+  ],
+  "landlordId": "bot_007",
+  "landlordCardsAfterBottom": [
+    "♠3",
+    "♣4",
+    "♦6",
+    "♣6",
+    "♥6",
+    "♣7",
+    "♠8",
+    "♦9",
+    "♥10",
+    "♥J",
+    "♠Q",
+    "♦Q",
+    "♣K",
+    "♦K",
+    "♠K",
+    "♦A",
+    "♣2",
+    "♥2",
+    "♠2",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_013",
+      "83696397",
+      "bot_007"
+    ],
+    "bids": [
+      {
+        "userId": "bot_013",
+        "bid": false,
+        "timestamp": "2025-12-09T15:34:19.430Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-09T15:34:21.563Z"
+      },
+      {
+        "userId": "bot_007",
+        "bid": true,
+        "timestamp": "2025-12-09T15:34:21.956Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♦6",
+        "♣6",
+        "♥6",
+        "♠Q",
+        "♦Q"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 6,
+        "cards": [
+          "♦6",
+          "♣6",
+          "♥6",
+          "♠Q",
+          "♦Q"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T15:34:25.621Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:26.691Z"
+    },
+    {
+      "index": 2,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:30.785Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♣K",
+        "♦K",
+        "♠K",
+        "♠3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 13,
+        "cards": [
+          "♣K",
+          "♦K",
+          "♠K",
+          "♠3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-09T15:34:31.877Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:33.556Z"
+    },
+    {
+      "index": 5,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:34.594Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♣2",
+        "♥2",
+        "♠2",
+        "♣4"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 15,
+        "cards": [
+          "♣2",
+          "♥2",
+          "♠2",
+          "♣4"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-09T15:34:35.972Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:37.730Z"
+    },
+    {
+      "index": 8,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:38.726Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♣7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♣7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:39.881Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "play",
+      "cards": [
+        "♠9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♠9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:41.704Z"
+    },
+    {
+      "index": 11,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:48.902Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♥10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♥10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:49.930Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "play",
+      "cards": [
+        "♣J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♣J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:51.420Z"
+    },
+    {
+      "index": 14,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♥K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:54.981Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♦A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♦A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:56.677Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "play",
+      "cards": [
+        "🃏小王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 16,
+        "cards": [
+          "🃏小王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:34:58.540Z"
+    },
+    {
+      "index": 17,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:34:59.590Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:35:01.400Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:03.079Z"
+    },
+    {
+      "index": 20,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:04.121Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "play",
+      "cards": [
+        "♠8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♠8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:35:06.069Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "play",
+      "cards": [
+        "♦10"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 10,
+        "cards": [
+          "♦10"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:35:07.616Z"
+    },
+    {
+      "index": 23,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♦2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:35:13.261Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:14.826Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:16.153Z"
+    },
+    {
+      "index": 26,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣3",
+        "♥4",
+        "♣5",
+        "♠6",
+        "♠7",
+        "♥8",
+        "♣9"
+      ],
+      "cardType": {
+        "type": "straight",
+        "value": 9,
+        "cards": [
+          "♣3",
+          "♥4",
+          "♣5",
+          "♠6",
+          "♠7",
+          "♥8",
+          "♣9"
+        ],
+        "length": 7,
+        "description": "顺子"
+      },
+      "timestamp": "2025-12-09T15:35:29.037Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:30.380Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:31.786Z"
+    },
+    {
+      "index": 29,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣8",
+        "♥7",
+        "♥9",
+        "♠10",
+        "♦J"
+      ],
+      "cardType": {
+        "type": "straight",
+        "value": 11,
+        "cards": [
+          "♣8",
+          "♥7",
+          "♥9",
+          "♠10",
+          "♦J"
+        ],
+        "length": 5,
+        "description": "顺子"
+      },
+      "timestamp": "2025-12-09T15:35:35.630Z"
+    },
+    {
+      "index": 30,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:37.626Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:38.996Z"
+    },
+    {
+      "index": 32,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠A",
+        "♥A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♠A",
+          "♥A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T15:35:40.116Z"
+    },
+    {
+      "index": 33,
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:41.725Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T15:35:43.224Z"
+    },
+    {
+      "index": 35,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♦8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T15:35:43.749Z"
+    }
+  ],
+  "result": {
+    "winnerId": "83696397",
+    "winnerName": "83696397",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_007",
+        "playerName": "冷静农民",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -10000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      },
+      {
+        "playerId": "bot_013",
+        "playerName": "深度同学",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": []
+    },
+    "bot_007": {
+      "playerId": "bot_007",
+      "playerName": "冷静农民",
+      "cards": [
+        "♦9",
+        "♥J"
+      ]
+    },
+    "bot_013": {
+      "playerId": "bot_013",
+      "playerName": "深度同学",
+      "cards": [
+        "♥3",
+        "♦3",
+        "♠4",
+        "♦4",
+        "♠5",
+        "♦5",
+        "♥5",
+        "♦7",
+        "♣10",
+        "♠J",
+        "♥Q",
+        "♣Q",
+        "♣A"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_007": [],
+    "bot_013": [
+      "score_1000",
+      "score_5000"
+    ]
+  }
+}

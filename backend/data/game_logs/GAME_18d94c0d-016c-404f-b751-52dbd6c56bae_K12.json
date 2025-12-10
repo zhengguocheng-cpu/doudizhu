@@ -1,0 +1,626 @@
+{
+  "version": "1.0.0",
+  "gameId": "18d94c0d-016c-404f-b751-52dbd6c56bae",
+  "roomId": "K12",
+  "startedAt": "2025-12-09T21:24:51.640Z",
+  "endedAt": "2025-12-09T21:25:44.603Z",
+  "durationMs": 52963,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♠4",
+        "♥4",
+        "♦6",
+        "♠8",
+        "♠9",
+        "♥10",
+        "♦J",
+        "♣J",
+        "♠Q",
+        "♣Q",
+        "♦K",
+        "♣K",
+        "♠K",
+        "♦A",
+        "♣A",
+        "♦2",
+        "🃏小王"
+      ],
+      "finalCards": [
+        "♠4",
+        "♥4",
+        "♦6",
+        "♠8",
+        "♠9",
+        "♥10",
+        "♦J",
+        "♣J",
+        "♠Q",
+        "♣Q",
+        "♦K",
+        "♣K",
+        "♠K",
+        "♦A",
+        "♣A",
+        "♦2",
+        "🃏小王"
+      ]
+    },
+    {
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♥3",
+        "♦4",
+        "♦5",
+        "♠7",
+        "♦7",
+        "♥8",
+        "♦8",
+        "♥9",
+        "♦10",
+        "♠10",
+        "♣10",
+        "♥J",
+        "♠J",
+        "♥A",
+        "♠2",
+        "♥2",
+        "🃏大王"
+      ],
+      "finalCards": []
+    },
+    {
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♣3",
+        "♠3",
+        "♦3",
+        "♣4",
+        "♣5",
+        "♠5",
+        "♥5",
+        "♥6",
+        "♠6",
+        "♣6",
+        "♥7",
+        "♣7",
+        "♣8",
+        "♥Q",
+        "♦Q",
+        "♥K",
+        "♣2"
+      ],
+      "finalCards": [
+        "♣3",
+        "♠3",
+        "♦3",
+        "♣5",
+        "♠5",
+        "♥5",
+        "♠6",
+        "♣6",
+        "♥7",
+        "♣7",
+        "♣8",
+        "♥K",
+        "♣2"
+      ]
+    }
+  ],
+  "bottomCards": [
+    "♠A",
+    "♣9",
+    "♦9"
+  ],
+  "landlordId": "bot_017",
+  "landlordCardsAfterBottom": [
+    "♥3",
+    "♦4",
+    "♦5",
+    "♠7",
+    "♦7",
+    "♥8",
+    "♦8",
+    "♥9",
+    "♣9",
+    "♦9",
+    "♦10",
+    "♠10",
+    "♣10",
+    "♥J",
+    "♠J",
+    "♥A",
+    "♠A",
+    "♠2",
+    "♥2",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_017",
+      "bot_005",
+      "83696397"
+    ],
+    "bids": [
+      {
+        "userId": "bot_017",
+        "bid": true,
+        "timestamp": "2025-12-09T21:24:53.958Z"
+      },
+      {
+        "userId": "bot_005",
+        "bid": false,
+        "timestamp": "2025-12-09T21:24:54.318Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": false,
+        "timestamp": "2025-12-09T21:25:10.333Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♥9",
+        "♣9",
+        "♦9",
+        "♦10",
+        "♠10",
+        "♣10",
+        "♠7",
+        "♦7",
+        "♥8",
+        "♦8"
+      ],
+      "cardType": {
+        "type": "airplane_with_wings",
+        "value": 10,
+        "cards": [
+          "♥9",
+          "♣9",
+          "♦9",
+          "♦10",
+          "♠10",
+          "♣10",
+          "♠7",
+          "♦7",
+          "♥8",
+          "♦8"
+        ],
+        "description": "飞机带翅膀"
+      },
+      "timestamp": "2025-12-09T21:25:13.802Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:15.545Z"
+    },
+    {
+      "index": 2,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:16.637Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♥J",
+        "♠J"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 11,
+        "cards": [
+          "♥J",
+          "♠J"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:25:17.661Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "play",
+      "cards": [
+        "♥Q",
+        "♦Q"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 12,
+        "cards": [
+          "♥Q",
+          "♦Q"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:25:19.354Z"
+    },
+    {
+      "index": 5,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:26.520Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♥A",
+        "♠A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♥A",
+          "♠A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:25:27.553Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:29.269Z"
+    },
+    {
+      "index": 8,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:29.344Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♠2",
+        "♥2"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 15,
+        "cards": [
+          "♠2",
+          "♥2"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T21:25:30.841Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:32.832Z"
+    },
+    {
+      "index": 11,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:33.037Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♥3"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 3,
+        "cards": [
+          "♥3"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:34.303Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "play",
+      "cards": [
+        "♣4"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 4,
+        "cards": [
+          "♣4"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:35.584Z"
+    },
+    {
+      "index": 14,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:35.729Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♦5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♦5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:37.144Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "play",
+      "cards": [
+        "♥6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♥6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:38.317Z"
+    },
+    {
+      "index": 17,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:38.432Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:40.319Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:41.989Z"
+    },
+    {
+      "index": 20,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T21:25:43.065Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "action": "play",
+      "cards": [
+        "♦4"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 4,
+        "cards": [
+          "♦4"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T21:25:44.599Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_017",
+    "winnerName": "快乐摸鱼人",
+    "winnerRole": "landlord",
+    "landlordWin": true,
+    "baseScore": 5000,
+    "bombCount": 0,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 1,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 1
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_017",
+        "playerName": "快乐摸鱼人",
+        "role": "landlord",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": 10000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      },
+      {
+        "playerId": "bot_005",
+        "playerName": "摸牌怪侠",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 1,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 1
+        },
+        "finalScore": -5000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♠4",
+        "♥4",
+        "♦6",
+        "♠8",
+        "♠9",
+        "♥10",
+        "♦J",
+        "♣J",
+        "♠Q",
+        "♣Q",
+        "♦K",
+        "♣K",
+        "♠K",
+        "♦A",
+        "♣A",
+        "♦2",
+        "🃏小王"
+      ]
+    },
+    "bot_017": {
+      "playerId": "bot_017",
+      "playerName": "快乐摸鱼人",
+      "cards": []
+    },
+    "bot_005": {
+      "playerId": "bot_005",
+      "playerName": "摸牌怪侠",
+      "cards": [
+        "♣3",
+        "♠3",
+        "♦3",
+        "♣5",
+        "♠5",
+        "♥5",
+        "♠6",
+        "♣6",
+        "♥7",
+        "♣7",
+        "♣8",
+        "♥K",
+        "♣2"
+      ]
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_017": [
+      "first_win"
+    ],
+    "bot_005": []
+  }
+}

@@ -1,0 +1,877 @@
+{
+  "version": "1.0.0",
+  "gameId": "1002b8dc-4dc4-4c4a-adc6-fd7770554983",
+  "roomId": "K22",
+  "startedAt": "2025-12-09T22:18:27.497Z",
+  "endedAt": "2025-12-09T22:21:56.845Z",
+  "durationMs": 209348,
+  "players": [
+    {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "seatIndex": 0,
+      "isBot": false,
+      "role": "farmer",
+      "initialCards": [
+        "♠3",
+        "♣5",
+        "♥5",
+        "♥6",
+        "♣6",
+        "♥7",
+        "♥9",
+        "♣9",
+        "♦10",
+        "♣10",
+        "♠10",
+        "♥10",
+        "♠J",
+        "♦K",
+        "♥K",
+        "♣A",
+        "♦A"
+      ],
+      "finalCards": [
+        "♠3",
+        "♣5",
+        "♥5",
+        "♥6",
+        "♣6",
+        "♥9",
+        "♦K",
+        "♥K"
+      ]
+    },
+    {
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "seatIndex": 1,
+      "isBot": true,
+      "role": "landlord",
+      "initialCards": [
+        "♣3",
+        "♠5",
+        "♦6",
+        "♠7",
+        "♦8",
+        "♣8",
+        "♠9",
+        "♦9",
+        "♠Q",
+        "♦Q",
+        "♥Q",
+        "♥A",
+        "♠A",
+        "♦2",
+        "♠2",
+        "♣2",
+        "🃏大王"
+      ],
+      "finalCards": [
+        "♦6",
+        "♠7"
+      ]
+    },
+    {
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "seatIndex": 2,
+      "isBot": true,
+      "role": "farmer",
+      "initialCards": [
+        "♥3",
+        "♦3",
+        "♠4",
+        "♥4",
+        "♦4",
+        "♦5",
+        "♠6",
+        "♣7",
+        "♦7",
+        "♥8",
+        "♥J",
+        "♣J",
+        "♦J",
+        "♣K",
+        "♠K",
+        "♥2",
+        "🃏小王"
+      ],
+      "finalCards": []
+    }
+  ],
+  "bottomCards": [
+    "♣4",
+    "♠8",
+    "♣Q"
+  ],
+  "landlordId": "bot_018",
+  "landlordCardsAfterBottom": [
+    "♣3",
+    "♣4",
+    "♠5",
+    "♦6",
+    "♠7",
+    "♦8",
+    "♣8",
+    "♠8",
+    "♠9",
+    "♦9",
+    "♠Q",
+    "♦Q",
+    "♥Q",
+    "♣Q",
+    "♥A",
+    "♠A",
+    "♦2",
+    "♠2",
+    "♣2",
+    "🃏大王"
+  ],
+  "bidding": {
+    "order": [
+      "bot_008",
+      "83696397",
+      "bot_018"
+    ],
+    "bids": [
+      {
+        "userId": "bot_008",
+        "bid": false,
+        "timestamp": "2025-12-09T22:18:29.874Z"
+      },
+      {
+        "userId": "83696397",
+        "bid": true,
+        "timestamp": "2025-12-09T22:19:51.714Z"
+      },
+      {
+        "userId": "bot_018",
+        "bid": true,
+        "timestamp": "2025-12-09T22:19:51.968Z"
+      }
+    ]
+  },
+  "playHistory": [
+    {
+      "index": 0,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♦8",
+        "♣8",
+        "♠8",
+        "♠9",
+        "♦9"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 8,
+        "cards": [
+          "♦8",
+          "♣8",
+          "♠8",
+          "♠9",
+          "♦9"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T22:19:55.553Z"
+    },
+    {
+      "index": 1,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:19:56.968Z"
+    },
+    {
+      "index": 2,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦10",
+        "♣10",
+        "♥10",
+        "♠10"
+      ],
+      "cardType": {
+        "type": "bomb",
+        "value": 10,
+        "cards": [
+          "♦10",
+          "♣10",
+          "♥10",
+          "♠10"
+        ],
+        "description": "炸弹"
+      },
+      "timestamp": "2025-12-09T22:20:57.996Z"
+    },
+    {
+      "index": 3,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♠Q",
+        "♦Q",
+        "♥Q",
+        "♣Q"
+      ],
+      "cardType": {
+        "type": "bomb",
+        "value": 12,
+        "cards": [
+          "♠Q",
+          "♦Q",
+          "♥Q",
+          "♣Q"
+        ],
+        "description": "炸弹"
+      },
+      "timestamp": "2025-12-09T22:20:59.615Z"
+    },
+    {
+      "index": 4,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:00.860Z"
+    },
+    {
+      "index": 5,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:01.970Z"
+    },
+    {
+      "index": 6,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♦2",
+        "♠2",
+        "♣2",
+        "♣3"
+      ],
+      "cardType": {
+        "type": "triple_with_single",
+        "value": 15,
+        "cards": [
+          "♦2",
+          "♠2",
+          "♣2",
+          "♣3"
+        ],
+        "description": "三带一"
+      },
+      "timestamp": "2025-12-09T22:21:03.940Z"
+    },
+    {
+      "index": 7,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:05.682Z"
+    },
+    {
+      "index": 8,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:06.651Z"
+    },
+    {
+      "index": 9,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♥A",
+        "♠A"
+      ],
+      "cardType": {
+        "type": "pair",
+        "value": 14,
+        "cards": [
+          "♥A",
+          "♠A"
+        ],
+        "description": "对子"
+      },
+      "timestamp": "2025-12-09T22:21:07.668Z"
+    },
+    {
+      "index": 10,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:09.349Z"
+    },
+    {
+      "index": 11,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:10.415Z"
+    },
+    {
+      "index": 12,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♣4"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 4,
+        "cards": [
+          "♣4"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:12.140Z"
+    },
+    {
+      "index": 13,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♦5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♦5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:13.497Z"
+    },
+    {
+      "index": 14,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♥7"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 7,
+        "cards": [
+          "♥7"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:14.827Z"
+    },
+    {
+      "index": 15,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "🃏大王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 17,
+        "cards": [
+          "🃏大王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:16.160Z"
+    },
+    {
+      "index": 16,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:17.410Z"
+    },
+    {
+      "index": 17,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:18.472Z"
+    },
+    {
+      "index": 18,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "play",
+      "cards": [
+        "♠5"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 5,
+        "cards": [
+          "♠5"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:20.290Z"
+    },
+    {
+      "index": 19,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♠6"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 6,
+        "cards": [
+          "♠6"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:21.341Z"
+    },
+    {
+      "index": 20,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♠J"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 11,
+        "cards": [
+          "♠J"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:23.861Z"
+    },
+    {
+      "index": 21,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:25.459Z"
+    },
+    {
+      "index": 22,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♣K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♣K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:27.373Z"
+    },
+    {
+      "index": 23,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♦A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♦A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:29.550Z"
+    },
+    {
+      "index": 24,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:31.004Z"
+    },
+    {
+      "index": 25,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♥2"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 15,
+        "cards": [
+          "♥2"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:32.305Z"
+    },
+    {
+      "index": 26,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:33.425Z"
+    },
+    {
+      "index": 27,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:35.335Z"
+    },
+    {
+      "index": 28,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♠4",
+        "♥4",
+        "♦4",
+        "♥3",
+        "♦3"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 4,
+        "cards": [
+          "♠4",
+          "♥4",
+          "♦4",
+          "♥3",
+          "♦3"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T22:21:36.469Z"
+    },
+    {
+      "index": 29,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:37.629Z"
+    },
+    {
+      "index": 30,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:39.317Z"
+    },
+    {
+      "index": 31,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♥J",
+        "♣J",
+        "♦J",
+        "♣7",
+        "♦7"
+      ],
+      "cardType": {
+        "type": "triple_with_pair",
+        "value": 11,
+        "cards": [
+          "♥J",
+          "♣J",
+          "♦J",
+          "♣7",
+          "♦7"
+        ],
+        "description": "三带二"
+      },
+      "timestamp": "2025-12-09T22:21:40.782Z"
+    },
+    {
+      "index": 32,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:41.670Z"
+    },
+    {
+      "index": 33,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:42.910Z"
+    },
+    {
+      "index": 34,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♥8"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 8,
+        "cards": [
+          "♥8"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:44.037Z"
+    },
+    {
+      "index": 35,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣9"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 9,
+        "cards": [
+          "♣9"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:47.260Z"
+    },
+    {
+      "index": 36,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:48.496Z"
+    },
+    {
+      "index": 37,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "♠K"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 13,
+        "cards": [
+          "♠K"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:49.946Z"
+    },
+    {
+      "index": 38,
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "action": "play",
+      "cards": [
+        "♣A"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 14,
+        "cards": [
+          "♣A"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:54.190Z"
+    },
+    {
+      "index": 39,
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "action": "pass",
+      "cards": [],
+      "cardType": null,
+      "timestamp": "2025-12-09T22:21:55.759Z"
+    },
+    {
+      "index": 40,
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "action": "play",
+      "cards": [
+        "🃏小王"
+      ],
+      "cardType": {
+        "type": "single",
+        "value": 16,
+        "cards": [
+          "🃏小王"
+        ],
+        "description": "单牌"
+      },
+      "timestamp": "2025-12-09T22:21:56.825Z"
+    }
+  ],
+  "result": {
+    "winnerId": "bot_008",
+    "winnerName": "激进地主",
+    "winnerRole": "farmer",
+    "landlordWin": false,
+    "baseScore": 5000,
+    "bombCount": 2,
+    "rocketCount": 0,
+    "isSpring": false,
+    "isAntiSpring": false,
+    "multipliers": {
+      "base": 1,
+      "bomb": 9,
+      "rocket": 1,
+      "spring": 1,
+      "antiSpring": 1,
+      "total": 9
+    },
+    "playerScores": [
+      {
+        "playerId": "bot_018",
+        "playerName": "稳健同学",
+        "role": "landlord",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 9,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 9
+        },
+        "finalScore": -90000
+      },
+      {
+        "playerId": "83696397",
+        "playerName": "83696397",
+        "role": "farmer",
+        "isWinner": false,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 9,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 9
+        },
+        "finalScore": 45000
+      },
+      {
+        "playerId": "bot_008",
+        "playerName": "激进地主",
+        "role": "farmer",
+        "isWinner": true,
+        "baseScore": 5000,
+        "multipliers": {
+          "base": 1,
+          "bomb": 9,
+          "rocket": 1,
+          "spring": 1,
+          "antiSpring": 1,
+          "total": 9
+        },
+        "finalScore": 45000
+      }
+    ]
+  },
+  "remainingHands": {
+    "83696397": {
+      "playerId": "83696397",
+      "playerName": "83696397",
+      "cards": [
+        "♠3",
+        "♣5",
+        "♥5",
+        "♥6",
+        "♣6",
+        "♥9",
+        "♦K",
+        "♥K"
+      ]
+    },
+    "bot_018": {
+      "playerId": "bot_018",
+      "playerName": "稳健同学",
+      "cards": [
+        "♦6",
+        "♠7"
+      ]
+    },
+    "bot_008": {
+      "playerId": "bot_008",
+      "playerName": "激进地主",
+      "cards": []
+    }
+  },
+  "hintHistory": [],
+  "achievements": {
+    "83696397": [],
+    "bot_018": [
+      "score_1000",
+      "score_5000"
+    ],
+    "bot_008": [
+      "first_win"
+    ]
+  }
+}

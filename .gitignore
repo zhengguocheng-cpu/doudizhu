@@ -59,3 +59,4 @@ coverage/
 *.css.map
 backend/dist
 backend/data/feedback/
+backend/data/

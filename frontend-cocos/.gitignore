@@ -1,10 +1,13 @@
 library/
-local/
 temp/
+local/
 build/
-settings/
-dist/
+native/
 node_modules/
+dist/
+.vscode/
+.idea/
+.git/
 .DS_Store
 Thumbs.db
 *.log
